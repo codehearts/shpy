@@ -56,7 +56,7 @@ examineNextSpyCall() {
 
 cleanupSpies() {
     if [ -n "$_shpy_spies_dir" ]; then
-        shpy_remove_dir_tree "$_shpy_spies_dir"
+        shpy_remove_dir_tree "$_shpy_spies_dir" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
     fi
 }
 
@@ -66,11 +66,11 @@ _shpyInit() {
     fi
 
     _shpy_inited=1
-    _shpy_spies_dir=$(shpy_make_temp_dir)
+    _shpy_spies_dir=$(shpy_make_temp_dir) || shpy_die 'Error: `shpy_make_temp_dir` failed'
 }
 
 _shpyResetSpy() {
-    shpy_remove_dir_tree "$_shpy_spies_dir/$1"
+    shpy_remove_dir_tree "$_shpy_spies_dir/$1" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
 
     eval unset "${1}_val"
     eval unset "${1}_output"
@@ -142,7 +142,7 @@ _shpySpySaveArgs() {
     count=$(getSpyCallCount "$name")
 
     path="$_shpy_spies_dir/$name/$count"
-    shpy_ensure_dir "$path" || shpy_die "Error: unable to create directory '$path'"
+    shpy_ensure_dir "$path" || shpy_die "Error: \`shpy_ensure_dir '$path'\` failed"
 
     i=0
     for arg in "$@"; do
@@ -172,7 +172,7 @@ shpy_make_temp_dir() {
 }
 
 shpy_ensure_dir() {
-    command mkdir -p "$1"
+    command mkdir -p -- "$1"
 }
 
 shpy_remove_dir_tree() {
