@@ -16,11 +16,11 @@ To use **shpy** in your tests, source the `shpy` script:
 	. path/to/shpy
 
 Function                        | Description
------------------------------------------------------
+--------------------------------|---------------------------------------------------------------------------------
 `createspy SPY_NAME`            | create a new spy, or reset a spy if it already existed
 `getSpyCallCount SPY`           | output number of times a spy has been called
 `wasSpyCalledWith SPY [ARG]...` | test if a spy was called with the given arguments
-`examineNextSpyCall SPY`        | tell `wasSpyCalledWith` to test on the next call for a spy (by default, `wasSpyCalledwith` tests the first call to a spy; after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
+`examineNextSpyCall SPY`        | tell `wasSpyCalledWith` to test on the spy's next call<br/>(by default, `wasSpyCalledwith` tests the first call to a spy — after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
 
 ### shunit2 Integration
 
@@ -31,7 +31,7 @@ To use **shpy** asserts in your **shunit2** tests, you must also source the
 	. path/to/shpy-shunit2
 
 Function                                     | Description
-------------------------------------------------------------------
+---------------------------------------------|----------------------------------------------------------------------
 `assertCallCount [MESSAGE] SPY COUNT`        | asset SPY was called COUNT times
 `assertCalledWith SPY [ARG]...`              | assert SPY was called with ARGs
 `assertCalledWith_ MESSAGE SPY [ARG]...`     | same, but include MESSAGE in failure output
