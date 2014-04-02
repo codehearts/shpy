@@ -1,0 +1,81 @@
+#!/bin/sh
+
+. ./shpy
+. ./shpy-shunit2
+
+testAssertCallCountFail() {
+    local output
+    createSpy dosomething
+    dosomething
+
+    output=$(assertCallCount dosomething 0)
+
+    assertFalse '`assertCallCount dosomething 0` fails' $?
+    printf '%s\n' "$output" | grep -q '^ASSERT:'
+    assertTrue 'output begins with "ASSERT:"' $?
+}
+
+testAssertCallCountPass() {
+    createSpy dosomething
+
+    assertCallCount dosomething 0
+
+    assertTrue '`assertCallCount dosomething 0` passes' $?
+}
+
+testAssertCalledWithFailure() {
+    local output
+    createSpy dosomething
+    dosomething somearg
+
+    output=$(assertCalledWith dosomething anotherarg 2>/dev/null)
+
+    assertFalse '`assertCalledWith anotherarg` fails' $?
+    printf '%s' "$output" | grep -q "^ASSERT"
+    assertTrue 'output begins with "ASSERT:"' $?
+}
+
+testAssertCalledWithPass() {
+    createSpy dosomething
+    dosomething somearg
+
+    assertCalledWith dosomething somearg
+
+    assertTrue '`assertCalledWith somearg` passes' $?
+}
+
+testAssertCalledWith_AdvancesToTheNextCall() {
+    createSpy dosomething
+    dosomething somearg
+    dosomething anotherarg
+
+    assertCalledWith dosomething somearg
+    assertTrue '`assertCalledWith dosomething somearg` passes' $?
+
+    assertCalledWith dosomething anotherarg
+    assertTrue '`assertCalledWith dosomething anotherarg` passes' $?
+}
+
+testAssertCalledOnceWithFail_WhenCalledMoreThanOnce() {
+    local output
+    createSpy dosomething
+    dosomething somearg
+    dosomething anotherarg
+
+    output=$(assertCalledOnceWith dosomething somearg)
+
+    assertFalse '`assertCalledOnceWith dosomething somearg` fails' $?
+    printf '%s' "$output" | grep -q '^ASSERT'
+    assertTrue 'output begins with "ASSERT:"' $?
+}
+
+testAssertCalledOnceWithPass() {
+    createSpy dosomething
+    dosomething somearg
+
+    assertCalledOnceWith dosomething somearg
+
+    assertTrue '`assertCalledOnceWith dosomething somearg` passes' $?
+}
+
+. shunit2

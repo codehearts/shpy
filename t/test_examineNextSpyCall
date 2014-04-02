@@ -1,0 +1,59 @@
+#!/bin/sh
+
+. ./shpy
+
+testCalledWithZeroArgs_ShouldReturnUsage() {
+    local output
+
+    output=$(examineNextSpyCall 2>&1 >/dev/null)
+
+    assertFalse '`examineNextSpyCall` returns error' $?
+    printf '%s\n' "$output" | grep -q '^Usage:'
+    assertTrue 'begins with "Error:"' $?
+}
+
+testCalledAfterZeroSpyCalls_ShouldSucceed() {
+    createSpy dosomething || fail 'createSpy dosomething'
+
+    examineNextSpyCall dosomething
+
+    assertTrue '`examineNextSpyCall` returns true' $?
+}
+
+testCalledAfterOneSpyCall_ShouldSucceed() {
+    createSpy dosomething || fail 'createSpy dosomething'
+    dosomething
+
+    examineNextSpyCall dosomething
+
+    assertTrue '`examineNextSpyCall dosomething` is true' $?
+}
+
+testCalledAfterOneSpyCall_wasSpyCalledShouldReturnError() {
+    local output
+    createSpy dosomething || fail 'createSpy dosomething'
+    dosomething
+
+    examineNextSpyCall dosomething
+    output=$(wasSpyCalledWith dosomething 2>&1  >/dev/null)
+
+    assertFalse '`wasSpyCalledWith dosomething` returns error' $?
+    printf '%s' "$output" | grep -q '^Error:'
+    assertTrue 'output begins with Error:' $?
+}
+
+testCalled_wasSpyCalledWithShouldMatchSecondCall() {
+    createSpy dosomething || fail 'createSpy dosomething'
+    dosomething
+    dosomething somearg
+
+    wasSpyCalledWith dosomething
+    assertTrue '`wasSpyCalledWith dosomething` is true' $?
+
+    examineNextSpyCall dosomething
+    wasSpyCalledWith dosomething somearg
+
+    assertTrue '`wasSpyCalledWith dosomething somearg` is true' $?
+}
+
+. shunit2

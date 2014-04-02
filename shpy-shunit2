@@ -1,0 +1,74 @@
+#!/bin/sh
+
+assertCallCount() {
+    if [ $# -lt 2 ] || [ $# -gt 3 ]; then
+        echo 'Usage: assertCallCount [MESSAGE] SPY COUNT' >&2
+        return 1
+    fi
+
+    local val
+    if [ $# -eq 2 ]; then
+        assertEquals "$2" "$(getSpyCallCount "$1")"
+    else
+        assertEquals "$1" "$3" "$(getSpyCallCount "$2")"
+    fi
+}
+
+assertCalledWith() {
+    if [ $# -lt 1 ]; then
+        echo 'Usage: assertCalledWith SPY [ARG]...' >&2
+        return 1
+    fi
+
+    local val
+
+    wasSpyCalledWith "$@"
+    assertTrue $?
+    val=$?
+
+    examineNextSpyCall "$1"
+
+    return $val
+}
+
+assertCalledWith_() {
+    if [ $# -lt 2 ]; then
+        echo 'Usage: assertCalledWith_ MESSAGE SPY [ARG]...' >&2
+        return 1
+    fi
+
+    local message val
+
+    message=$1
+    shift
+
+    wasSpyCalledWith "$@"
+    assertTrue "$message" $?
+    val=$?
+
+    examineNextSpyCall "$1"
+
+    return $val
+}
+
+assertCalledOnceWith() {
+    ${_SHUNIT_LINENO_}
+
+    if [ $# -lt 1 ]; then
+        echo 'Usage: assertCalledOnceWith SPY [ARG]...' >&2
+        return 1
+    fi
+
+    assertCallCount "$1" 1 &&
+    assertCalledWith "$@"
+}
+
+assertCalledOnceWith_() {
+    if [ $# -lt 2 ]; then
+        echo 'Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]...' >&2
+        return 1
+    fi
+
+    assertCallCount "$2" 1 &&
+    assertCalledWith_ "$@"
+}

@@ -1,0 +1,67 @@
+#!/bin/sh
+
+. ./shpy
+
+testWithNoArguments_ShouldReturnUsage() {
+    local output
+
+    output=$(createSpy)
+
+    assertFalse 'returns error' $?
+    printf '%s\n' "$output" | grep -q '^Usage:'
+    assertTrue 'begins with "Usage:"' $?
+}
+
+testWithOneArgument_ShouldCreateFunction() {
+    createSpy dosomething || fail 'createSpy dosomething'
+
+    assertEquals 'function' "$(type -t dosomething)"
+}
+
+testShouldFakeReturnValue() {
+    createSpy dosomething || fail 'createSpy dosomething'
+    dosomething_val=123
+
+    dosomething
+
+    assertEquals 'return value equals $dosomething_val' 123 $?
+}
+
+testShouldResetFakeReturnValue() {
+    dosomething_val=123
+
+    createSpy dosomething || fail 'createSpy dosomething'
+
+    assertNull '$dosomething_val is unset' "$dosomething_val"
+}
+
+testShouldFakeOutput() {
+    local output
+    createSpy dosomething || fail 'createSpy dosomething'
+    dosomething_output='some
+output'
+
+    output=$(dosomething) || fail 'dosomething'
+
+    assertEquals 'output equals $dosomething_output' 'some
+output' "$output"
+}
+
+testShouldResetFakeOutput() {
+    dosomething_output='some output'
+
+    createSpy dosomething || fail 'createSpy dosomething'
+
+    assertNull '$dosomething_output is unset' "$dosomething_output"
+}
+
+test_ShouldResetCallCount() {
+    createSpy dosomething || fail 'createSpy dosomething'
+    dosomething
+
+    createSpy dosomething || fail 'createSpy dosomething'
+
+    assertEquals 0 "$(getSpyCallCount dosomething)"
+}
+
+. shunit2

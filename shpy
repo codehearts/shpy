@@ -1,0 +1,171 @@
+#!/bin/sh
+
+createSpy() {
+    if [ $# -eq 0 ]; then
+        echo 'Usage: spy SPY_NAME'
+        return 1
+    fi
+
+    _shpyInit
+    _shpyResetSpy "$1"
+    _shpyInjectSpyFunction "$1"
+}
+
+getSpyCallCount() {
+    if [ $# -eq 0 ]; then
+        echo 'Usage: getSpyCallCount SPY' >&2
+        return 1
+    fi
+
+    local path
+    path="$_shpy_spies_dir/$1"
+    set -- "$path"/*
+    if [ "$1" = "$path/*" ]; then
+        echo 0
+    else
+        echo $#
+    fi
+}
+
+wasSpyCalledWith() {
+    if [ $# -eq 0 ]; then
+        echo 'Usage: wasSpyCalledWith SPY [ARG]...' >&2
+        return 1
+    fi
+
+    local count current name path
+
+    name=$1
+    shift
+
+    current=$(_shpyGetSpyCurent "$name")
+    count=$(getSpyCallCount "$name")
+    if [ "$current" -ge "$count" ]; then
+        echo "Error: spy '$name' has not been called $current time(s)" >&2
+        return 1
+    fi
+
+    path=$_shpy_spies_dir/$name/$current
+    _shpyMatchArgs "$@" <"$path"
+}
+
+examineNextSpyCall() {
+    local current
+
+    if [ $# -eq 0 ]; then
+        echo 'Usage: examineNextSpyCall SPY' >&2
+        return 1
+    fi
+
+    current=$(_shpyGetSpyCurent "$1")
+    _shpySetSpyCurent "$1" $(( current + 1 ))
+}
+
+cleanupSpies() {
+    if [ -n "$_shpy_spies_dir" ]; then
+        shpy_remove_dir_tree "$_shpy_spies_dir"
+    fi
+}
+
+_shpyInit() {
+    if [ -n "$_shpy_inited" ]; then
+        return
+    fi
+
+    _shpy_inited=1
+    _shpy_spies_dir=$(shpy_make_temp_dir)
+}
+
+_shpyResetSpy() {
+    shpy_remove_dir_tree "$_shpy_spies_dir/$1"
+
+    eval unset "${1}_val"
+    eval unset "${1}_output"
+    eval unset "_shpy_${1}_current"
+    unset "$1"
+}
+
+_shpyInjectSpyFunction() {
+    eval "$1() { _shpyRunSpy '$1' \"\$@\"; }"
+}
+
+_shpyGetSpyCurent() {
+    local current
+    eval current=\$_shpy_${1}_current
+    printf '%s\n' "${current:-0}"
+}
+
+_shpySetSpyCurent() {
+    eval _shpy_$1_current=$2
+}
+
+_shpyMatchArgs() {
+    local arg argCount
+
+    read -rd '' argCount
+    if [ "$argCount" -ne $# ]; then
+        return 1
+    fi
+
+    while IFS= read -rd '' arg; do
+        if [ "$arg" != "$1" ]; then
+            return 1
+        fi
+        shift
+    done
+
+    return 0
+}
+
+_shpyRunSpy() {
+    local name
+    name=$1
+    shift
+
+    _shpySpySaveArgs "$@"
+    _shpySpyPrintOutput
+    _shpySpyGetReturnValue
+}
+
+_shpySpySaveArgs() {
+    local arg count path
+
+    path="$_shpy_spies_dir/$name"
+    shpy_ensure_dir "$path"
+
+    count=$(getSpyCallCount "$name")
+
+    printf '%s\0' $# >|"$path/$count"
+    for arg in "$@"; do
+        printf '%s\0' "$arg" >>"$path/$count"
+    done
+}
+
+_shpySpyPrintOutput() {
+    local output
+    eval output=\$${name}_output
+    if [ -n "$output" ]; then
+        printf '%s' "$output"
+    fi
+}
+
+_shpySpyGetReturnValue() {
+    local val
+    eval val=\$${name}_val
+    return "${val:-0}"
+}
+
+
+##### External Interface #####
+
+shpy_make_temp_dir() {
+    command mktemp -d -t shpy
+}
+
+shpy_ensure_dir() {
+    command mkdir -p "$1"
+}
+
+shpy_remove_dir_tree() {
+    command rm -rf -- "$1"
+}

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+. ./shpy
+. ./shpy-shunit2
+
+testCanFakeTouchCommand() {
+    createSpy touch
+
+    touch nonexistent_file
+
+    assertCalledOnceWith touch nonexistent_file
+
+    [ -f nonexistent_file ]
+    assertFalse 'nonexistent_file is not a file' $?
+}
+
+# mkdir is trikier because the implementation of shpy calls mkdir
+testCanFakeMkdirCommand() {
+    createSpy mkdir
+    mkdir_val=123
+
+    mkdir -p nonexistent_dir
+
+    assertEquals '`mkdir` returns $mkdir_val' 123 $?
+
+    assertCalledOnceWith mkdir -p nonexistent_dir
+
+    [ -d nonexistent_dir ]
+    assertFalse 'nonexistent_dir is not a dir' $?
+}
+
+. shunit2
