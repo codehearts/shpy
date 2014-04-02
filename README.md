@@ -14,11 +14,13 @@ Features at a glance:
 To use **shpy** in your tests, source the `shpy` script:
 
 	. path/to/shpy
+	
+A summary of functions:
 
 Function                        | Description
 --------------------------------|---------------------------------------------------------------------------------
-`createspy SPY_NAME`            | create a new spy, or reset a spy if it already existed
-`getSpyCallCount SPY`           | output number of times a spy has been called
+`createSpy SPY_NAME`            | create a new spy, or reset a spy if it already existed
+`getSpyCallCount SPY`           | output the number of times a spy has been called
 `wasSpyCalledWith SPY [ARG]...` | test if a spy was called with the given arguments
 `examineNextSpyCall SPY`        | tell `wasSpyCalledWith` to test on the spy's next call<br/>(by default, `wasSpyCalledwith` tests the first call to a spy — after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
 
@@ -29,19 +31,20 @@ To use **shpy** asserts in your **shunit2** tests, you must also source the
 
 	. path/to/shpy
 	. path/to/shpy-shunit2
+	
+A summary of asserts:
 
 Function                                     | Description
 ---------------------------------------------|----------------------------------------------------------------------
 `assertCallCount [MESSAGE] SPY COUNT`        | asset SPY was called COUNT times
-`assertCalledWith SPY [ARG]...`              | assert SPY was called with ARGs
+`assertCalledWith SPY [ARG]...`              | assert SPY was called with ARGs; also calls `examineNextSpyCall` so that calling `assertCalledWith` again asserts on the next call to SPY
 `assertCalledWith_ MESSAGE SPY [ARG]...`     | same, but include MESSAGE in failure output
-`assertCalledOnceWith SPY [ARG]...`          | convenience assert for `assertCallCount SPY 1 && assertCalledWith SPY [ARG]...`
+`assertCalledOnceWith SPY [ARG]...`          | convenience assert for `assertCallCount SPY 1 && assertCalledWith SPY ARGs`
 `assertCalledOnceWith_ MESSAGE SPY [ARG]...` | same, but include MESSAGE in failure output
 
 ## A Word On Shell Portability
 
 While **shunit2** remains strictly [POSIX
-compliant](http://shellhaters.heroku.com/posix), **shpy** relies on portable
-but [more modern shell features](http://apenwarr.ca/log/?m=201102#28), such as
+compliant](http://shellhaters.heroku.com/posix), **shpy** relies on [portable but more modern shell features](http://apenwarr.ca/log/?m=201102#28), such as
 function-local variables.  To be clear, **shpy** does not use any
 [Bashisms](https://wiki.ubuntu.com/DashAsBinSh).
