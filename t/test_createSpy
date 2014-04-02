@@ -15,7 +15,8 @@ testWithNoArguments_ShouldReturnUsage() {
 testWithOneArgument_ShouldCreateFunction() {
     createSpy dosomething || fail 'createSpy dosomething'
 
-    assertEquals 'function' "$(type -t dosomething)"
+    type -t dosomething | grep -q function
+    assertTrue 'dosomething is a function' $?
 }
 
 testShouldFakeReturnValue() {

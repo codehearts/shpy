@@ -8,12 +8,12 @@ check: test
 test:
 	-checkbashisms shpy shpy-shunit2
 	#-shellcheck shpy shpy-shunit2
-	t/test_createSpy
-	t/test_getSpyCallCount
-	t/test_wasSpyCalledWith
-	t/test_examineNextSpyCall
-	t/test_shunit2Interface
-	t/test_systemCommands
+	"$(SHELL)" t/test_createSpy
+	"$(SHELL)" t/test_getSpyCallCount
+	"$(SHELL)" t/test_wasSpyCalledWith
+	"$(SHELL)" t/test_examineNextSpyCall
+	"$(SHELL)" t/test_shunit2Interface
+	"$(SHELL)" t/test_systemCommands
 
 install:
 	cp shpy shpy-shunit2 "$(BIN)"

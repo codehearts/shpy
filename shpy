@@ -17,14 +17,7 @@ getSpyCallCount() {
         return 1
     fi
 
-    local path
-    path="$_shpy_spies_dir/$1"
-    set -- "$path"/*
-    if [ "$1" = "$path/*" ]; then
-        echo 0
-    else
-        echo $#
-    fi
+    _shpyGetDirectoryContentsCount "$_shpy_spies_dir/$1"
 }
 
 wasSpyCalledWith() {
@@ -45,8 +38,8 @@ wasSpyCalledWith() {
         return 1
     fi
 
-    path=$_shpy_spies_dir/$name/$current
-    _shpyMatchArgs "$@" <"$path"
+    path="$_shpy_spies_dir/$name/$current" \
+        _shpyMatchArgs "$@"
 }
 
 examineNextSpyCall() {
@@ -99,19 +92,35 @@ _shpySetSpyCurent() {
     eval _shpy_$1_current=$2
 }
 
-_shpyMatchArgs() {
-    local arg argCount
+_shpyGetDirectoryContentsCount() {
+    local path
+    path=$1
 
-    read -rd '' argCount
+    set -- "$path"/*
+    if [ "$1" = "$path/*" ]; then
+        echo 0
+    else
+        echo $#
+    fi
+}
+
+_shpyMatchArgs() {
+    local arg argCount i
+
+    argCount=$(_shpyGetDirectoryContentsCount "$path")
     if [ "$argCount" -ne $# ]; then
         return 1
     fi
 
-    while IFS= read -rd '' arg; do
+    i=0
+    while [ "$i" -lt "$argCount" ]; do
+        arg=$(cat "$path/$i")
         if [ "$arg" != "$1" ]; then
             return 1
         fi
+
         shift
+        i=$(( i + 1 ))
     done
 
     return 0
@@ -128,16 +137,17 @@ _shpyRunSpy() {
 }
 
 _shpySpySaveArgs() {
-    local arg count path
-
-    path="$_shpy_spies_dir/$name"
-    shpy_ensure_dir "$path"
+    local arg count i path
 
     count=$(getSpyCallCount "$name")
 
-    printf '%s\0' $# >|"$path/$count"
+    path="$_shpy_spies_dir/$name/$count"
+    shpy_ensure_dir "$path" || shpy_die "Error: unable to create directory '$path'"
+
+    i=0
     for arg in "$@"; do
-        printf '%s\0' "$arg" >>"$path/$count"
+        printf '%s' "$arg" >|"$path/$i"
+        i=$(( i + 1 ))
     done
 }
 
@@ -155,7 +165,6 @@ _shpySpyGetReturnValue() {
     return "${val:-0}"
 }
 
-
 ##### External Interface #####
 
 shpy_make_temp_dir() {
@@ -168,4 +177,9 @@ shpy_ensure_dir() {
 
 shpy_remove_dir_tree() {
     command rm -rf -- "$1"
+}
+
+shpy_die() {
+    echo "${1:-"Error: aborting"}" >&2
+    exit "${2:-1}"
 }
