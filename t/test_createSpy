@@ -20,48 +20,63 @@ testWithOneArgument_ShouldCreateFunction() {
 }
 
 testShouldFakeReturnValue() {
-    createSpy dosomething || fail 'createSpy dosomething'
-    dosomething_val=123
+    val=123 createSpy dosomething || fail 'createSpy dosomething'
 
     dosomething
 
-    assertEquals 'return value equals $dosomething_val' 123 $?
+    assertEquals 'return value equals passed val' 123 $?
+}
+
+testShouldFakeReturnValue_PerSpy() {
+    val=123 createSpy dosomething || fail 'val=123 createSpy dosomething'
+    val=234 createSpy domore || fail 'val=234 createSpy domore'
+
+    dosomething
+    assertEquals 'dosomething return value is 123' 123 $?
+    domore
+    assertEquals 'domore return value is 234' 234 $?
 }
 
 testShouldResetFakeReturnValue() {
-    dosomething_val=123
+    val=123 createSpy dosomething || fail 'val=123 createSpy dosomething'
 
-    createSpy dosomething || fail 'createSpy dosomething'
+    createSpy dosomething
 
-    assertNull '$dosomething_val is unset' "$dosomething_val"
+    dosomething
+    assertTrue 'dosomething returns the default -- success' $?
 }
 
 testShouldFakeOutput() {
     local output
-    createSpy dosomething || fail 'createSpy dosomething'
-    dosomething_output='some
-output'
+    output='some
+output' \
+        createSpy dosomething || fail 'createSpy dosomething'
 
-    output=$(dosomething) || fail 'dosomething'
+    output=$(dosomething)
 
-    assertEquals 'output equals $dosomething_output' 'some
+    assertTrue '`dosomething` succeeds' $?
+    assertEquals 'output is the passed value' 'some
 output' "$output"
 }
 
 testShouldResetFakeOutput() {
-    dosomething_output='some output'
+    local output
+    output='some output' \
+        createSpy dosomething || fail 'createSpy dosomething'
 
-    createSpy dosomething || fail 'createSpy dosomething'
+    output=$(createSpy dosomething)
 
-    assertNull '$dosomething_output is unset' "$dosomething_output"
+    assertTrue '`createSpy dosomething` succeeds' $?
+    assertNull 'output is unset' "$output"
 }
 
-test_ShouldResetCallCount() {
+testShouldResetCallCount() {
     createSpy dosomething || fail 'createSpy dosomething'
     dosomething
 
-    createSpy dosomething || fail 'createSpy dosomething'
+    createSpy dosomething
 
+    assertTrue '`createSpy dosomething` succeeds' $?
     assertEquals 0 "$(getSpyCallCount dosomething)"
 }
 

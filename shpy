@@ -8,6 +8,8 @@ createSpy() {
 
     _shpyInit
     _shpyResetSpy "$1"
+    _shpySpySetReturnValue "$1" "${val:-0}"
+    _shpySpySetOutput "$1" "$output"
     _shpyInjectSpyFunction "$1"
 }
 
@@ -151,17 +153,25 @@ _shpySpySaveArgs() {
     done
 }
 
+_shpySpySetOutput() {
+    eval _shpy_${1}_output=\$2
+}
+
 _shpySpyPrintOutput() {
     local output
-    eval output=\$${name}_output
+    eval output=\$_shpy_${name}_output
     if [ -n "$output" ]; then
         printf '%s' "$output"
     fi
 }
 
+_shpySpySetReturnValue() {
+    eval _shpy_${1}_val=\$2
+}
+
 _shpySpyGetReturnValue() {
     local val
-    eval val=\$${name}_val
+    eval val=\$_shpy_${name}_val
     return "${val:-0}"
 }
 

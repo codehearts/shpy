@@ -19,7 +19,9 @@ A summary of functions:
 
 Function                        | Description
 --------------------------------|---------------------------------------------------------------------------------
-`createSpy SPY_NAME`            | create a new spy, or reset a spy if it already existed
+`createSpy SPY`                 | create a new spy named SPY, or reset SPY if it already existed
+`val=RETURN_VAL createSpy SPY`  | `createSpy` accepts an optional parameter `val`, the value that SPY returns
+`output=OUTPUT createSpy SPY`   | `createSpy` accepts an optional parameter `output`, the text that SPY outputs when run
 `getSpyCallCount SPY`           | output the number of times a spy has been called
 `wasSpyCalledWith SPY [ARG]...` | test if a spy was called with the given arguments
 `examineNextSpyCall SPY`        | tell `wasSpyCalledWith` to test on the spy's next call<br/>(by default, `wasSpyCalledwith` tests the first call to a spy — after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
