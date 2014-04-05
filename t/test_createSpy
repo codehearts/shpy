@@ -39,6 +39,7 @@ testShouldFakeReturnValue_PerSpy() {
 
 testShouldResetFakeReturnValue() {
     val=123 createSpy dosomething || fail 'val=123 createSpy dosomething'
+    unset val   # required for dash
 
     createSpy dosomething
 
