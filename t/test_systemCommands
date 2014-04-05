@@ -28,4 +28,8 @@ testCanFakeMkdirCommand() {
     assertFalse 'nonexistent_dir is not a dir' $?
 }
 
+oneTimeTearDown() {
+    cleanupSpies
+}
+
 . shunit2

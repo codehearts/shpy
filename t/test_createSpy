@@ -80,4 +80,8 @@ testShouldResetCallCount() {
     assertEquals 0 "$(getSpyCallCount dosomething)"
 }
 
+oneTimeTearDown() {
+    cleanupSpies
+}
+
 . shunit2

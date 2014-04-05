@@ -56,4 +56,8 @@ testCalled_wasSpyCalledWithShouldMatchSecondCall() {
     assertTrue '`wasSpyCalledWith dosomething somearg` is true' $?
 }
 
+oneTimeTearDown() {
+    cleanupSpies
+}
+
 . shunit2

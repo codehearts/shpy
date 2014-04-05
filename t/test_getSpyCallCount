@@ -53,4 +53,8 @@ testSpyRunTwice_ShouldReportTwoCalls() {
     assertEquals 2 "$(getSpyCallCount dosomething)"
 }
 
+oneTimeTearDown() {
+    cleanupSpies
+}
+
 . shunit2

@@ -82,4 +82,8 @@ testTwoArgs_ReturnsTrueWhenSpyCalledWithSameArgs() {
     assertTrue '`wasSpyCalledWith dosomething somearg anotherarg` is true' $?
 }
 
+oneTimeTearDown() {
+    cleanupSpies
+}
+
 . shunit2

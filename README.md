@@ -25,6 +25,7 @@ Function                        | Description
 `getSpyCallCount SPY`           | output the number of times a spy has been called
 `wasSpyCalledWith SPY [ARG]...` | test if a spy was called with the given arguments
 `examineNextSpyCall SPY`        | tell `wasSpyCalledWith` to test on the spy's next call<br/>(by default, `wasSpyCalledwith` tests the first call to a spy — after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
+`cleanupSpies`                  | after you are done testing, call this function to clean up any temporary directories created
 
 ### shunit2 Integration
 
