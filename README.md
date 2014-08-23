@@ -17,15 +17,15 @@ To use **shpy** in your tests, source the `shpy` script:
 	
 A summary of functions:
 
-Function                        | Description
---------------------------------|---------------------------------------------------------------------------------
-`createSpy SPY`                 | create a new spy named SPY, or reset SPY if it already existed
-`val=RETURN_VAL createSpy SPY`  | `createSpy` accepts an optional parameter `val`, the value that SPY returns
-`output=OUTPUT createSpy SPY`   | `createSpy` accepts an optional parameter `output`, the text that SPY outputs when run
-`getSpyCallCount SPY`           | output the number of times a spy has been called
-`wasSpyCalledWith SPY [ARG]...` | test if a spy was called with the given arguments
-`examineNextSpyCall SPY`        | tell `wasSpyCalledWith` to test on the spy's next call<br/>(by default, `wasSpyCalledwith` tests the first call to a spy — after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
-`cleanupSpies`                  | after you are done testing, call this function to clean up any temporary directories created
+Function                                 | Description
+-----------------------------------------|-------------------------------------------------------------------------------
+<pre>createSpy SPY</pre>                 | create a new spy named SPY, or reset SPY if it already existed
+<pre>val=RETURN_VAL createSpy SPY</pre>  | `createSpy` accepts an optional parameter `val`, the value that SPY returns
+<pre>output=OUTPUT createSpy SPY</pre>   | `createSpy` accepts an optional parameter `output`, the text that SPY outputs when run
+<pre>getSpyCallCount SPY</pre>           | output the number of times a spy has been called
+<pre>wasSpyCalledWith SPY [ARG]...</pre> | test if a spy was called with the given arguments
+<pre>examineNextSpyCall SPY</pre>        | tell `wasSpyCalledWith` to test on the spy's next call<br/>(by default, `wasSpyCalledwith` tests the first call to a spy — after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
+<pre>cleanupSpies</pre>                  | after you are done testing, call this function to clean up any temporary directories created
 
 ### shunit2 Integration
 
@@ -37,13 +37,13 @@ To use **shpy** asserts in your **shunit2** tests, you must also source the
 	
 A summary of asserts:
 
-Function                                     | Description
----------------------------------------------|----------------------------------------------------------------------
-`assertCallCount [MESSAGE] SPY COUNT`        | asset SPY was called COUNT times
-`assertCalledWith SPY [ARG]...`              | assert SPY was called with ARGs; also calls `examineNextSpyCall` so that calling `assertCalledWith` again asserts on the next call to SPY
-`assertCalledWith_ MESSAGE SPY [ARG]...`     | same, but include MESSAGE in failure output
-`assertCalledOnceWith SPY [ARG]...`          | convenience assert for `assertCallCount SPY 1 && assertCalledWith SPY ARGs`
-`assertCalledOnceWith_ MESSAGE SPY [ARG]...` | same, but include MESSAGE in failure output
+Function                                              | Description
+------------------------------------------------------|------------------------------------------------------------------
+<pre>assertCallCount [MESSAGE] SPY COUNT</pre>        | asset SPY was called COUNT times
+<pre>assertCalledWith SPY [ARG]...</pre>              | assert SPY was called with ARGs; also calls `examineNextSpyCall` so that calling `assertCalledWith</pre> again asserts on the next call to SPY
+<pre>assertCalledWith_ MESSAGE SPY [ARG]...</pre>     | same, but include MESSAGE in failure output
+<pre>assertCalledOnceWith SPY [ARG]...</pre>          | convenience assert for `assertCallCount SPY 1 && assertCalledWith SPY ARGs`
+<pre>assertCalledOnceWith_ MESSAGE SPY [ARG]...</pre> | same, but include MESSAGE in failure output
 
 Use the `oneTimeTearDown` hook provided by **shunit2** to clean up any spies:
 
