@@ -1,11 +1,11 @@
 # shpy
 
-*Spies and fakes for shell unit testing*
+*Spies and stubs for shell unit testing*
 
 Features at a glance:
 
 * Create spies for any command or function in the shell environment
-* Fake stdout and return value of spies
+* Stub stdout and return value of spies
 * See call count and check arguments passed to the spy
 * [Integrates](#shunit2-integration) with the [shunit2](http://code.google.com/p/shunit2/) testing framework
 

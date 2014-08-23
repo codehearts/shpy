@@ -19,7 +19,7 @@ testWithOneArgument_ShouldCreateFunction() {
     assertTrue 'dosomething is a function' $?
 }
 
-testShouldFakeReturnValue() {
+testShouldStubReturnValue() {
     val=123 createSpy dosomething || fail 'createSpy dosomething'
 
     dosomething
@@ -27,7 +27,7 @@ testShouldFakeReturnValue() {
     assertEquals 'return value equals passed val' 123 $?
 }
 
-testShouldFakeReturnValue_PerSpy() {
+testShouldStubReturnValue_PerSpy() {
     val=123 createSpy dosomething || fail 'val=123 createSpy dosomething'
     val=234 createSpy domore || fail 'val=234 createSpy domore'
 
@@ -37,7 +37,7 @@ testShouldFakeReturnValue_PerSpy() {
     assertEquals 'domore return value is 234' 234 $?
 }
 
-testShouldResetFakeReturnValue() {
+testShouldResetStubReturnValue() {
     val=123 createSpy dosomething || fail 'val=123 createSpy dosomething'
     unset val   # required for dash
 
@@ -47,7 +47,7 @@ testShouldResetFakeReturnValue() {
     assertTrue 'dosomething returns the default -- success' $?
 }
 
-testShouldFakeOutput() {
+testShouldStubOutput() {
     local output
     output='some
 output' \
@@ -60,7 +60,7 @@ output' \
 output' "$output"
 }
 
-testShouldResetFakeOutput() {
+testShouldResetStubOutput() {
     local output
     output='some output' \
         createSpy dosomething || fail 'createSpy dosomething'

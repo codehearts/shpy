@@ -3,7 +3,7 @@
 . ./shpy
 . ./shpy-shunit2
 
-testCanFakeTouchCommand() {
+testCanStubTouchCommand() {
     createSpy touch
 
     touch nonexistent_file
@@ -15,7 +15,7 @@ testCanFakeTouchCommand() {
 }
 
 # mkdir is trikier because the implementation of shpy calls mkdir
-testCanFakeMkdirCommand() {
+testCanStubMkdirCommand() {
     val=123 createSpy mkdir
 
     mkdir -p nonexistent_dir
