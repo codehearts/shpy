@@ -45,6 +45,7 @@ Function                                              | Description
 <pre>assertCalledWith_ MESSAGE SPY [ARG]...</pre>     | same, but include MESSAGE in failure output
 <pre>assertCalledOnceWith SPY [ARG]...</pre>          | convenience assert for `assertCallCount SPY 1 && assertCalledWith SPY ARGs`
 <pre>assertCalledOnceWith_ MESSAGE SPY [ARG]...</pre> | same, but include MESSAGE in failure output
+<pre>assertNeverCalled [MESSAGE] SPY</pre>            | convenience assert for `assertCallCount SPY 0`
 
 Use the `oneTimeTearDown` hook provided by **shunit2** to clean up any spies:
 

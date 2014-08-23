@@ -78,6 +78,25 @@ testAssertCalledOnceWithPass() {
     assertTrue '`assertCalledOnceWith dosomething somearg` passes' $?
 }
 
+testAssertNeverCalledPass_WhenNotCalled() {
+    createSpy dosomething
+
+    assertNeverCalled dosomething
+
+    assertTrue '`assertNeverCalled dosomething` passes' $?
+}
+
+testAssertNeverCalledFail_WhenCalledOnce() {
+    local output
+    createSpy dosomething
+    dosomething
+
+    output=$(assertNeverCalled dosomething)
+    assertFalse '`assertNeverCalled dosomething ` fails' $?
+    printf '%s' "$output" | grep -q '^ASSERT'
+    assertTrue 'output begins with "ASSERT:"' $?
+}
+
 oneTimeTearDown() {
     cleanupSpies
 }

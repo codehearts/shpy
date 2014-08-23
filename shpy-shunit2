@@ -72,3 +72,12 @@ assertCalledOnceWith_() {
     assertCallCount "$2" 1 &&
     assertCalledWith_ "$@"
 }
+
+assertNeverCalled() {
+    if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+        echo 'Usage: assertNeverCalled [MESSAGE] SPY' >&2
+        return 1
+    fi
+
+    assertCallCount "$@" 0
+}
