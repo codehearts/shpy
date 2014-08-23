@@ -1,0 +1,17 @@
+#!/bin/sh
+
+. ./shpy
+
+createSpy() {
+    createSpyArg="$1"
+}
+
+testCreateStub_IsAliasForCreateSpy() {
+    local createSpyArg
+
+    createStub someStub
+
+    assertEquals someStub "$createSpyArg"
+}
+
+. shunit2

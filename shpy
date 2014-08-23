@@ -13,6 +13,10 @@ createSpy() {
     _shpyInjectSpyFunction "$1"
 }
 
+createStub() {
+    createSpy "$@"
+}
+
 getSpyCallCount() {
     if [ $# -eq 0 ]; then
         echo 'Usage: getSpyCallCount SPY' >&2

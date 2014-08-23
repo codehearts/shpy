@@ -22,6 +22,7 @@ Function                                 | Description
 <pre>createSpy SPY</pre>                 | create a new spy named SPY, or reset SPY if it already existed
 <pre>val=RETURN_VAL createSpy SPY</pre>  | `createSpy` accepts an optional parameter `val`, the value that SPY returns
 <pre>output=OUTPUT createSpy SPY</pre>   | `createSpy` accepts an optional parameter `output`, the text that SPY outputs when run
+<pre>createStub STUB</pre>               | alias for `createSpy`
 <pre>getSpyCallCount SPY</pre>           | output the number of times a spy has been called
 <pre>wasSpyCalledWith SPY [ARG]...</pre> | test if a spy was called with the given arguments
 <pre>examineNextSpyCall SPY</pre>        | tell `wasSpyCalledWith` to test on the spy's next call<br/>(by default, `wasSpyCalledwith` tests the first call to a spy — after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
