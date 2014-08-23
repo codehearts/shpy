@@ -178,7 +178,7 @@ _shpySpyGetReturnValue() {
 ##### External Interface #####
 
 shpy_make_temp_dir() {
-    command mktemp -d -t shpy
+    command mktemp -d shpy.XXXXXX
 }
 
 shpy_ensure_dir() {
