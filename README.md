@@ -45,6 +45,12 @@ Function                                     | Description
 `assertCalledOnceWith SPY [ARG]...`          | convenience assert for `assertCallCount SPY 1 && assertCalledWith SPY ARGs`
 `assertCalledOnceWith_ MESSAGE SPY [ARG]...` | same, but include MESSAGE in failure output
 
+Use the `oneTimeTearDown` hook provided by **shunit2** to clean up any spies:
+
+    oneTimeTearDown() {
+        cleanupSpies
+    }
+
 ## A Word On Shell Portability
 
 While **shunit2** remains strictly [POSIX
