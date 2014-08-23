@@ -20,8 +20,8 @@ A summary of functions:
 Function                                 | Description
 -----------------------------------------|-------------------------------------------------------------------------------
 <pre>createSpy SPY</pre>                 | create a new spy named SPY, or reset SPY if it already existed
-<pre>val=RETURN_VAL createSpy SPY</pre>  | `createSpy` accepts an optional parameter `val`, the value that SPY returns
-<pre>output=OUTPUT createSpy SPY</pre>   | `createSpy` accepts an optional parameter `output`, the text that SPY outputs when run
+<pre>createSpy -r RETURN_VAL SPY</pre>   | `createSpy` accepts an option `-r`, the value that SPY returns
+<pre>createSpy -o OUTPUT SPY</pre>       | `createSpy` accepts an option `-o`, the text that SPY outputs when run
 <pre>createStub STUB</pre>               | alias for `createSpy`
 <pre>getSpyCallCount SPY</pre>           | output the number of times a spy has been called
 <pre>wasSpyCalledWith SPY [ARG]...</pre> | test if a spy was called with the given arguments

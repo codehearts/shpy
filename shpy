@@ -6,6 +6,17 @@ createSpy() {
         return 1
     fi
 
+    local val output
+
+    while getopts o:r: opt; do
+        case "$opt" in
+            o) output="$OPTARG" ;;
+            r) val="$OPTARG" ;;
+        esac
+    done
+    shift $(( OPTIND - 1 ))
+    OPTIND=1
+
     _shpyInit
     _shpyResetSpy "$1"
     _shpySpySetReturnValue "$1" "${val:-0}"

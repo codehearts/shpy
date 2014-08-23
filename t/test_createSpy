@@ -4,7 +4,6 @@
 
 testWithNoArguments_ShouldReturnUsage() {
     local output
-
     output=$(createSpy)
 
     assertFalse 'returns error' $?
@@ -20,7 +19,7 @@ testWithOneArgument_ShouldCreateFunction() {
 }
 
 testShouldStubReturnValue() {
-    val=123 createSpy dosomething || fail 'createSpy dosomething'
+    createSpy -r 123 dosomething || fail 'createSpy dosomething'
 
     dosomething
 
@@ -28,8 +27,8 @@ testShouldStubReturnValue() {
 }
 
 testShouldStubReturnValue_PerSpy() {
-    val=123 createSpy dosomething || fail 'val=123 createSpy dosomething'
-    val=234 createSpy domore || fail 'val=234 createSpy domore'
+    createSpy -r 123 dosomething || fail 'createSpy -r 123 dosomething'
+    createSpy -r 234 domore || fail 'createSpy -r 234 domore'
 
     dosomething
     assertEquals 'dosomething return value is 123' 123 $?
@@ -38,8 +37,7 @@ testShouldStubReturnValue_PerSpy() {
 }
 
 testShouldResetStubReturnValue() {
-    val=123 createSpy dosomething || fail 'val=123 createSpy dosomething'
-    unset val   # required for dash
+    createSpy -r 123 dosomething || fail 'createSpy -r 123 dosomething'
 
     createSpy dosomething
 
@@ -49,9 +47,9 @@ testShouldResetStubReturnValue() {
 
 testShouldStubOutput() {
     local output
-    output='some
-output' \
-        createSpy dosomething || fail 'createSpy dosomething'
+    local output_arg='some
+output'
+    createSpy -o "$output_arg" dosomething || fail 'createSpy dosomething'
 
     output=$(dosomething)
 
@@ -62,8 +60,7 @@ output' "$output"
 
 testShouldResetStubOutput() {
     local output
-    output='some output' \
-        createSpy dosomething || fail 'createSpy dosomething'
+    createSpy -o 'some output' dosomething || fail 'createSpy dosomething'
 
     output=$(createSpy dosomething)
 
