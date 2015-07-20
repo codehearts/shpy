@@ -7,7 +7,7 @@ Features at a glance:
 * Create spies for any command or function in the shell environment
 * Stub stdout and return value of spies
 * See call count and check arguments passed to the spy
-* [Integrates](#shunit2-integration) with the [shunit2](http://code.google.com/p/shunit2/) testing framework
+* [Integrates](#shunit2-integration) with the [shunit2](https://github.com/kward/shunit2) testing framework
 
 ## API
 
