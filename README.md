@@ -17,16 +17,16 @@ To use **shpy** in your tests, source the `shpy` script:
 	
 A summary of functions:
 
-Function                                 | Description
------------------------------------------|-------------------------------------------------------------------------------
-<pre>createSpy SPY</pre>                 | create a new spy named SPY, or reset SPY if it already existed
-<pre>createSpy -r RETURN_VAL SPY</pre>   | `createSpy` accepts an option `-r`, the value that SPY returns
-<pre>createSpy -o OUTPUT SPY</pre>       | `createSpy` accepts an option `-o`, the text that SPY outputs when run
-<pre>createStub STUB</pre>               | alias for `createSpy`
-<pre>getSpyCallCount SPY</pre>           | output the number of times a spy has been called
-<pre>wasSpyCalledWith SPY [ARG]...</pre> | test if a spy was called with the given arguments
-<pre>examineNextSpyCall SPY</pre>        | tell `wasSpyCalledWith` to test on the spy's next call<br/>(by default, `wasSpyCalledwith` tests the first call to a spy — after calling `examineNextSpyCall`, `wasSpyCalledWith` will test against the second call, and so on)
-<pre>cleanupSpies</pre>                  | after you are done testing, call this function to clean up any temporary directories created
+Function | Description
+---|---
+`createSpy SPY`                 | Create a new spy, or reset an existing spy
+`createSpy -r RETURN_VAL SPY`   | Sets the return value of the spy when invoked
+`createSpy -o OUTPUT SPY`       | Sets output via standard output when the spy is invoked
+`createStub SPY`                | Alias for `createSpy`
+`getSpyCallCount SPY`           | Outputs the number of invocations of a spy
+`wasSpyCalledWith SPY [ARG]...` | Verify a spy was called with the given arguments on its first invocation
+`examineNextSpyCall SPY`        | Advances the invocation to check when calling `wasSpyCalledWith`<br>This causes `wasSpyCalledWith` to verify the second invocation, etc
+`cleanupSpies`                  | Clean up any temporary directories created for spies
 
 ### shunit2 Integration
 
@@ -40,12 +40,12 @@ A summary of asserts:
 
 Function                                              | Description
 ------------------------------------------------------|------------------------------------------------------------------
-<pre>assertCallCount [MESSAGE] SPY COUNT</pre>        | asset SPY was called COUNT times
-<pre>assertCalledWith SPY [ARG]...</pre>              | assert SPY was called with ARGs; also calls `examineNextSpyCall` so that calling `assertCalledWith</pre> again asserts on the next call to SPY
-<pre>assertCalledWith_ MESSAGE SPY [ARG]...</pre>     | same, but include MESSAGE in failure output
-<pre>assertCalledOnceWith SPY [ARG]...</pre>          | convenience assert for `assertCallCount SPY 1 && assertCalledWith SPY ARGs`
-<pre>assertCalledOnceWith_ MESSAGE SPY [ARG]...</pre> | same, but include MESSAGE in failure output
-<pre>assertNeverCalled [MESSAGE] SPY</pre>            | convenience assert for `assertCallCount SPY 0`
+`assertCallCount [MESSAGE] SPY COUNT`        | Assert the number of times the spy was invoked
+`assertCalledWith SPY [ARG]...`              | Assert the arguments for the first invocation of the spy<br>Subsequent calls will assert for the second invocation, etc
+`assertCalledWith_ MESSAGE SPY [ARG]...`     | Same as `assertCalledWith`, with a specific assertion message
+`assertCalledOnceWith SPY [ARG]...`          | Assert the spy was called once and given the specified arguments
+`assertCalledOnceWith_ MESSAGE SPY [ARG]...` | Same as `assertCalledOnceWith`, with a specific assertion message
+`assertNeverCalled [MESSAGE] SPY`            | Assert the spy was never invoked
 
 Use the `oneTimeTearDown` hook provided by **shunit2** to clean up any spies:
 
