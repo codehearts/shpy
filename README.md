@@ -56,6 +56,6 @@ Use the `oneTimeTearDown` hook provided by **shunit2** to clean up any spies:
 ## A Word On Shell Portability
 
 While **shunit2** remains strictly [POSIX
-compliant](http://shellhaters.heroku.com/posix), **shpy** relies on [portable but more modern shell features](http://apenwarr.ca/log/?m=201102#28), such as
+compliant](http://shellhaters.herokuapp.com/posix), **shpy** relies on [portable but more modern shell features](http://apenwarr.ca/log/?m=201102#28), such as
 function-local variables.  To be clear, **shpy** does not use any
 [Bashisms](https://wiki.ubuntu.com/DashAsBinSh).
