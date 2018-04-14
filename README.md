@@ -1,8 +1,9 @@
 # shpy
-
-[![Build Status][build-badge]][build-link] [![Coverage][coverage-badge]][coverage-link] [![MIT License][license-badge]](LICENSE.md)
-
 Spies and stubs for shell unit testing
+
+| POSIX Compliance | Bash | Zsh | Coverage | License |
+| :--------------: | :--: | :-: | :------: | :-----: |
+[![Build Status][lint-build-badge]][build-link] | [![Build Status][bash-build-badge]][build-link] | [![Build Status][zsh-build-badge]][build-link] | [![Coverage][coverage-badge]][coverage-link] | [![MIT License][license-badge]](LICENSE.md) |
 
 Features at a glance:
 
@@ -62,8 +63,11 @@ compliant](http://shellhaters.herokuapp.com/posix), **shpy** relies on [portable
 function-local variables.  To be clear, **shpy** does not use any
 [Bashisms](https://wiki.ubuntu.com/DashAsBinSh).
 
-[coverage-badge]: https://codecov.io/gh/codehearts/shpy/branch/master/graph/badge.svg
-[coverage-link]:  https://codecov.io/gh/codehearts/shpy
-[license-badge]:  https://img.shields.io/badge/license-MIT-007EC7.svg
-[build-badge]:    https://travis-ci.org/codehearts/shpy.svg?branch=master
-[build-link]:     https://travis-ci.org/codehearts/shpy
+[coverage-badge]:   https://codecov.io/gh/codehearts/shpy/branch/master/graph/badge.svg
+[coverage-link]:    https://codecov.io/gh/codehearts/shpy
+[license-badge]:    https://img.shields.io/badge/license-MIT-007EC7.svg
+[build-badge]:      https://travis-ci.org/codehearts/shpy.svg?branch=master
+[lint-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/1
+[bash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/2
+[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/3
+[build-link]:       https://travis-ci.org/codehearts/shpy
