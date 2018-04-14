@@ -1,6 +1,8 @@
 # shpy
 
-*Spies and stubs for shell unit testing*
+[![Build Status][build-badge]][build-link] [![Coverage][coverage-badge]][coverage-link] [![MIT License][license-badge]](LICENSE.md)
+
+Spies and stubs for shell unit testing
 
 Features at a glance:
 
@@ -59,3 +61,9 @@ While **shunit2** remains strictly [POSIX
 compliant](http://shellhaters.herokuapp.com/posix), **shpy** relies on [portable but more modern shell features](http://apenwarr.ca/log/?m=201102#28), such as
 function-local variables.  To be clear, **shpy** does not use any
 [Bashisms](https://wiki.ubuntu.com/DashAsBinSh).
+
+[coverage-badge]: https://codecov.io/gh/codehearts/shpy/branch/master/graph/badge.svg
+[coverage-link]:  https://codecov.io/gh/codehearts/shpy
+[license-badge]:  https://img.shields.io/badge/license-MIT-007EC7.svg
+[build-badge]:    https://travis-ci.org/codehearts/shpy.svg?branch=master
+[build-link]:     https://travis-ci.org/codehearts/shpy

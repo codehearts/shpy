@@ -1,0 +1,20 @@
+sudo: required
+
+language: sh
+
+services:
+  - docker
+
+env:
+  - TEST_SUITE=lint
+  - TEST_SUITE=test
+
+install:
+  - make install
+
+script:
+  - make $TEST_SUITE
+
+after_success:
+  - make coverage
+  - bash <(curl -s https://codecov.io/bash)
