@@ -1,9 +1,9 @@
 # shpy
 Spies and stubs for shell unit testing
 
-| POSIX Compliance | Bash | Zsh | Coverage | License |
-| :--------------: | :--: | :-: | :------: | :-----: |
-[![Build Status][lint-build-badge]][build-link] | [![Build Status][bash-build-badge]][build-link] | [![Build Status][zsh-build-badge]][build-link] | [![Coverage][coverage-badge]][coverage-link] | [![MIT License][license-badge]](LICENSE.md) |
+| POSIX Compliance | Bash | Dash | Zsh | Coverage | License |
+| :--------------: | :--: | :--: | :-: | :------: | :-----: |
+[![Build Status][lint-build-badge]][build-link] | [![Build Status][bash-build-badge]][build-link] | [![Build Status][dash-build-badge]][build-link] | [![Build Status][zsh-build-badge]][build-link] | [![Coverage][coverage-badge]][coverage-link] | [![MIT License][license-badge]](LICENSE.md) |
 
 Features at a glance:
 
@@ -69,5 +69,6 @@ function-local variables.  To be clear, **shpy** does not use any
 [build-badge]:      https://travis-ci.org/codehearts/shpy.svg?branch=master
 [lint-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/1
 [bash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/2
-[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/3
+[dash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/3
+[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/4
 [build-link]:       https://travis-ci.org/codehearts/shpy

@@ -8,6 +8,7 @@ services:
 env:
   - TEST_SUITE=lint
   - TEST_SUITE=test_bash
+  - TEST_SUITE=test_dash
   - TEST_SUITE=test_zsh
 
 install:
