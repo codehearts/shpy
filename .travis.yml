@@ -7,7 +7,8 @@ services:
 
 env:
   - TEST_SUITE=lint
-  - TEST_SUITE=test
+  - TEST_SUITE=test_bash
+  - TEST_SUITE=test_zsh
 
 install:
   - make install

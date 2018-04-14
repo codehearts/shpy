@@ -20,7 +20,7 @@ testCanStubTouchCommand() {
 
 # mkdir is trikier because the implementation of shpy calls mkdir
 testCanStubMkdirCommand() {
-    val=123 createSpy mkdir
+    createSpy -r 123 mkdir
 
     mkdir -p nonexistent_dir
 
