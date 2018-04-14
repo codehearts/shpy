@@ -1,8 +1,12 @@
 #!/bin/sh
 
-. ./shpy
+readonly TEST_DIR="$(dirname "$0")"
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy"
 
 testWithNoArguments_ShouldReturnUsage() {
+    # shellcheck disable=SC2039
     local output
     output=$(createSpy)
 
@@ -14,7 +18,7 @@ testWithNoArguments_ShouldReturnUsage() {
 testWithOneArgument_ShouldCreateFunction() {
     createSpy dosomething || fail 'createSpy dosomething'
 
-    type -t dosomething | grep -q function
+    command -V dosomething | grep -q function
     assertTrue 'dosomething is a function' $?
 }
 
@@ -46,25 +50,28 @@ testShouldResetStubReturnValue() {
 }
 
 testShouldStubOutput() {
+    # shellcheck disable=SC2039
     local output
+    # shellcheck disable=SC2039
     local output_arg='some
 output'
     createSpy -o "$output_arg" dosomething || fail 'createSpy dosomething'
 
     output=$(dosomething)
 
-    assertTrue '`dosomething` succeeds' $?
+    assertTrue "\`dosomething\` succeeds" $?
     assertEquals 'output is the passed value' 'some
 output' "$output"
 }
 
 testShouldResetStubOutput() {
+    # shellcheck disable=SC2039
     local output
     createSpy -o 'some output' dosomething || fail 'createSpy dosomething'
 
     output=$(createSpy dosomething)
 
-    assertTrue '`createSpy dosomething` succeeds' $?
+    assertTrue "\`createSpy dosomething\` succeeds" $?
     assertNull 'output is unset' "$output"
 }
 
@@ -74,7 +81,7 @@ testShouldResetCallCount() {
 
     createSpy dosomething
 
-    assertTrue '`createSpy dosomething` succeeds' $?
+    assertTrue "\`createSpy dosomething\` succeeds" $?
     assertEquals 0 "$(getSpyCallCount dosomething)"
 }
 
@@ -82,4 +89,5 @@ oneTimeTearDown() {
     cleanupSpies
 }
 
-. shunit2
+# shellcheck source=/dev/null
+. "$TEST_DIR/shunit2"

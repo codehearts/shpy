@@ -1,23 +1,28 @@
 #!/bin/sh
 
-. ./shpy
+readonly TEST_DIR="$(dirname "$0")"
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy"
 
 testCalledWithNoArgs_ShouldReturnUsage() {
+    # shellcheck disable=SC2039
     local output
 
     output=$(wasSpyCalledWith 2>&1 >/dev/null)
 
-    assertFalse '`wasSpyCalledWith` is false' $?
+    assertFalse "\`wasSpyCalledWith\` is false" $?
     printf '%s\n' "$output" | grep -q '^Usage:'
     assertTrue 'output begins with "Usage:"' $?
 }
 
 testCalledWithInvalidSpy_ShouldReturnError() {
+    # shellcheck disable=SC2039
     local output
 
     output=$(wasSpyCalledWith invalid_spy 2>&1 >/dev/null)
 
-    assertFalse '`wasSpyCalledWith invalid_spy` is false' $?
+    assertFalse "\`wasSpyCalledWith invalid_spy\` is false" $?
     printf '%s\n' "$output" | grep -q '^Error:'
     assertTrue 'output begins with "Error:"' $?
 }
@@ -28,7 +33,7 @@ testNoArgs_ReturnsTrueWhenSpyCalledWithNoArgs() {
 
     wasSpyCalledWith dosomething
 
-    assertTrue '`wasSpyCalledWith dosomething` is true' $?
+    assertTrue "\`wasSpyCalledWith dosomething\` is true" $?
 }
 
 testOneArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
@@ -37,7 +42,7 @@ testOneArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
 
     wasSpyCalledWith dosomething somearg
 
-    assertFalse '`wasSpyCalledWith dosomething somearg` is false' $?
+    assertFalse "\`wasSpyCalledWith dosomething somearg\` is false" $?
 }
 
 testOneArg_ReturnsTrueWhenSpyCalledWithSameArg() {
@@ -46,7 +51,7 @@ testOneArg_ReturnsTrueWhenSpyCalledWithSameArg() {
 
     wasSpyCalledWith dosomething somearg
 
-    assertTrue '`wasSpyCalledWith dosomething somearg` is true' $?
+    assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
 }
 
 testBlankArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
@@ -55,22 +60,22 @@ testBlankArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
 
     wasSpyCalledWith dosomething
 
-    assertFalse '`wasSpyCalledWith dosomething` is false' $?
+    assertFalse "\`wasSpyCalledWith dosomething\` is false" $?
 }
 
 testArgContainingWhitespace_ReturnsTrueWhenSpyCalledWithSameArg() {
     createSpy dosomething || fail 'createSpy dosomething'
     dosomething ' some arg
 with embedded newlines
-	and tabs	
+	and tabs
 and trailing whitespace  '
 
     wasSpyCalledWith dosomething ' some arg
 with embedded newlines
-	and tabs	
+	and tabs
 and trailing whitespace  '
 
-    assertTrue '`wasSpyCalledWith dosomething somearg` is true' $?
+    assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
 }
 
 testTwoArgs_ReturnsTrueWhenSpyCalledWithSameArgs() {
@@ -79,11 +84,12 @@ testTwoArgs_ReturnsTrueWhenSpyCalledWithSameArgs() {
 
     wasSpyCalledWith dosomething somearg anotherarg
 
-    assertTrue '`wasSpyCalledWith dosomething somearg anotherarg` is true' $?
+    assertTrue "\`wasSpyCalledWith dosomething somearg anotherarg\` is true" $?
 }
 
 oneTimeTearDown() {
     cleanupSpies
 }
 
-. shunit2
+# shellcheck source=/dev/null
+. "$TEST_DIR/shunit2"

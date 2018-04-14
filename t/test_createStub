@@ -1,12 +1,16 @@
 #!/bin/sh
 
-. ./shpy
+readonly TEST_DIR="$(dirname "$0")"
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy"
 
 createSpy() {
     createSpyArg="$1"
 }
 
 testCreateStub_IsAliasForCreateSpy() {
+    # shellcheck disable=SC2039
     local createSpyArg
 
     createStub someStub
@@ -14,4 +18,5 @@ testCreateStub_IsAliasForCreateSpy() {
     assertEquals someStub "$createSpyArg"
 }
 
-. shunit2
+# shellcheck source=/dev/null
+. "$TEST_DIR/shunit2"

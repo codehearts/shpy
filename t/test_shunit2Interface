@@ -1,17 +1,24 @@
 #!/bin/sh
 
-. ./shpy
-. ./shpy-shunit2
+readonly TEST_DIR="$(dirname "$0")"
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy"
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy-shunit2"
+
+readonly ANSI_COLOR_PATTERN="$(printf '\033\[[0-9];[0-9]\+m')"
 
 testAssertCallCountFail() {
+    # shellcheck disable=SC2039
     local output
     createSpy dosomething
     dosomething
 
     output=$(assertCallCount dosomething 0)
 
-    assertFalse '`assertCallCount dosomething 0` fails' $?
-    printf '%s\n' "$output" | grep -q '^ASSERT:'
+    assertFalse "\`assertCallCount dosomething 0\` fails" $?
+    printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
     assertTrue 'output begins with "ASSERT:"' $?
 }
 
@@ -20,18 +27,19 @@ testAssertCallCountPass() {
 
     assertCallCount dosomething 0
 
-    assertTrue '`assertCallCount dosomething 0` passes' $?
+    assertTrue "\`assertCallCount dosomething 0\` passes" $?
 }
 
 testAssertCalledWithFailure() {
+    # shellcheck disable=SC2039
     local output
     createSpy dosomething
     dosomething somearg
 
     output=$(assertCalledWith dosomething anotherarg 2>/dev/null)
 
-    assertFalse '`assertCalledWith anotherarg` fails' $?
-    printf '%s' "$output" | grep -q "^ASSERT"
+    assertFalse "\`assertCalledWith anotherarg\` fails" $?
+    printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
     assertTrue 'output begins with "ASSERT:"' $?
 }
 
@@ -41,7 +49,7 @@ testAssertCalledWithPass() {
 
     assertCalledWith dosomething somearg
 
-    assertTrue '`assertCalledWith somearg` passes' $?
+    assertTrue "\`assertCalledWith somearg\` passes" $?
 }
 
 testAssertCalledWith_AdvancesToTheNextCall() {
@@ -50,13 +58,14 @@ testAssertCalledWith_AdvancesToTheNextCall() {
     dosomething anotherarg
 
     assertCalledWith dosomething somearg
-    assertTrue '`assertCalledWith dosomething somearg` passes' $?
+    assertTrue "\`assertCalledWith dosomething somearg\` passes" $?
 
     assertCalledWith dosomething anotherarg
-    assertTrue '`assertCalledWith dosomething anotherarg` passes' $?
+    assertTrue "\`assertCalledWith dosomething anotherarg\` passes" $?
 }
 
 testAssertCalledOnceWithFail_WhenCalledMoreThanOnce() {
+    # shellcheck disable=SC2039
     local output
     createSpy dosomething
     dosomething somearg
@@ -64,8 +73,8 @@ testAssertCalledOnceWithFail_WhenCalledMoreThanOnce() {
 
     output=$(assertCalledOnceWith dosomething somearg)
 
-    assertFalse '`assertCalledOnceWith dosomething somearg` fails' $?
-    printf '%s' "$output" | grep -q '^ASSERT'
+    assertFalse "\`assertCalledOnceWith dosomething somearg\` fails" $?
+    printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
     assertTrue 'output begins with "ASSERT:"' $?
 }
 
@@ -75,7 +84,7 @@ testAssertCalledOnceWithPass() {
 
     assertCalledOnceWith dosomething somearg
 
-    assertTrue '`assertCalledOnceWith dosomething somearg` passes' $?
+    assertTrue "\`assertCalledOnceWith dosomething somearg\` passes" $?
 }
 
 testAssertNeverCalledPass_WhenNotCalled() {
@@ -83,17 +92,18 @@ testAssertNeverCalledPass_WhenNotCalled() {
 
     assertNeverCalled dosomething
 
-    assertTrue '`assertNeverCalled dosomething` passes' $?
+    assertTrue "\`assertNeverCalled dosomething\` passes" $?
 }
 
 testAssertNeverCalledFail_WhenCalledOnce() {
+    # shellcheck disable=SC2039
     local output
     createSpy dosomething
     dosomething
 
     output=$(assertNeverCalled dosomething)
-    assertFalse '`assertNeverCalled dosomething ` fails' $?
-    printf '%s' "$output" | grep -q '^ASSERT'
+    assertFalse "\`assertNeverCalled dosomething\` fails" $?
+    printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
     assertTrue 'output begins with "ASSERT:"' $?
 }
 
@@ -101,4 +111,5 @@ oneTimeTearDown() {
     cleanupSpies
 }
 
-. shunit2
+# shellcheck source=/dev/null
+. "$TEST_DIR/shunit2"

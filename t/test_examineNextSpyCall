@@ -1,13 +1,17 @@
 #!/bin/sh
 
-. ./shpy
+readonly TEST_DIR="$(dirname "$0")"
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy"
 
 testCalledWithZeroArgs_ShouldReturnUsage() {
+    # shellcheck disable=SC2039
     local output
 
     output=$(examineNextSpyCall 2>&1 >/dev/null)
 
-    assertFalse '`examineNextSpyCall` returns error' $?
+    assertFalse "\`examineNextSpyCall\` returns error" $?
     printf '%s\n' "$output" | grep -q '^Usage:'
     assertTrue 'begins with "Error:"' $?
 }
@@ -17,7 +21,7 @@ testCalledAfterZeroSpyCalls_ShouldSucceed() {
 
     examineNextSpyCall dosomething
 
-    assertTrue '`examineNextSpyCall` returns true' $?
+    assertTrue "\`examineNextSpyCall\` returns true" $?
 }
 
 testCalledAfterOneSpyCall_ShouldSucceed() {
@@ -26,10 +30,11 @@ testCalledAfterOneSpyCall_ShouldSucceed() {
 
     examineNextSpyCall dosomething
 
-    assertTrue '`examineNextSpyCall dosomething` is true' $?
+    assertTrue "\`examineNextSpyCall dosomething\` is true" $?
 }
 
 testCalledAfterOneSpyCall_wasSpyCalledShouldReturnError() {
+    # shellcheck disable=SC2039
     local output
     createSpy dosomething || fail 'createSpy dosomething'
     dosomething
@@ -37,7 +42,7 @@ testCalledAfterOneSpyCall_wasSpyCalledShouldReturnError() {
     examineNextSpyCall dosomething
     output=$(wasSpyCalledWith dosomething 2>&1  >/dev/null)
 
-    assertFalse '`wasSpyCalledWith dosomething` returns error' $?
+    assertFalse "\`wasSpyCalledWith dosomething\` returns error" $?
     printf '%s' "$output" | grep -q '^Error:'
     assertTrue 'output begins with Error:' $?
 }
@@ -48,16 +53,17 @@ testCalled_wasSpyCalledWithShouldMatchSecondCall() {
     dosomething somearg
 
     wasSpyCalledWith dosomething
-    assertTrue '`wasSpyCalledWith dosomething` is true' $?
+    assertTrue "\`wasSpyCalledWith dosomething\` is true" $?
 
     examineNextSpyCall dosomething
     wasSpyCalledWith dosomething somearg
 
-    assertTrue '`wasSpyCalledWith dosomething somearg` is true' $?
+    assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
 }
 
 oneTimeTearDown() {
     cleanupSpies
 }
 
-. shunit2
+# shellcheck source=/dev/null
+. "$TEST_DIR/shunit2"

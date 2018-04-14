@@ -6,12 +6,14 @@ createSpy() {
         return 1
     fi
 
+    # shellcheck disable=SC2039
     local val output
 
     while getopts o:r: opt; do
         case "$opt" in
             o) output="$OPTARG" ;;
             r) val="$OPTARG" ;;
+            *) ;;
         esac
     done
     shift $(( OPTIND - 1 ))
@@ -43,6 +45,7 @@ wasSpyCalledWith() {
         return 1
     fi
 
+    # shellcheck disable=SC2039
     local count current name path
 
     name=$1
@@ -60,6 +63,7 @@ wasSpyCalledWith() {
 }
 
 examineNextSpyCall() {
+    # shellcheck disable=SC2039
     local current
 
     if [ $# -eq 0 ]; then
@@ -83,7 +87,7 @@ _shpyInit() {
     fi
 
     _shpy_inited=1
-    _shpy_spies_dir=$(shpy_make_temp_dir) || shpy_die 'Error: `shpy_make_temp_dir` failed'
+    _shpy_spies_dir=$(shpy_make_temp_dir) || shpy_die "Error: \`shpy_make_temp_dir\` failed"
 }
 
 _shpyResetSpy() {
@@ -100,16 +104,18 @@ _shpyInjectSpyFunction() {
 }
 
 _shpyGetSpyCurent() {
+    # shellcheck disable=SC2039
     local current
-    eval current=\$_shpy_${1}_current
+    eval current="\$_shpy_${1}_current"
     printf '%s\n' "${current:-0}"
 }
 
 _shpySetSpyCurent() {
-    eval _shpy_$1_current=$2
+    eval "_shpy_$1_current=$2"
 }
 
 _shpyGetDirectoryContentsCount() {
+    # shellcheck disable=SC2039
     local path
     path=$1
 
@@ -122,6 +128,7 @@ _shpyGetDirectoryContentsCount() {
 }
 
 _shpyMatchArgs() {
+    # shellcheck disable=SC2039
     local arg argCount i
 
     argCount=$(_shpyGetDirectoryContentsCount "$path")
@@ -144,6 +151,7 @@ _shpyMatchArgs() {
 }
 
 _shpyRunSpy() {
+    # shellcheck disable=SC2039
     local name
     name=$1
     shift
@@ -154,6 +162,7 @@ _shpyRunSpy() {
 }
 
 _shpySpySaveArgs() {
+    # shellcheck disable=SC2039
     local arg count i path
 
     count=$(getSpyCallCount "$name")
@@ -169,24 +178,26 @@ _shpySpySaveArgs() {
 }
 
 _shpySpySetOutput() {
-    eval _shpy_${1}_output=\$2
+    eval "_shpy_${1}_output=\$2"
 }
 
 _shpySpyPrintOutput() {
+    # shellcheck disable=SC2039
     local output
-    eval output=\$_shpy_${name}_output
+    eval output="\$_shpy_${name}_output"
     if [ -n "$output" ]; then
         printf '%s' "$output"
     fi
 }
 
 _shpySpySetReturnValue() {
-    eval _shpy_${1}_val=\$2
+    eval "_shpy_${1}_val=\$2"
 }
 
 _shpySpyGetReturnValue() {
+    # shellcheck disable=SC2039
     local val
-    eval val=\$_shpy_${name}_val
+    eval val="\$_shpy_${name}_val"
     return "${val:-0}"
 }
 

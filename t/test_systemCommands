@@ -1,7 +1,11 @@
 #!/bin/sh
 
-. ./shpy
-. ./shpy-shunit2
+readonly TEST_DIR="$(dirname "$0")"
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy"
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy-shunit2"
 
 testCanStubTouchCommand() {
     createSpy touch
@@ -20,7 +24,7 @@ testCanStubMkdirCommand() {
 
     mkdir -p nonexistent_dir
 
-    assertEquals '`mkdir` returns val passed to createSpy' 123 $?
+    assertEquals "\`mkdir\` returns val passed to createSpy" 123 $?
 
     assertCalledOnceWith mkdir -p nonexistent_dir
 
@@ -32,4 +36,5 @@ oneTimeTearDown() {
     cleanupSpies
 }
 
-. shunit2
+# shellcheck source=/dev/null
+. "$TEST_DIR/shunit2"
