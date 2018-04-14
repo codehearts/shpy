@@ -6,17 +6,17 @@ TESTS=$(wildcard t/test_*)
 APP_TESTS=$(addprefix /app/, $(TESTS))
 WORK_TESTS=$(addprefix /work/, $(TESTS))
 
-.PHONY: check test test_bash test_dash test_zsh coverage lint install
+.PHONY: check test test_bash test_dash test_sh test_zsh coverage lint install
 
 check: test
-test: test_bash test_dash test_zsh
+test: test_bash test_dash test_sh test_zsh
 
 test_bash: docker_installed
 	@$(foreach TEST, $(TESTS), \
 		echo "Running $(TEST)"; \
 		docker run $(DOCKER_FLAGS) \
 			--mount type=bind,source=$(REPO_ROOT),target=/app,readonly \
-			bash:latest bash /app/$(TEST) || exit $$?; echo;)
+			debian:latest bash /app/$(TEST) || exit $$?; echo;)
 
 test_dash: docker_installed
 	@$(foreach TEST, $(TESTS), \
@@ -24,6 +24,13 @@ test_dash: docker_installed
 		docker run $(DOCKER_FLAGS) \
 			--mount type=bind,source=$(REPO_ROOT),target=/rootfs,readonly \
 			debian:latest dash -c /rootfs/$(TEST) || exit $$?; echo;)
+
+test_sh: docker_installed
+	@$(foreach TEST, $(TESTS), \
+		echo "Running $(TEST)"; \
+		docker run $(DOCKER_FLAGS) \
+			--mount type=bind,source=$(REPO_ROOT),target=/app,readonly \
+			debian:latest sh /app/$(TEST) || exit $$?; echo;)
 
 test_zsh: docker_installed
 	@$(foreach TEST, $(TESTS), \
@@ -48,7 +55,6 @@ coverage: docker_installed
 			/source/coverage --exclude-path=/source/t/ /source/$(TEST) || exit $$?;)
 
 install: docker_installed
-	@docker pull bash:latest
 	@docker pull debian:latest
 	@docker pull imwithye/zsh:latest
 	@docker pull manabu/checkbashisms-docker:latest
