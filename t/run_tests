@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if "$SHELL" --version >/dev/null 2>&1; then
+  printf '%s\n' "$($SHELL --version)"
+else
+  printf '%s\n' "$SHELL"
+fi
+
+[ "$USE_KCOV" ] && \
+  test_runner="kcov $(dirname "$0")/../coverage --exclude-path=$(dirname "$0")"
+
+for test_file in "$(dirname "$0")"/test_*; do
+  printf '\nRunning %s...\n' "$(basename "$test_file")"
+  "$SHELL" -c "SHUNIT_PARENT=$test_file $test_runner $test_file" || exit $?
+done

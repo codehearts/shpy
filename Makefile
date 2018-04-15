@@ -12,47 +12,38 @@ check: test
 test: test_bash test_dash test_sh test_zsh
 
 test_bash: docker_installed
-	@$(foreach TEST, $(TESTS), \
-		echo "Running $(TEST)"; \
-		docker run $(DOCKER_FLAGS) \
-			--mount type=bind,source=$(REPO_ROOT),target=/app,readonly \
-			debian:latest bash /app/$(TEST) || exit $$?; echo;)
+	@docker run $(DOCKER_FLAGS) -e SHELL=/bin/bash \
+		--mount type=bind,source=$(REPO_ROOT),target=/app,readonly \
+		debian:latest /bin/bash /app/t/run_tests
 
 test_dash: docker_installed
-	@$(foreach TEST, $(TESTS), \
-		echo "Running $(TEST)"; \
-		docker run $(DOCKER_FLAGS) \
-			--mount type=bind,source=$(REPO_ROOT),target=/rootfs,readonly \
-			debian:latest dash -c /rootfs/$(TEST) || exit $$?; echo;)
+	@docker run $(DOCKER_FLAGS) -e SHELL=/bin/dash \
+		--mount type=bind,source=$(REPO_ROOT),target=/rootfs,readonly \
+		debian:latest /bin/dash -c /rootfs/t/run_tests
 
 test_sh: docker_installed
-	@$(foreach TEST, $(TESTS), \
-		echo "Running $(TEST)"; \
-		docker run $(DOCKER_FLAGS) \
-			--mount type=bind,source=$(REPO_ROOT),target=/app,readonly \
-			debian:latest sh /app/$(TEST) || exit $$?; echo;)
+	@docker run $(DOCKER_FLAGS) -e SHELL=/bin/sh \
+		--mount type=bind,source=$(REPO_ROOT),target=/app,readonly \
+		debian:latest /bin/sh -c /app/t/run_tests
 
 test_zsh: docker_installed
-	@$(foreach TEST, $(TESTS), \
-		echo "Running $(TEST)"; \
-		docker run $(DOCKER_FLAGS) -e SHUNIT_PARENT=/rootfs/$(TEST) \
-			--mount type=bind,source=$(REPO_ROOT),target=/rootfs,readonly \
-			imwithye/zsh:latest zsh -o shwordsplit -c /rootfs/$(TEST) || exit $$?; echo;)
+	@docker run $(DOCKER_FLAGS) -e SHELL=/bin/zsh \
+		--mount type=bind,source=$(REPO_ROOT),target=/rootfs,readonly \
+		imwithye/zsh:latest /bin/zsh -o shwordsplit -c /rootfs/t/run_tests
 
 lint: docker_installed
 	@docker run $(DOCKER_FLAGS) \
 		--mount type=bind,source=$(REPO_ROOT),target=/work,readonly \
-		manabu/checkbashisms-docker /work/shpy /work/shpy-shunit2 $(WORK_TESTS)
+		manabu/checkbashisms-docker /work/shpy /work/shpy-shunit2 /work/t/run_tests $(WORK_TESTS)
 	@docker run $(DOCKER_FLAGS) \
 		--mount type=bind,source=$(REPO_ROOT),target=/app,readonly \
-		koalaman/shellcheck:latest /app/shpy /app/shpy-shunit2 $(APP_TESTS)
+		koalaman/shellcheck:latest /app/shpy /app/shpy-shunit2 /app/t/run_tests $(APP_TESTS)
 
 coverage: docker_installed
-	@$(foreach TEST, $(TESTS), \
-		docker run $(DOCKER_FLAGS) --security-opt seccomp=unconfined \
-			--mount type=bind,source=$(REPO_ROOT),target=/source \
-			ragnaroek/kcov:$(KCOV_TAG) \
-			/source/coverage --exclude-path=/source/t/ /source/$(TEST) || exit $$?;)
+	@docker run $(DOCKER_FLAGS) --security-opt seccomp=unconfined \
+		-e SHELL=/bin/bash -e USE_KCOV=true \
+		--mount type=bind,source=$(REPO_ROOT),target=/source \
+		--entrypoint=/source/t/run_tests ragnaroek/kcov:$(KCOV_TAG)
 
 install: docker_installed
 	@docker pull debian:latest
