@@ -12,9 +12,6 @@ env:
   - TEST_SUITE=test_sh
   - TEST_SUITE=test_zsh
 
-install:
-  - make install
-
 script:
   - make $TEST_SUITE
 
