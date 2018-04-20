@@ -15,6 +15,24 @@ testWithNoArguments_ShouldReturnUsage() {
     assertTrue 'begins with "Usage:"' $?
 }
 
+testWithNoArguments_ShouldDieWithUnsupportedFlags() {
+    # shellcheck disable=SC2039
+    local output
+    output=$(createSpy -z 2>&1)
+
+    assertFalse 'returns error' $?
+    assertEquals 'Error: Unknown option -z' "$output"
+}
+
+testWithNoArguments_ShouldDieWhenRequiredArgumentIsMissing() {
+    # shellcheck disable=SC2039
+    local output
+    output=$(createSpy -r dosomething 2>&1)
+
+    assertFalse 'returns error' $?
+    assertEquals 'Error: Missing spy name' "$output"
+}
+
 testWithOneArgument_ShouldCreateFunction() {
     createSpy dosomething || fail 'createSpy dosomething'
 
