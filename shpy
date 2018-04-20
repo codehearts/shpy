@@ -9,15 +9,17 @@ createSpy() {
     # shellcheck disable=SC2039
     local val output
 
-    while getopts o:r: opt; do
+    while getopts :o:r: opt; do
         case "$opt" in
             o) output="$OPTARG" ;;
             r) val="$OPTARG" ;;
-            *) ;;
+            *) shpy_die "Error: Unknown option -$OPTARG" ;;
         esac
     done
     shift $(( OPTIND - 1 ))
     OPTIND=1
+
+    [ -n "$1" ] || shpy_die "Error: Missing spy name"
 
     _shpyInit
     _shpyResetSpy "$1"
