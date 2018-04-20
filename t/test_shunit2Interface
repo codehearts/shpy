@@ -30,6 +30,39 @@ testAssertCallCountPass() {
     assertTrue "\`assertCallCount dosomething 0\` passes" $?
 }
 
+testAssertCallCountFailWithMessage() {
+    # shellcheck disable=SC2039
+    local output
+    createSpy dosomething
+    dosomething
+
+    output=$(assertCallCount "shpymsg" dosomething 0)
+
+    assertFalse "\`assertCallCount \"shpymsg\" dosomething 0\` fails" $?
+    printf '%s' "$output" | grep "^${ANSI_COLOR_PATTERN}ASSERT" | grep -q "shpymsg"
+    assertTrue 'output begins with "ASSERT:"' $?
+}
+
+testAssertCallCountPassWithMessage() {
+    createSpy dosomething
+
+    assertCallCount "shpymsg" dosomething 0
+
+    assertTrue "\`assertCallCount \"shpymsg\" dosomething 0\` passes" $?
+}
+
+testAssertCallCountWrongArgumentCount() {
+    # shellcheck disable=SC2039
+    local output
+    createSpy dosomething
+    dosomething
+
+    output=$(assertCallCount dosomething)
+
+    assertFalse "\`assertCallCount dosomething\` fails" $?
+    assertEqual "Usage: assertCallCount [MESSAGE] SPY COUNT" "$output"
+}
+
 testAssertCalledWithFailure() {
     # shellcheck disable=SC2039
     local output
