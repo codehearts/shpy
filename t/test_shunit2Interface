@@ -151,6 +151,16 @@ testAssertCalledWith__AdvancesToTheNextCall() {
     assertTrue "\`assertCalledWith_  \"shpymsg\" dosomething anotherarg\` passes" $?
 }
 
+testAssertCalledOnceWithWrongArgumentCount() {
+    # shellcheck disable=SC2039
+    local output
+
+    output=$(assertCalledOnceWith)
+
+    assertFalse "\`assertCalledOnceWith\` fails" $?
+    assertEqual "Usage: assertCalledOnceWith SPY [ARG]..." "$output"
+}
+
 testAssertCalledOnceWithFail_WhenCalledMoreThanOnce() {
     # shellcheck disable=SC2039
     local output
