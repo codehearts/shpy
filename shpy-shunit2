@@ -72,7 +72,7 @@ assertCalledOnceWith_() {
         return 1
     fi
 
-    assertCallCount "$2" 1 &&
+    assertCallCount "$1" "$2" 1 &&
     assertCalledWith_ "$@"
 }
 

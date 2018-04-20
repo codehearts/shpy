@@ -184,6 +184,39 @@ testAssertCalledOnceWithPass() {
     assertTrue "\`assertCalledOnceWith dosomething somearg\` passes" $?
 }
 
+testAssertCalledOnceWith_WrongArgumentCount() {
+    # shellcheck disable=SC2039
+    local output
+
+    output=$(assertCalledOnceWith_ "shpymsg")
+
+    assertFalse "\`assertCalledOnceWith_ \"shpymsg\"\` fails" $?
+    assertEqual "Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]..." "$output"
+}
+
+testAssertCalledOnceWith_Fail_WhenCalledMoreThanOnce() {
+    # shellcheck disable=SC2039
+    local output
+    createSpy dosomething
+    dosomething somearg
+    dosomething anotherarg
+
+    output=$(assertCalledOnceWith_ "shpymsg" dosomething somearg)
+
+    assertFalse "\`assertCalledOnceWith_ \"shpymsg\" dosomething somearg\` fails" $?
+    printf '%s' "$output" | grep "^${ANSI_COLOR_PATTERN}ASSERT" | grep -q "shpymsg"
+    assertTrue 'output begins with "ASSERT:" and contains "shpymsg"' $?
+}
+
+testAssertCalledOnceWith_Pass() {
+    createSpy dosomething
+    dosomething somearg
+
+    assertCalledOnceWith_ "shpymsg" dosomething somearg
+
+    assertTrue "\`assertCalledOnceWith_ \"shpymsg\" dosomething somearg\` passes" $?
+}
+
 testAssertNeverCalledPass_WhenNotCalled() {
     createSpy dosomething
 
