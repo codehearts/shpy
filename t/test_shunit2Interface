@@ -217,6 +217,16 @@ testAssertCalledOnceWith_Pass() {
     assertTrue "\`assertCalledOnceWith_ \"shpymsg\" dosomething somearg\` passes" $?
 }
 
+testAssertNeverCalledWrongArgumentCount() {
+    # shellcheck disable=SC2039
+    local output
+
+    output=$(assertNeverCalled)
+
+    assertFalse "\`assertNeverCalled\` fails" $?
+    assertEqual "Usage: assertNeverCalled [MESSAGE] SPY" "$output"
+}
+
 testAssertNeverCalledPass_WhenNotCalled() {
     createSpy dosomething
 
