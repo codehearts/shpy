@@ -13,6 +13,4 @@ jobs:
     - script: make test_dash
     - script: make test_sh
     - script: make test_zsh
-    - script: make coverage
-    - stage: Coverage Report
-      script: bash <(curl -s https://codecov.io/bash)
+    - script: make coverage && bash <(curl -s https://codecov.io/bash)
