@@ -15,10 +15,10 @@ testAssertCallCountWrongArgumentCount() {
     createSpy dosomething
     dosomething
 
-    output=$(assertCallCount dosomething)
+    output=$(assertCallCount dosomething 2>&1)
 
     assertFalse "\`assertCallCount dosomething\` fails" $?
-    assertEqual "Usage: assertCallCount [MESSAGE] SPY COUNT" "$output"
+    assertEquals "Usage: assertCallCount [MESSAGE] SPY COUNT" "$output"
 }
 
 testAssertCallCountFail() {
@@ -67,10 +67,10 @@ testAssertCalledWithWrongArgumentCount() {
     # shellcheck disable=SC2039
     local output
 
-    output=$(assertCalledWith)
+    output=$(assertCalledWith 2>&1)
 
     assertFalse "\`assertCalledWith\` fails" $?
-    assertEqual "Usage: assertCalledWith SPY [ARG]..." "$output"
+    assertEquals "Usage: assertCalledWith SPY [ARG]..." "$output"
 }
 
 testAssertCalledWithFailure() {
@@ -111,10 +111,10 @@ testAssertCalledWith_WrongArgumentCount() {
     # shellcheck disable=SC2039
     local output
 
-    output=$(assertCalledWith_ "shpymsg")
+    output=$(assertCalledWith_ "shpymsg" 2>&1)
 
     assertFalse "\`assertCalledWith_ \"shpymsg\"\` fails" $?
-    assertEqual "Usage: assertCalledWith MESSAGE SPY [ARG]..." "$output"
+    assertEquals "Usage: assertCalledWith_ MESSAGE SPY [ARG]..." "$output"
 }
 
 testAssertCalledWith_Failure() {
@@ -155,10 +155,10 @@ testAssertCalledOnceWithWrongArgumentCount() {
     # shellcheck disable=SC2039
     local output
 
-    output=$(assertCalledOnceWith)
+    output=$(assertCalledOnceWith 2>&1)
 
     assertFalse "\`assertCalledOnceWith\` fails" $?
-    assertEqual "Usage: assertCalledOnceWith SPY [ARG]..." "$output"
+    assertEquals "Usage: assertCalledOnceWith SPY [ARG]..." "$output"
 }
 
 testAssertCalledOnceWithFail_WhenCalledMoreThanOnce() {
@@ -188,10 +188,10 @@ testAssertCalledOnceWith_WrongArgumentCount() {
     # shellcheck disable=SC2039
     local output
 
-    output=$(assertCalledOnceWith_ "shpymsg")
+    output=$(assertCalledOnceWith_ "shpymsg" 2>&1)
 
     assertFalse "\`assertCalledOnceWith_ \"shpymsg\"\` fails" $?
-    assertEqual "Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]..." "$output"
+    assertEquals "Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]..." "$output"
 }
 
 testAssertCalledOnceWith_Fail_WhenCalledMoreThanOnce() {
@@ -221,10 +221,10 @@ testAssertNeverCalledWrongArgumentCount() {
     # shellcheck disable=SC2039
     local output
 
-    output=$(assertNeverCalled)
+    output=$(assertNeverCalled 2>&1)
 
     assertFalse "\`assertNeverCalled\` fails" $?
-    assertEqual "Usage: assertNeverCalled [MESSAGE] SPY" "$output"
+    assertEquals "Usage: assertNeverCalled [MESSAGE] SPY" "$output"
 }
 
 testAssertNeverCalledPass_WhenNotCalled() {
