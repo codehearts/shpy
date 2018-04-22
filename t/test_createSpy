@@ -93,6 +93,43 @@ testShouldResetStubOutput() {
     assertNull 'output is unset' "$output"
 }
 
+testShouldStubErrorOutput() {
+    # shellcheck disable=SC2039
+    local error_output
+    # shellcheck disable=SC2039
+    local error_output_arg='some
+output'
+    createSpy -e "$error_output_arg" dosomething || fail 'createSpy dosomething'
+
+    error_output=$(dosomething 2>&1 >/dev/null)
+
+    assertTrue "\`dosomething\` succeeds" $?
+    assertEquals 'error output is the passed value' 'some
+output' "$error_output"
+}
+
+testShouldResetStubErrorOutput() {
+    # shellcheck disable=SC2039
+    local error_output
+    createSpy -e 'some output' dosomething || fail 'createSpy dosomething'
+
+    error_output=$(createSpy dosomething)
+
+    assertTrue "\`createSpy dosomething\` succeeds" $?
+    assertNull 'output is unset' "$error_output"
+}
+
+testShouldStubOutputErrorLast() {
+    # shellcheck disable=SC2039
+    local combined_output
+    createSpy -o 'stdout' -e 'stderr' dosomething || fail 'createSpy dosomething'
+
+    combined_output=$(dosomething 2>&1)
+
+    assertTrue "\`dosomething\` succeeds" $?
+    assertEquals 'error output is after standard output' 'stdoutstderr' "$combined_output"
+}
+
 testShouldResetCallCount() {
     createSpy dosomething || fail 'createSpy dosomething'
     dosomething

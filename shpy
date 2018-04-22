@@ -7,11 +7,12 @@ createSpy() {
     fi
 
     # shellcheck disable=SC2039
-    local val output
+    local val output error_output
 
-    while getopts :o:r: opt; do
+    while getopts :o:r:e: opt; do
         case "$opt" in
             o) output="$OPTARG" ;;
+            e) error_output="$OPTARG" ;;
             r) val="$OPTARG" ;;
             *) shpy_die "Error: Unknown option -$OPTARG" ;;
         esac
@@ -25,6 +26,7 @@ createSpy() {
     _shpyResetSpy "$1"
     _shpySpySetReturnValue "$1" "${val:-0}"
     _shpySpySetOutput "$1" "$output"
+    _shpySpySetErrorOutput "$1" "$error_output"
     _shpyInjectSpyFunction "$1"
 }
 
@@ -160,6 +162,7 @@ _shpyRunSpy() {
 
     _shpySpySaveArgs "$@"
     _shpySpyPrintOutput
+    _shpySpyPrintErrorOutput
     _shpySpyGetReturnValue
 }
 
@@ -183,12 +186,25 @@ _shpySpySetOutput() {
     eval "_shpy_${1}_output=\$2"
 }
 
+_shpySpySetErrorOutput() {
+    eval "_shpy_${1}_error_output=\$2"
+}
+
 _shpySpyPrintOutput() {
     # shellcheck disable=SC2039
     local output
     eval output="\$_shpy_${name}_output"
     if [ -n "$output" ]; then
         printf '%s' "$output"
+    fi
+}
+
+_shpySpyPrintErrorOutput() {
+    # shellcheck disable=SC2039
+    local error_output
+    eval error_output="\$_shpy_${name}_error_output"
+    if [ -n "$error_output" ]; then
+        printf '%s' "$error_output" 1>&2
     fi
 }
 
