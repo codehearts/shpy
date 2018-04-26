@@ -13,7 +13,7 @@ createSpy() {
         case "$opt" in
             o) output="$OPTARG" ;;
             e) error_output="$OPTARG" ;;
-            r) val="$OPTARG" ;;
+            r) val="$val $OPTARG" ;;
             *) shpy_die "Error: Unknown option -$OPTARG" ;;
         esac
     done
@@ -214,9 +214,22 @@ _shpySpySetReturnValue() {
 
 _shpySpyGetReturnValue() {
     # shellcheck disable=SC2039
-    local val
-    eval val="\$_shpy_${name}_val"
-    return "${val:-0}"
+    local values count current_value
+    eval values="\$_shpy_${name}_val"
+    count=$(getSpyCallCount "$name")
+
+    # $values is a space separated array. Iterate
+    # $count times to set $current_value to the right entry.
+    # If $count is greater than the number of return values,
+    # $current_value is set to the last return value.
+    for value in ${values:-0}; do
+      current_value=$value
+
+      count=$(( count - 1 ))
+      [ $count -eq 0 ] && break
+    done
+
+    return "$current_value"
 }
 
 ##### External Interface #####

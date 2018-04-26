@@ -67,6 +67,23 @@ testShouldResetStubReturnValue() {
     assertTrue 'dosomething returns the default -- success' $?
 }
 
+testShouldStubMultipleReturnValues() {
+    createSpy -r 2 -r 1 -r 0 dosomething || fail 'createSpy dosomething'
+
+    dosomething
+    assertEquals 'first return value equals first passed val' 2 $?
+
+    dosomething
+    assertEquals 'second return value equals second passed val' 1 $?
+
+    dosomething
+    assertEquals 'third return value equals third passed val' 0 $?
+
+    dosomething
+    assertEquals 'subsequent return values equal last passed val' 0 $?
+}
+
+
 testShouldStubOutput() {
     # shellcheck disable=SC2039
     local output
