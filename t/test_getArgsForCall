@@ -16,11 +16,16 @@ testCalledWithNoArgs_ShouldReturnUsage() {
     assertTrue 'output begins with "Usage:"' $?
 }
 
-# testCalledWithInvalidSpy_ShouldReturnError() {
-    # # shellcheck disable=SC2039
-    # local output
+testCalledWithOneArg_ShouldReturnUsage() {
+    # shellcheck disable=SC2039
+    local output
 
-    # output=$(wasSpyCalledWith invalid_spy 2>&1 >/dev/null)
+    output=$(getArgsForCall some_spy 2>&1 >/dev/null)
+
+    assertFalse "\`getArgsForCall\` is false" $?
+    printf '%s\n' "$output" | grep -q '^Usage:'
+    assertTrue 'output begins with "Usage:"' $?
+}
 
     # assertFalse "\`wasSpyCalledWith invalid_spy\` is false" $?
     # printf '%s\n' "$output" | grep -q '^Error:'
