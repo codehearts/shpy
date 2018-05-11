@@ -86,7 +86,8 @@ getArgsForCall() {
         return 1
     fi
 
-    local arg_file args call_number max name num_args path res saved_arg_files
+    local arg_file call_number max name num_args path res
+    local -a args
 
     name=$1
     call_number=$(($2 - 1))
@@ -104,11 +105,9 @@ getArgsForCall() {
         return 1
     fi
 
-    saved_arg_files=(${path}/*)
-    num_args=${#saved_arg_files[@]}
+    num_args=$(find ${path} -maxdepth 1 -type f | wc -l)
     max=$((${num_args} - 1))
 
-    args=()
     for i in $(seq 0 $max); do
         arg_file=${path}/${i}
         if [ -f ${arg_file} ]; then
