@@ -53,6 +53,29 @@ testCalledWithInvalidCallNumber_ShouldReturnError() {
     assertTrue 'output begins with "Error:"' $?
 }
 
+testNoArgs_ReturnsTrue() {
+    # shellcheck disable=SC2039
+    local output
+
+    createSpy some_spy || fail 'createSpy some_spy'
+    
+    some_spy
+    some_spy
+
+    output=$(getArgsForCall some_spy 1 2>&1)
+    assertTrue "\`getArgsForCall some_spy 1\` is true" $?
+    assertEquals "'Output is empty'" 0 ${#output}
+
+    output=$(getArgsForCall some_spy 2 2>&1 >/dev/null)
+    assertTrue "\`getArgsForCall some_spy 2\` is true" $?
+    assertEquals "'Output is empty'" 0 ${#output}
+}
+
+
+# Multiple calls
+# Various args
+
+
 # testNoArgs_ReturnsTrueWhenSpyCalledWithNoArgs() {
     # createSpy dosomething || fail 'createSpy dosomething'
     # dosomething
