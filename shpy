@@ -91,7 +91,6 @@ getArgsForCall() {
     name=$1
     call_number=$(($2 - 1))
 
-    #path="$_shpy_spies_dir/$name/$call_number"
     path="$_shpy_spies_dir/$name"
 
     if [ ! -d $(realpath ${path}) ]; then
@@ -105,22 +104,22 @@ getArgsForCall() {
         return 1
     fi
 
-    # saved_arg_files=(${path}/*)
-    # num_args=${#saved_arg_files[@]}
-    # max=$((${num_args} - 1))
+    saved_arg_files=(${path}/*)
+    num_args=${#saved_arg_files[@]}
+    max=$((${num_args} - 1))
 
-    # args=()
-    # # for (( i=0; i < ${num_args}; i++)); do  # Compatible with all shells?
-    # for i in $(seq 0 $max); do
-        # arg_file=${path}/${i}
-        # args+=($(cat ${arg_file}))
-    # done
+    args=()
+    for i in $(seq 0 $max); do
+        arg_file=${path}/${i}
+        if [ -f ${arg_file} ]; then
+            args+=($(cat ${arg_file}))
+        fi
+    done
 
-    # # Portability concern (printf)
-    # res=$(printf "%s " "${args[@]}")
-    # res=${res: : -1}
+    res=$(printf "%s " "${args[@]}")
+    res=${res: : -1}
 
-    # echo "${res}"
+    echo "${res}"
 }
 
 examineNextSpyCall() {

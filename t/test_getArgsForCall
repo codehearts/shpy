@@ -71,9 +71,29 @@ testNoArgs_ReturnsTrue() {
     assertEquals "'Output is empty'" 0 ${#output}
 }
 
+testMultipleCalls_ReturnsCorrectArgLists() {
+    # shellcheck disable=SC2039
+    local output
 
-# Multiple calls
-# Various args
+    createSpy some_spy || fail 'createSpy some_spy'
+    
+    some_spy foo
+    some_spy
+    some_spy bar -a foo -baz
+
+    output=$(getArgsForCall some_spy 1 2>&1)
+    assertTrue "\`getArgsForCall some_spy 1\` is true" $?
+    assertEquals "'Output is correct'" "foo" "${output}"
+
+    output=$(getArgsForCall some_spy 2 2>&1)
+    assertTrue "\`getArgsForCall some_spy 2\` is true" $?
+    assertEquals "'Output is empty'" 0 ${#output}
+
+    output=$(getArgsForCall some_spy 3 2>&1)
+    assertTrue "\`getArgsForCall some_spy 3\` is true" $?
+    assertEquals "'Output is correct'" "bar -a foo -baz" "${output}"
+}
+
 
 
 # testNoArgs_ReturnsTrueWhenSpyCalledWithNoArgs() {
