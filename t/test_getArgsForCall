@@ -38,6 +38,21 @@ testCalledWithInvalidSpy_ShouldReturnError() {
     assertTrue 'output begins with "Error:"' $?
 }
 
+testCalledWithInvalidCallNumber_ShouldReturnError() {
+    # shellcheck disable=SC2039
+    local output
+
+    createSpy some_spy || fail 'createSpy some_spy'
+    
+    some_spy
+
+    output=$(getArgsForCall some_spy 999 2>&1 >/dev/null)
+
+    assertFalse "\`getArgsForCall some_spy 999\` is false" $?
+    printf '%s\n' "$output" | grep -q '^Error:'
+    assertTrue 'output begins with "Error:"' $?
+}
+
 # testNoArgs_ReturnsTrueWhenSpyCalledWithNoArgs() {
     # createSpy dosomething || fail 'createSpy dosomething'
     # dosomething

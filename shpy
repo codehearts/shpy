@@ -89,19 +89,21 @@ getArgsForCall() {
     local arg_file args call_number max name num_args path res saved_arg_files
 
     name=$1
-    # call_number=$(($2 - 1))
+    call_number=$(($2 - 1))
 
     #path="$_shpy_spies_dir/$name/$call_number"
     path="$_shpy_spies_dir/$name"
 
     if [ ! -d $(realpath ${path}) ]; then
-        echo "Error: spy '$name' has not been set up" >&2
+        echo "Error: spy '${name}' has not been set up" >&2
         return 1
     fi
 
-    # if [ ! -d $(realpath ${path}/..) ]; then
-      # return 1
-    # fi
+    path=$(realpath "${path}/${call_number}")
+    if [ ! -d ${path} ]; then
+        echo "Error: spy '${name}' has not been called $((${call_number} + 1)) times" >&2
+        return 1
+    fi
 
     # saved_arg_files=(${path}/*)
     # num_args=${#saved_arg_files[@]}
