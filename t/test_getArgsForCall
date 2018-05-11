@@ -22,15 +22,21 @@ testCalledWithOneArg_ShouldReturnUsage() {
 
     output=$(getArgsForCall some_spy 2>&1 >/dev/null)
 
-    assertFalse "\`getArgsForCall\` is false" $?
+    assertFalse "\`getArgsForCall some_spy\` is false" $?
     printf '%s\n' "$output" | grep -q '^Usage:'
     assertTrue 'output begins with "Usage:"' $?
 }
 
-    # assertFalse "\`wasSpyCalledWith invalid_spy\` is false" $?
-    # printf '%s\n' "$output" | grep -q '^Error:'
-    # assertTrue 'output begins with "Error:"' $?
-# }
+testCalledWithInvalidSpy_ShouldReturnError() {
+    # shellcheck disable=SC2039
+    local output
+
+    output=$(getArgsForCall invalid_spy 1 2>&1 >/dev/null)
+
+    assertFalse "\`getArgsForCall invalid_spy 1\` is false" $?
+    printf '%s\n' "$output" | grep -q '^Error:'
+    assertTrue 'output begins with "Error:"' $?
+}
 
 # testNoArgs_ReturnsTrueWhenSpyCalledWithNoArgs() {
     # createSpy dosomething || fail 'createSpy dosomething'
