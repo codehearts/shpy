@@ -94,68 +94,6 @@ testMultipleCalls_ReturnsCorrectArgLists() {
     assertEquals "'Output is correct'" "bar -a foo -baz" "${output}"
 }
 
-
-
-# testNoArgs_ReturnsTrueWhenSpyCalledWithNoArgs() {
-    # createSpy dosomething || fail 'createSpy dosomething'
-    # dosomething
-
-    # wasSpyCalledWith dosomething
-
-    # assertTrue "\`wasSpyCalledWith dosomething\` is true" $?
-# }
-
-# testOneArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
-    # createSpy dosomething || fail 'createSpy dosomething'
-    # dosomething
-
-    # wasSpyCalledWith dosomething somearg
-
-    # assertFalse "\`wasSpyCalledWith dosomething somearg\` is false" $?
-# }
-
-# testOneArg_ReturnsTrueWhenSpyCalledWithSameArg() {
-    # createSpy dosomething || fail 'createSpy dosomething'
-    # dosomething somearg
-
-    # wasSpyCalledWith dosomething somearg
-
-    # assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
-# }
-
-# testBlankArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
-    # createSpy dosomething || fail 'createSpy dosomething'
-    # dosomething ""
-
-    # wasSpyCalledWith dosomething
-
-    # assertFalse "\`wasSpyCalledWith dosomething\` is false" $?
-# }
-
-# testArgContainingWhitespace_ReturnsTrueWhenSpyCalledWithSameArg() {
-    # createSpy dosomething || fail 'createSpy dosomething'
-    # dosomething ' some arg
-# with embedded newlines
-	# and tabs
-# and trailing whitespace  '
-
-    # wasSpyCalledWith dosomething ' some arg
-# with embedded newlines
-	# and tabs
-# and trailing whitespace  '
-
-    # assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
-# }
-
-# testTwoArgs_ReturnsTrueWhenSpyCalledWithSameArgs() {
-    # createSpy dosomething || fail 'createSpy dosomething'
-    # dosomething somearg anotherarg
-
-    # wasSpyCalledWith dosomething somearg anotherarg
-
-    # assertTrue "\`wasSpyCalledWith dosomething somearg anotherarg\` is true" $?
-# }
-
 oneTimeTearDown() {
     cleanupSpies
 }
