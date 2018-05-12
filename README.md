@@ -29,6 +29,7 @@ Function | Description
 `createStub SPY`                | Alias for `createSpy`
 `getSpyCallCount SPY`           | Outputs the number of invocations of a spy
 `wasSpyCalledWith SPY [ARG]...` | Verify a spy was called with the given arguments on its first invocation
+`getArgsForCall SPY NUM`        | Get list of arguments passed to spy on a given call number (first call is 1)
 `examineNextSpyCall SPY`        | Advances the invocation to check when calling `wasSpyCalledWith`<br>This causes `wasSpyCalledWith` to verify the second invocation, etc
 `cleanupSpies`                  | Clean up any temporary directories created for spies
 
