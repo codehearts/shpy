@@ -101,9 +101,10 @@ output' "$output"
 
 testShouldStubMultipleOutputs() {
     local first_output second_output third_output actual_output
-    first_output="first output"
+    first_output=$(printf "%s\n%s" "first" "output")
     second_output="second OUTPUT"
-    third_output="Third Output"
+    third_output="Third\
+Output"
 
     createSpy -o "${first_output}" -o "${second_output}" -o "${third_output}" dosomething || fail 'createSpy -o MULTIPLE dosomething'
   
