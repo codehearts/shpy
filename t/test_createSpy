@@ -99,6 +99,25 @@ output'
 output' "$output"
 }
 
+testShouldStubMultipleOutputs() {
+    local output
+
+    createSpy -o "first output" -o "second OUTPUT" -o "Third Output" dosomething || fail 'createSpy -o MULTIPLE dosomething'
+  
+    output=$(dosomething)
+    assertEquals 'first output equals first passed val' "first output" "${output}"
+
+    output=$(dosomething)
+    assertEquals 'second output equals second passed val' "second OUTPUT" "${output}"
+
+    output=$(dosomething)
+    assertEquals 'third output equals third passed val' "Third Output" "${output}"
+
+    output=$(dosomething)
+    assertEquals 'subsequent outputs equal last passed val' "Third Output" "${output}"
+  
+}
+
 testShouldResetStubOutput() {
     # shellcheck disable=SC2039
     local output

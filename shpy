@@ -7,22 +7,33 @@ createSpy() {
     fi
 
     # shellcheck disable=SC2039
-    local val output error_output
+    local val output error_output stub_dir outputs_dir last_arg
+    for last_arg; do true; done
 
+    _shpyInit
+
+    stub_dir=$(realpath "$_shpy_spies_dir")
+    outputs_dir=${stub_dir}/outputs/${last_arg}
+    mkdir -p "${outputs_dir}"
+
+    output_num=0
     while getopts :o:r:e: opt; do
         case "$opt" in
-            o) output="$OPTARG" ;;
+            o) 
+              echo "$OPTARG" > "${outputs_dir}/${output_num}"
+              output_num=$((output_num + 1))
+              ;;
             e) error_output="$OPTARG" ;;
             r) val="$val $OPTARG" ;;
             *) shpy_die "Error: Unknown option -$OPTARG" ;;
         esac
     done
+
     shift $(( OPTIND - 1 ))
     OPTIND=1
 
     [ -n "$1" ] || shpy_die "Error: Missing spy name"
 
-    _shpyInit
     _shpyResetSpy "$1"
     _shpySpySetReturnValue "$1" "${val:-0}"
     _shpySpySetOutput "$1" "$output"
@@ -192,8 +203,22 @@ _shpySpySetErrorOutput() {
 
 _shpySpyPrintOutput() {
     # shellcheck disable=SC2039
-    local output
-    eval output="\$_shpy_${name}_output"
+    local call_index count output output_fixture
+
+    stub_dir=$(realpath "$_shpy_spies_dir")
+    outputs_dir=${stub_dir}/outputs/${name}
+
+    count=$(getSpyCallCount "$name")
+    call_index=$((count - 1))
+    while [ ${call_index} -ge 0 ]; do
+        output_fixture=${outputs_dir}/${call_index}
+        if [ -f "${output_fixture}" ]; then
+            output=$(cat "${output_fixture}")
+            break
+        fi
+        call_index=$((call_index - 1))
+    done
+
     if [ -n "$output" ]; then
         printf '%s' "$output"
     fi
