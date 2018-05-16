@@ -87,10 +87,10 @@ getArgsForCall() {
     fi
 
     # shellcheck disable=SC2039
-    local arg_file args call_number i name num_args path res
+    local arg_file args call_index i name num_args path res
 
     name=$1
-    call_number=$(($2 - 1))
+    call_index=$(($2 - 1))
 
     path="$_shpy_spies_dir/$name"
 
@@ -99,9 +99,9 @@ getArgsForCall() {
         return 1
     fi
 
-    path="$path/$call_number"
+    path="$path/$call_index"
     if [ ! -d "$path" ]; then
-        echo "Error: spy '$name' has not been called $((call_number + 1)) times" >&2
+        echo "Error: spy '$name' has not been called $((call_index + 1)) times" >&2
         return 1
     fi
 
