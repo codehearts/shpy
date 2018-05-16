@@ -209,10 +209,10 @@ _shpySpyPrintOutput() {
 
     count=$(getSpyCallCount "$name")
     call_index=$((count - 1))
-    while [ ${call_index} -ge 0 ]; do
-        output_fixture=${outputs_dir}/${call_index}
-        if [ -f "${output_fixture}" ]; then
-            output=$(cat "${output_fixture}")
+    while [ $call_index -ge 0 ]; do
+        output_fixture="$outputs_dir/$call_index"
+        if [ -f "$output_fixture" ]; then
+            output=$(cat "$output_fixture")
             break
         fi
         call_index=$((call_index - 1))
