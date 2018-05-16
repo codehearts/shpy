@@ -193,6 +193,45 @@ testShouldStubOutputErrorLast() {
     assertEquals 'error output is after standard output' 'stdoutstderr' "$combined_output"
 }
 
+
+testShouldOutputMultipleCorrectlyWhenSpecsInterleaved() {
+    # shellcheck disable=SC2039
+    local combined_output expected_output first_output second_output first_err second_err third_err
+
+    first_output="first stdout"
+    second_output="Second STDOUT"
+    first_err="first err"
+    second_err="Second ERR"
+    third_err="THIRD err"
+
+    createSpy \
+        -o "$first_output" \
+        -e "$first_err" \
+        -o "$second_output" \
+        -e "$second_err" \
+        -e "$third_err" \
+        dosomething \
+      || fail 'createSpy dosomething'
+
+    expected_output=$(printf "%s%s" "$first_output" "$first_err")
+    combined_output=$(dosomething 2>&1)
+
+    assertTrue "\`dosomething\` succeeds" $?
+    assertEquals 'combined output is correct for first call' "$expected_output" "$combined_output"
+
+    expected_output=$(printf "%s%s" "$second_output" "$second_err")
+    combined_output=$(dosomething 2>&1)
+
+    assertTrue "\`dosomething\` succeeds" $?
+    assertEquals 'combined output is correct for second call' "$expected_output" "$combined_output"
+
+    expected_output=$(printf "%s%s" "$second_output" "$third_err")
+    combined_output=$(dosomething 2>&1)
+
+    assertTrue "\`dosomething\` succeeds" $?
+    assertEquals 'combined output is correct for third call' "$expected_output" "$combined_output"
+}
+
 testShouldResetCallCount() {
     createSpy dosomething || fail 'createSpy dosomething'
     dosomething
@@ -203,9 +242,10 @@ testShouldResetCallCount() {
     assertEquals 0 "$(getSpyCallCount dosomething)"
 }
 
-oneTimeTearDown() {
+tearDown() {
     cleanupSpies
 }
+
 
 # shellcheck source=/dev/null
 . "$TEST_DIR/shunit2"
