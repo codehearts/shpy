@@ -83,7 +83,7 @@ testMultipleCalls_ReturnsCorrectArgLists() {
 
     output=$(getArgsForCall some_spy 1 2>&1)
     assertTrue "\`getArgsForCall some_spy 1\` is true" $?
-    assertEquals "'Output is correct'" "foo" "${output}"
+    assertEquals "'Output is correct'" "foo" "$output"
 
     output=$(getArgsForCall some_spy 2 2>&1)
     assertTrue "\`getArgsForCall some_spy 2\` is true" $?
@@ -91,7 +91,7 @@ testMultipleCalls_ReturnsCorrectArgLists() {
 
     output=$(getArgsForCall some_spy 3 2>&1)
     assertTrue "\`getArgsForCall some_spy 3\` is true" $?
-    assertEquals "'Output is correct'" "bar -a foo -baz" "${output}"
+    assertEquals "'Output is correct'" "bar -a foo -baz" "$output"
 }
 
 oneTimeTearDown() {
