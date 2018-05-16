@@ -100,8 +100,9 @@ output' "$output"
 }
 
 testShouldStubMultipleOutputs() {
+    # shellcheck disable=SC2039
     local first_output second_output third_output actual_output
-    first_output=$(printf "%s\n%s" "first" "output")
+    first_output=$(printf "%s\\n%s" "first" "output")
     second_output="second OUTPUT"
     third_output="Third\
 Output"
