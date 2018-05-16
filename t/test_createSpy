@@ -100,22 +100,24 @@ output' "$output"
 }
 
 testShouldStubMultipleOutputs() {
-    local output
+    local first_output second_output third_output actual_output
+    first_output="first output"
+    second_output="second OUTPUT"
+    third_output="Third Output"
 
-    createSpy -o "first output" -o "second OUTPUT" -o "Third Output" dosomething || fail 'createSpy -o MULTIPLE dosomething'
+    createSpy -o "${first_output}" -o "${second_output}" -o "${third_output}" dosomething || fail 'createSpy -o MULTIPLE dosomething'
   
-    output=$(dosomething)
-    assertEquals 'first output equals first passed val' "first output" "${output}"
+    actual_output=$(dosomething)
+    assertEquals 'first output equals first passed val' "${first_output}" "${actual_output}"
 
-    output=$(dosomething)
-    assertEquals 'second output equals second passed val' "second OUTPUT" "${output}"
+    actual_output=$(dosomething)
+    assertEquals 'second output equals second passed val' "${second_output}" "${actual_output}"
 
-    output=$(dosomething)
-    assertEquals 'third output equals third passed val' "Third Output" "${output}"
+    actual_output=$(dosomething)
+    assertEquals 'third output equals third passed val' "${third_output}" "${actual_output}"
 
-    output=$(dosomething)
-    assertEquals 'subsequent outputs equal last passed val' "Third Output" "${output}"
-  
+    actual_output=$(dosomething)
+    assertEquals 'subsequent outputs equal last passed val' "${third_output}" "${actual_output}"
 }
 
 testShouldResetStubOutput() {
