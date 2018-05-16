@@ -35,7 +35,6 @@ createSpy() {
 
     _shpyResetSpy "$1"
     _shpySpySetReturnValue "$1" "${val:-0}"
-    _shpySpySetOutput "$1" "$output"
     _shpySpySetErrorOutput "$1" "$error_output"
     _shpyInjectSpyFunction "$1"
 }
@@ -190,10 +189,6 @@ _shpySpySaveArgs() {
         printf '%s' "$arg" >|"$path/$i"
         i=$(( i + 1 ))
     done
-}
-
-_shpySpySetOutput() {
-    eval "_shpy_${1}_output=\$2"
 }
 
 _shpySpySetErrorOutput() {
