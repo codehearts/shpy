@@ -7,26 +7,40 @@ createSpy() {
     fi
 
     # shellcheck disable=SC2039
-    local val output error_output
+    local val output errors_dir outputs_dir spy_name
+    for spy_name; do true; done
 
+    _shpyInit
+
+    outputs_dir="$_shpy_spies_dir/outputs/$spy_name"
+    errors_dir="$_shpy_spies_dir/errors/$spy_name"
+    shpy_ensure_dir "$outputs_dir" || shpy_die "Error: \`shpy_ensure_dir '$outputs_dir'\` failed"
+    shpy_ensure_dir "$errors_dir" || shpy_die "Error: \`shpy_ensure_dir '$errors_dir'\` failed"
+
+    output_num=0
+    error_num=0
     while getopts :o:r:e: opt; do
         case "$opt" in
-            o) output="$OPTARG" ;;
-            e) error_output="$OPTARG" ;;
+            o)
+              echo "$OPTARG" > "$outputs_dir/$output_num"
+              output_num=$((output_num + 1))
+              ;;
+            e)
+              echo "$OPTARG" > "$errors_dir/$error_num"
+              error_num=$((error_num + 1))
+              ;;
             r) val="$val $OPTARG" ;;
             *) shpy_die "Error: Unknown option -$OPTARG" ;;
         esac
     done
+
     shift $(( OPTIND - 1 ))
     OPTIND=1
 
     [ -n "$1" ] || shpy_die "Error: Missing spy name"
 
-    _shpyInit
     _shpyResetSpy "$1"
     _shpySpySetReturnValue "$1" "${val:-0}"
-    _shpySpySetOutput "$1" "$output"
-    _shpySpySetErrorOutput "$1" "$error_output"
     _shpyInjectSpyFunction "$1"
 }
 
@@ -182,18 +196,24 @@ _shpySpySaveArgs() {
     done
 }
 
-_shpySpySetOutput() {
-    eval "_shpy_${1}_output=\$2"
-}
-
-_shpySpySetErrorOutput() {
-    eval "_shpy_${1}_error_output=\$2"
-}
-
 _shpySpyPrintOutput() {
     # shellcheck disable=SC2039
-    local output
-    eval output="\$_shpy_${name}_output"
+    local call_index count output outputs_dir output_fixture
+
+    outputs_dir="$_shpy_spies_dir/outputs/$name"
+    shpy_ensure_dir "$outputs_dir" || shpy_die "Error: \`shpy_ensure_dir '$outputs_dir'\` failed"
+
+    count=$(getSpyCallCount "$name")
+    call_index=$((count - 1))
+    while [ $call_index -ge 0 ]; do
+        output_fixture="$outputs_dir/$call_index"
+        if [ -f "$output_fixture" ]; then
+            output=$(cat "$output_fixture")
+            break
+        fi
+        call_index=$((call_index - 1))
+    done
+
     if [ -n "$output" ]; then
         printf '%s' "$output"
     fi
@@ -201,8 +221,22 @@ _shpySpyPrintOutput() {
 
 _shpySpyPrintErrorOutput() {
     # shellcheck disable=SC2039
-    local error_output
-    eval error_output="\$_shpy_${name}_error_output"
+    local call_index count error_output errors_dir error_fixture
+
+    errors_dir="$_shpy_spies_dir/errors/$name"
+    shpy_ensure_dir "$errors_dir" || shpy_die "Error: \`shpy_ensure_dir '$errors_dir'\` failed"
+
+    count=$(getSpyCallCount "$name")
+    call_index=$((count - 1))
+    while [ $call_index -ge 0 ]; do
+        error_fixture="$errors_dir/$call_index"
+        if [ -f "$error_fixture" ]; then
+            error_output=$(cat "$error_fixture")
+            break
+        fi
+        call_index=$((call_index - 1))
+    done
+
     if [ -n "$error_output" ]; then
         printf '%s' "$error_output" 1>&2
     fi

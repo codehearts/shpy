@@ -99,6 +99,29 @@ output'
 output' "$output"
 }
 
+testShouldStubMultipleOutputs() {
+    # shellcheck disable=SC2039
+    local first_output second_output third_output actual_output
+    first_output=$(printf "%s\\n%s" "first" "output")
+    second_output="second OUTPUT"
+    third_output="Third\
+Output"
+
+    createSpy -o "${first_output}" -o "${second_output}" -o "${third_output}" dosomething || fail 'createSpy -o MULTIPLE dosomething'
+  
+    actual_output=$(dosomething)
+    assertEquals 'first output equals first passed val' "${first_output}" "${actual_output}"
+
+    actual_output=$(dosomething)
+    assertEquals 'second output equals second passed val' "${second_output}" "${actual_output}"
+
+    actual_output=$(dosomething)
+    assertEquals 'third output equals third passed val' "${third_output}" "${actual_output}"
+
+    actual_output=$(dosomething)
+    assertEquals 'subsequent outputs equal last passed val' "${third_output}" "${actual_output}"
+}
+
 testShouldResetStubOutput() {
     # shellcheck disable=SC2039
     local output
@@ -125,6 +148,29 @@ output'
 output' "$error_output"
 }
 
+testShouldStubMultipleErrorOutputs() {
+    # shellcheck disable=SC2039
+    local first_err second_err third_err actual_err
+    first_err=$(printf "%s\\n%s" "first" "output")
+    second_err="second OUTPUT"
+    third_err="Third\
+Output"
+
+    createSpy -e "${first_err}" -e "${second_err}" -e "${third_err}" dosomething || fail 'createSpy -e MULTIPLE dosomething'
+  
+    actual_err=$(dosomething 2>&1 >/dev/null)
+    assertEquals 'first error output equals first passed val' "${first_err}" "${actual_err}"
+
+    actual_err=$(dosomething 2>&1 >/dev/null)
+    assertEquals 'second error output equals second passed val' "${second_err}" "${actual_err}"
+
+    actual_err=$(dosomething 2>&1 >/dev/null)
+    assertEquals 'third error output equals third passed val' "${third_err}" "${actual_err}"
+
+    actual_err=$(dosomething 2>&1 >/dev/null)
+    assertEquals 'subsequent error outputs equal last passed val' "${third_err}" "${actual_err}"
+}
+
 testShouldResetStubErrorOutput() {
     # shellcheck disable=SC2039
     local error_output
@@ -147,6 +193,69 @@ testShouldStubOutputErrorLast() {
     assertEquals 'error output is after standard output' 'stdoutstderr' "$combined_output"
 }
 
+do_multiple_outputs_test() {
+    interleave=$1
+
+    # shellcheck disable=SC2039
+    local combined_output expected_output first_output second_output first_err second_err third_err test_label
+
+    first_output="first stdout"
+    second_output="Second STDOUT"
+    first_err="first err"
+    second_err="Second ERR"
+    third_err="THIRD err"
+
+    if [ "$interleave" -eq 1 ]; then
+        createSpy \
+            -o "$first_output" \
+            -e "$first_err" \
+            -o "$second_output" \
+            -e "$second_err" \
+            -e "$third_err" \
+            dosomething \
+          || fail 'createSpy dosomething'
+
+        test_label="Interleaved"
+    else
+        createSpy \
+            -o "$first_output" \
+            -o "$second_output" \
+            -e "$first_err" \
+            -e "$second_err" \
+            -e "$third_err" \
+            dosomething \
+          || fail 'createSpy dosomething'
+
+        test_label="Grouped"
+    fi
+
+    expected_output=$(printf "%s%s" "$first_output" "$first_err")
+    combined_output=$(dosomething 2>&1)
+
+    assertTrue "\`dosomething\` succeeds" $?
+    assertEquals "$test_label multiple outputs: combined output is correct for first call" "$expected_output" "$combined_output"
+
+    expected_output=$(printf "%s%s" "$second_output" "$second_err")
+    combined_output=$(dosomething 2>&1)
+
+    assertTrue "\`dosomething\` succeeds" $?
+    assertEquals "$test_label multiple outputs: combined output is correct for second call" "$expected_output" "$combined_output"
+
+    expected_output=$(printf "%s%s" "$second_output" "$third_err")
+    combined_output=$(dosomething 2>&1)
+
+    assertTrue "\`dosomething\` succeeds" $?
+    assertEquals "$test_label multiple outputs: combined output is correct for third call" "$expected_output" "$combined_output"
+}
+
+testShouldOutputMultipleCorrectlyWhenSpecsGrouped() {
+    do_multiple_outputs_test 0
+}
+
+testShouldOutputMultipleCorrectlyWhenSpecsInterleaved() {
+    do_multiple_outputs_test 1
+}
+
 testShouldResetCallCount() {
     createSpy dosomething || fail 'createSpy dosomething'
     dosomething
@@ -157,9 +266,10 @@ testShouldResetCallCount() {
     assertEquals 0 "$(getSpyCallCount dosomething)"
 }
 
-oneTimeTearDown() {
+tearDown() {
     cleanupSpies
 }
+
 
 # shellcheck source=/dev/null
 . "$TEST_DIR/shunit2"

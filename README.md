@@ -24,8 +24,8 @@ Function | Description
 ---|---
 `createSpy SPY`                 | Create a new spy, or reset an existing spy
 `createSpy -r RETURN_VAL SPY`   | Sets the return value of the spy when invoked<br>Can be passed multiple times to set a return value sequence<br>Once the sequence finishes, the last value is always returned
-`createSpy -o OUTPUT SPY`       | Sets output via standard output when the spy is invoked<br>When used with `-e`, standard out is written to first
-`createSpy -e OUTPUT SPY`       | Sets output via standard error when the spy is invoked<br>When used with `-o`, standard out is written to first
+`createSpy -o OUTPUT SPY`       | Sets output via standard output when the spy is invoked<br>Can be passed multiple times to set an output sequence<br>Once the sequence finishes, the last value is always output<br>When used with `-e`, standard out is written to first
+`createSpy -e OUTPUT SPY`       | Sets output via standard error when the spy is invoked<br>Can be passed multiple times to set an error output sequence<br>Once the sequence finishes, the last value is always output<br>When used with `-o`, standard out is written to first
 `createStub SPY`                | Alias for `createSpy`
 `getSpyCallCount SPY`           | Outputs the number of invocations of a spy
 `wasSpyCalledWith SPY [ARG]...` | Verify a spy was called with the given arguments on its first invocation
