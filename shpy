@@ -7,13 +7,13 @@ createSpy() {
     fi
 
     # shellcheck disable=SC2039
-    local val output error_output stub_dir outputs_dir last_arg
-    for last_arg; do true; done
+    local val output error_output stub_dir outputs_dir spy_name
+    for spy_name; do true; done
 
     _shpyInit
 
     stub_dir=$(realpath "$_shpy_spies_dir")
-    outputs_dir=${stub_dir}/outputs/${last_arg}
+    outputs_dir=${stub_dir}/outputs/${spy_name}
     mkdir -p "${outputs_dir}"
 
     output_num=0
