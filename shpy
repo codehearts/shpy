@@ -86,37 +86,42 @@ getArgsForCall() {
         return 1
     fi
 
-    local arg_file call_number max name num_args path res
-    local -a args
+    # shellcheck disable=SC2039
+    local arg_file args call_number i name num_args path res
 
     name=$1
     call_number=$(($2 - 1))
 
     path="$_shpy_spies_dir/$name"
 
-    if [ ! -d $(realpath ${path}) ]; then
-        echo "Error: spy '${name}' has not been set up" >&2
+    if [ ! -d "$path" ]; then
+        echo "Error: spy '$name' has not been set up" >&2
         return 1
     fi
 
-    path=$(realpath "${path}/${call_number}")
-    if [ ! -d ${path} ]; then
-        echo "Error: spy '${name}' has not been called $((${call_number} + 1)) times" >&2
+    path="$path/$call_number"
+    if [ ! -d "$path" ]; then
+        echo "Error: spy '$name' has not been called $((call_number + 1)) times" >&2
         return 1
     fi
 
-    num_args=$(find ${path} -maxdepth 1 -type f | wc -l)
-    max=$((${num_args} - 1))
+    num_args=$(find "$path" -maxdepth 1 -type f | wc -l)
 
-    for i in $(seq 0 $max); do
-        arg_file=${path}/${i}
-        if [ -f ${arg_file} ]; then
-            args+=($(cat ${arg_file}))
+    i=0
+    res=""
+    while [ "$i" -le "$num_args" ]; do
+        arg_file="$path/$i"
+        if [ -f "$arg_file" ]; then
+            args=$(cat "$arg_file")
+            if [ ${#res} -gt 0 ]; then
+                res=$(printf "%s %s" "$res" "$args")
+            else
+                res="$args"
+            fi
         fi
-    done
 
-    res=$(printf "%s " "${args[@]}")
-    res=${res: : -1}
+        i=$((i + 1))
+    done
 
     echo "${res}"
 }
