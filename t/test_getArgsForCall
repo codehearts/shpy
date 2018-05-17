@@ -43,7 +43,7 @@ testCalledWithInvalidCallNumber_ShouldReturnError() {
     local output
 
     createSpy some_spy || fail 'createSpy some_spy'
-    
+
     some_spy
 
     output=$(getArgsForCall some_spy 999 2>&1 >/dev/null)
@@ -58,7 +58,7 @@ testNoArgs_ReturnsTrue() {
     local output
 
     createSpy some_spy || fail 'createSpy some_spy'
-    
+
     some_spy
     some_spy
 
@@ -71,12 +71,28 @@ testNoArgs_ReturnsTrue() {
     assertEquals "Output is empty" 0 ${#output}
 }
 
+testShouldQuoteArgsCorrectly() {
+    # shellcheck disable=SC2039
+    local output
+
+    createSpy some_spy || fail 'createSpy some_spy'
+
+    some_spy "foo" bar 'baz'
+    some_spy "foo bar" abc def 'baz bat'
+
+    output=$(getArgsForCall some_spy 1 2>&1)
+    assertEquals "First call output is correct" "foo bar baz" "$output"
+
+    output=$(getArgsForCall some_spy 2 2>&1)
+    assertEquals "Second call output is correct" '"foo bar" abc def "baz bat"' "$output"
+}
+
 testMultipleCalls_ReturnsCorrectArgLists() {
     # shellcheck disable=SC2039
     local output
 
     createSpy some_spy || fail 'createSpy some_spy'
-    
+
     some_spy foo
     some_spy
     some_spy -a "foo bar" -baz
@@ -91,7 +107,7 @@ testMultipleCalls_ReturnsCorrectArgLists() {
 
     output=$(getArgsForCall some_spy 3 2>&1)
     assertTrue "\`getArgsForCall some_spy 3\` is true" $?
-    assertEquals "Output is correct" "-a foo bar -baz" "$output"
+    assertEquals "Output is correct" '-a "foo bar" -baz' "$output"
 }
 
 oneTimeTearDown() {
