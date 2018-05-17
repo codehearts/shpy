@@ -34,8 +34,8 @@ testCalledWithInvalidSpy_ShouldReturnError() {
     output=$(getArgsForCall invalid_spy 1 2>&1 >/dev/null)
 
     assertFalse "\`getArgsForCall invalid_spy 1\` is false" $?
-    printf '%s\n' "$output" | grep -q '^Error:'
-    assertTrue 'output begins with "Error:"' $?
+    printf '%s\n' "$output" | grep -qx "Error: spy 'invalid_spy' has not been set up"
+    assertTrue 'output contains correct error message' $?
 }
 
 testCalledWithInvalidCallNumber_ShouldReturnError() {
