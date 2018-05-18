@@ -1,0 +1,121 @@
+#!/bin/sh
+
+readonly TEST_DIR="$(dirname "$0")"
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy"
+
+testCalledWithNoArgs_ShouldReturnUsage() {
+    # shellcheck disable=SC2039
+    local output
+
+    output=$(getArgsForCall 2>&1 >/dev/null)
+
+    assertFalse "\`getArgsForCall\` is false" $?
+    printf '%s\n' "$output" | grep -q '^Usage:'
+    assertTrue 'output begins with "Usage:"' $?
+}
+
+testCalledWithOneArg_ShouldReturnUsage() {
+    # shellcheck disable=SC2039
+    local output
+
+    output=$(getArgsForCall some_spy 2>&1 >/dev/null)
+
+    assertFalse "\`getArgsForCall some_spy\` is false" $?
+    printf '%s\n' "$output" | grep -q '^Usage:'
+    assertTrue 'output begins with "Usage:"' $?
+}
+
+testCalledWithInvalidSpy_ShouldReturnError() {
+    # shellcheck disable=SC2039
+    local output
+
+    output=$(getArgsForCall invalid_spy 1 2>&1 >/dev/null)
+
+    assertFalse "\`getArgsForCall invalid_spy 1\` is false" $?
+    printf '%s\n' "$output" | grep -qx "Error: spy 'invalid_spy' has not been set up"
+    assertTrue 'output contains correct error message' $?
+}
+
+testCalledWithInvalidCallNumber_ShouldReturnError() {
+    # shellcheck disable=SC2039
+    local output
+
+    createSpy some_spy || fail 'createSpy some_spy'
+
+    some_spy
+
+    output=$(getArgsForCall some_spy 999 2>&1 >/dev/null)
+
+    assertFalse "\`getArgsForCall some_spy 999\` is false" $?
+    printf '%s\n' "$output" | grep -q '^Error:'
+    assertTrue 'output begins with "Error:"' $?
+}
+
+testNoArgs_ReturnsTrue() {
+    # shellcheck disable=SC2039
+    local output
+
+    createSpy some_spy || fail 'createSpy some_spy'
+
+    some_spy
+    some_spy
+
+    output=$(getArgsForCall some_spy 1 2>&1)
+    assertTrue "\`getArgsForCall some_spy 1\` is true" $?
+    assertEquals "Output is empty" 0 ${#output}
+
+    output=$(getArgsForCall some_spy 2 2>&1 >/dev/null)
+    assertTrue "\`getArgsForCall some_spy 2\` is true" $?
+    assertEquals "Output is empty" 0 ${#output}
+}
+
+testShouldQuoteArgsCorrectly() {
+    # shellcheck disable=SC2039
+    local output tab_inside expected_output
+
+    tab_inside=$(printf "%s\\t%s" "tab" "inside")
+    expected_output=$(printf '"foo bar" abc def "baz bat" "%s"' "$tab_inside")
+
+    createSpy some_spy || fail 'createSpy some_spy'
+
+    some_spy "foo" bar 'baz'
+    some_spy "foo bar" abc def 'baz bat' "$tab_inside"
+
+    output=$(getArgsForCall some_spy 1 2>&1)
+    assertEquals "First call output is correct" "foo bar baz" "$output"
+
+    output=$(getArgsForCall some_spy 2 2>&1)
+    assertEquals "Second call output is correct" "$expected_output" "$output"
+}
+
+testMultipleCalls_ReturnsCorrectArgLists() {
+    # shellcheck disable=SC2039
+    local output
+
+    createSpy some_spy || fail 'createSpy some_spy'
+
+    some_spy foo
+    some_spy
+    some_spy -a "foo bar" -baz
+
+    output=$(getArgsForCall some_spy 1 2>&1)
+    assertTrue "\`getArgsForCall some_spy 1\` is true" $?
+    assertEquals "Output is correct" "foo" "$output"
+
+    output=$(getArgsForCall some_spy 2 2>&1)
+    assertTrue "\`getArgsForCall some_spy 2\` is true" $?
+    assertEquals "Output is empty" 0 ${#output}
+
+    output=$(getArgsForCall some_spy 3 2>&1)
+    assertTrue "\`getArgsForCall some_spy 3\` is true" $?
+    assertEquals "Output is correct" '-a "foo bar" -baz' "$output"
+}
+
+oneTimeTearDown() {
+    cleanupSpies
+}
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/shunit2"

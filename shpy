@@ -80,6 +80,56 @@ wasSpyCalledWith() {
         _shpyMatchArgs "$@"
 }
 
+getArgsForCall() {
+    if [ $# -ne 2 ]; then
+        echo 'Usage: getArgsForCall SPY CALL_NUMBER' >&2
+        return 1
+    fi
+
+    # shellcheck disable=SC2039
+    local arg_file args call_index i name num_args path res
+
+    name=$1
+    call_index=$(($2 - 1))
+
+    path="$_shpy_spies_dir/$name"
+
+    if [ ! -d "$path" ]; then
+        echo "Error: spy '$name' has not been set up" >&2
+        return 1
+    fi
+
+    path="$path/$call_index"
+    if [ ! -d "$path" ]; then
+        echo "Error: spy '$name' has not been called $((call_index + 1)) times" >&2
+        return 1
+    fi
+
+    num_args=$(find "$path" -maxdepth 1 -type f | wc -l)
+
+    i=0
+    res=""
+    while [ "$i" -le "$num_args" ]; do
+        arg_file="$path/$i"
+        if [ -f "$arg_file" ]; then
+            args=$(cat "$arg_file")
+            if printf "%s" "$args" | grep -qe "\\s"; then
+                args="\"$args\""
+            fi
+
+            if [ ${#res} -gt 0 ]; then
+                res=$(printf "%s %s" "$res" "$args")
+            else
+                res="$args"
+            fi
+        fi
+
+        i=$((i + 1))
+    done
+
+    echo "$res"
+}
+
 examineNextSpyCall() {
     # shellcheck disable=SC2039
     local current
