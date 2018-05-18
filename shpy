@@ -113,7 +113,7 @@ getArgsForCall() {
         arg_file="$path/$i"
         if [ -f "$arg_file" ]; then
             args=$(cat "$arg_file")
-            if printf "%s" "$args" | grep -q " "; then
+            if printf "%s" "$args" | grep -qe "\\s"; then
                 args="\"$args\""
             fi
 

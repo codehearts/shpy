@@ -73,18 +73,21 @@ testNoArgs_ReturnsTrue() {
 
 testShouldQuoteArgsCorrectly() {
     # shellcheck disable=SC2039
-    local output
+    local output tab_inside expected_output
+
+    tab_inside=$(printf "%s\\t%s" "tab" "inside")
+    expected_output=$(printf '"foo bar" abc def "baz bat" "%s"' "$tab_inside")
 
     createSpy some_spy || fail 'createSpy some_spy'
 
     some_spy "foo" bar 'baz'
-    some_spy "foo bar" abc def 'baz bat'
+    some_spy "foo bar" abc def 'baz bat' "$tab_inside"
 
     output=$(getArgsForCall some_spy 1 2>&1)
     assertEquals "First call output is correct" "foo bar baz" "$output"
 
     output=$(getArgsForCall some_spy 2 2>&1)
-    assertEquals "Second call output is correct" '"foo bar" abc def "baz bat"' "$output"
+    assertEquals "Second call output is correct" "$expected_output" "$output"
 }
 
 testMultipleCalls_ReturnsCorrectArgLists() {
