@@ -1,11 +1,11 @@
 REPO_ROOT=$(shell git rev-parse --show-toplevel)
 DOCKER_FLAGS=-it --rm -e SHUNIT_COLOR=always
 
-DOCKER_DEBIAN=debian:latest
-DOCKER_ZSH=imwithye/zsh:latest
-DOCKER_CHECKBASHISMS=manabu/checkbashisms-docker:latest
+DOCKER_DEBIAN=debian:buster-20190708-slim
+DOCKER_ZSH=zshusers/zsh:5.7.1
+DOCKER_CHECKBASHISMS=manabu/checkbashisms-docker:0.1.0
 DOCKER_SHELLCHECK=koalaman/shellcheck:latest
-DOCKER_KCOV=ragnaroek/kcov:v33
+DOCKER_KCOV=kcov/kcov:v36
 
 TESTS=$(wildcard t/test_*)
 APP_TESTS=$(addprefix /app/, $(TESTS))
@@ -44,9 +44,9 @@ test_zsh: docker_installed
 ifeq (, $(shell docker images -q $(DOCKER_ZSH)))
 	@docker pull $(DOCKER_ZSH)
 endif
-	@docker run $(DOCKER_FLAGS) -e SHELL=/bin/zsh \
-		--mount type=bind,source=$(REPO_ROOT),target=/rootfs,readonly \
-		$(DOCKER_ZSH) /bin/zsh -o shwordsplit -c /rootfs/t/run_tests
+	@docker run $(DOCKER_FLAGS) -e SHELL=/usr/bin/zsh -w /app \
+		--mount type=bind,source=$(REPO_ROOT),target=/app \
+		$(DOCKER_ZSH) /usr/bin/zsh -o shwordsplit -c /app/t/run_tests
 
 lint: docker_installed
 ifeq (, $(shell docker images -q $(DOCKER_CHECKBASHISMS)))
