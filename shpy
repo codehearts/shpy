@@ -150,7 +150,7 @@ cleanupSpies() {
 }
 
 _shpyInit() {
-    if [ -n "$_shpy_inited" ]; then
+    if [ -n "${_shpy_inited+is_set}" ]; then
         return
     fi
 
@@ -264,7 +264,7 @@ _shpySpyPrintOutput() {
         call_index=$((call_index - 1))
     done
 
-    if [ -n "$output" ]; then
+    if [ -n "${output+is_set}" ]; then
         printf '%s' "$output"
     fi
 }
@@ -287,7 +287,7 @@ _shpySpyPrintErrorOutput() {
         call_index=$((call_index - 1))
     done
 
-    if [ -n "$error_output" ]; then
+    if [ -n "${error_output+is_set}" ]; then
         printf '%s' "$error_output" 1>&2
     fi
 }
