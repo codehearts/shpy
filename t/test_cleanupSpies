@@ -1,0 +1,47 @@
+#!/bin/sh
+
+readonly TEST_DIR="$(dirname "$0")"
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy"
+# shellcheck source=/dev/null
+. "$TEST_DIR/../shpy-shunit2"
+
+testRemovesDirectory() {
+  createSpy foo
+
+  assertNotNull "${_shpy_spies_dir}"
+  [ -d "${_shpy_spies_dir}" ] || fail "Temporary directory does not exist"
+
+  cleanupSpies
+
+  [ ! -d "${_shpy_spies_dir}" ] || fail "Temporary directory should have been removed"
+}
+
+testWorksUnderNoUnsetOption() {
+  [ -d "${_shpy_spies_dir}" ] && shpy_remove_dir_tree "${_shpy_spies_dir}"
+
+  unset -v _shpy_spies_dir
+  unset -v _shpy_inited
+
+  set -o nounset
+
+  createSpy foo
+
+  cleanupSpies || fail "Should exit cleanly"
+}
+
+testDoesNotFailIfNoSpiesCreated() {
+  [ -d "${_shpy_spies_dir}" ] && shpy_remove_dir_tree "${_shpy_spies_dir}"
+
+  unset -v _shpy_spies_dir
+  unset -v _shpy_inited
+
+  set -o nounset
+
+  cleanupSpies || fail "Should exit cleanly"
+}
+
+
+# shellcheck source=/dev/null
+. "$TEST_DIR/shunit2"
