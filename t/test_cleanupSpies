@@ -10,6 +10,7 @@ readonly TEST_DIR="$(dirname "$0")"
 testRemovesDirectory() {
   createSpy foo
 
+  # shellcheck disable=SC2154
   assertNotNull "${_shpy_spies_dir}"
   [ -d "${_shpy_spies_dir}" ] || fail "Temporary directory does not exist"
 
