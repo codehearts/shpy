@@ -2,6 +2,8 @@
 
 readonly TEST_DIR="$(dirname "$0")"
 
+set -o nounset
+
 # shellcheck source=/dev/null
 . "$TEST_DIR/../shpy"
 
