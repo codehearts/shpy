@@ -7,7 +7,7 @@ readonly TEST_DIR="$(dirname "$0")"
 # shellcheck source=/dev/null
 . "$TEST_DIR/../shpy-shunit2"
 
-testRemovesDirectory() {
+testCleanupSpies_RemovesTmpDirectory() {
   createSpy foo
 
   # shellcheck disable=SC2154
