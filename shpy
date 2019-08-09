@@ -29,7 +29,7 @@ createSpy() {
               echo "$OPTARG" > "$errors_dir/$error_num"
               error_num=$((error_num + 1))
               ;;
-            r) val="$val $OPTARG" ;;
+            r) val="${val-} $OPTARG" ;;
             *) shpy_die "Error: Unknown option -$OPTARG" ;;
         esac
     done
@@ -37,7 +37,7 @@ createSpy() {
     shift $(( OPTIND - 1 ))
     OPTIND=1
 
-    [ -n "$1" ] || shpy_die "Error: Missing spy name"
+    [ $# -eq 0 ] && shpy_die "Error: Missing spy name"
 
     _shpyResetSpy "$1"
     _shpySpySetReturnValue "$1" "${val:-0}"
@@ -77,6 +77,10 @@ wasSpyCalledWith() {
     fi
 
     path="$_shpy_spies_dir/$name/$current" \
+    if [ -z "${_shpy_spies_dir:+is_set_and_not_null}" ]; then
+      echo "Error: no spies have been created" >&2
+      return 1
+    fi
         _shpyMatchArgs "$@"
 }
 
@@ -93,6 +97,10 @@ getArgsForCall() {
     call_index=$(($2 - 1))
 
     path="$_shpy_spies_dir/$name"
+    if [ -z "${_shpy_spies_dir:+is_set_and_not_null}" ]; then
+      echo "Error: no spies have been created" >&2
+      return 1
+    fi
 
     if [ ! -d "$path" ]; then
         echo "Error: spy '$name' has not been set up" >&2
@@ -144,7 +152,7 @@ examineNextSpyCall() {
 }
 
 cleanupSpies() {
-    if [ -n "$_shpy_spies_dir" ]; then
+    if [ -n "${_shpy_spies_dir+is_set}" ]; then
         shpy_remove_dir_tree "$_shpy_spies_dir" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
     fi
 }
@@ -174,8 +182,8 @@ _shpyInjectSpyFunction() {
 _shpyGetSpyCurent() {
     # shellcheck disable=SC2039
     local current
-    eval current="\$_shpy_${1}_current"
-    printf '%s\n' "${current:-0}"
+    eval current="\${_shpy_${1}_current-0}"
+    printf '%s\n' "$current"
 }
 
 _shpySetSpyCurent() {
