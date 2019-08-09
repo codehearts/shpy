@@ -1,20 +1,69 @@
 #!/bin/sh
 
+# Disallow unset variables in the test runner
 set -o nounset
 
-if "$SHELL" --version >/dev/null 2>&1; then
-  printf '%s\n' "$($SHELL --version)"
-else
-  printf '%s\n' "$SHELL"
-fi
+# Determine the location of this script, and subsequently the test directory
+test_directory=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
 
-if [ "${USE_KCOV+is_set}" ]; then
-  test_runner="kcov $(dirname "$0")/../coverage --exclude-path=$(dirname "$0")"
-else
-  test_runner=''
-fi
+# Display the name and version (if available) of the shell under test
+"$SHELL" --version 2>/dev/null || printf '%s\n' "$SHELL"
 
-for test_file in "$(dirname "$0")"/test_*; do
-  printf '\nRunning %s...\n' "$(basename "$test_file")"
-  "$SHELL" -c "SHUNIT_PARENT=$test_file $test_runner $test_file" || exit $?
-done
+#
+# Shell args
+#
+
+# Default arguments to the shell under test
+# -u: set -o nounset
+shell_args='-u'
+
+# If the shell is zsh, add flags needed for use with shunit2
+[ "$(basename "$SHELL")" = "zsh"  ] && shell_args="$shell_args -o shwordsplit"
+
+#
+# kcov args
+#
+
+# Default arguments to kcov, when coverage reporting is enabled
+# Exclude the test files from coverage reports
+# Write reports to a coverage/ directory in the root of the repo
+kcov_args="--exclude-path=$test_directory $test_directory/../coverage"
+
+#
+# Run tests
+#
+
+# Find all test files
+find "$test_directory" -name 'test_*' -type f | {
+  # Stores the cumulative status of all tests run
+  cumulative_exit_status=0
+
+  # Iterate through all test files
+  while IFS= read -r test_file
+  do
+    printf '\nRunning %s...\n' "$(basename "$test_file")"
+
+    # Necessary to use shunit2 with zsh
+    SHUNIT_PARENT="$test_file"
+    export SHUNIT_PARENT
+
+    # Run the test file with the shell under test
+    test_runner="$SHELL $shell_args"
+
+    if [ "${USE_KCOV+is_set}" ]; then
+      # If $USE_KCOV is set, run the test through kcov for coverage reporting
+      $test_runner -c "kcov $kcov_args $test_file"
+    else
+      $test_runner "$test_file"
+    fi
+
+    # Track the cumulative exit status, which becomes non-zero if a test fails
+    cumulative_exit_status=$((cumulative_exit_status+$?))
+  done
+
+  # Exit with a non-zero status is any test failed
+  exit $cumulative_exit_status
+}
+
+# Exit with a non-zero status if any test failed
+exit $?
