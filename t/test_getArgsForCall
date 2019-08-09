@@ -27,15 +27,29 @@ testCalledWithOneArg_ShouldReturnUsage() {
     assertTrue 'output begins with "Usage:"' $?
 }
 
-testCalledWithInvalidSpy_ShouldReturnError() {
+testCalledBeforeSpiesCreated_ShouldReturnError() {
     # shellcheck disable=SC2039
     local output
 
     output=$(getArgsForCall invalid_spy 1 2>&1 >/dev/null)
 
     assertFalse "\`getArgsForCall invalid_spy 1\` is false" $?
+    printf '%s\n' "$output" | grep -qx "Error: no spies have been created"
+    assertTrue 'output contains incorrect error message' $?
+}
+
+testCalledWithInvalidSpy_ShouldReturnError() {
+    # shellcheck disable=SC2039
+    local output
+
+    createSpy some_spy || fail 'createSpy some_spy'
+
+    # Attempt to get arguments for a nonexistent spy
+    output=$(getArgsForCall invalid_spy 1 2>&1 >/dev/null)
+
+    assertFalse "\`getArgsForCall invalid_spy 1\` is false" $?
     printf '%s\n' "$output" | grep -qx "Error: spy 'invalid_spy' has not been set up"
-    assertTrue 'output contains correct error message' $?
+    assertTrue 'output contains incorrect error message' $?
 }
 
 testCalledWithInvalidCallNumber_ShouldReturnError() {
