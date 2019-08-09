@@ -64,7 +64,7 @@ wasSpyCalledWith() {
     fi
 
     # shellcheck disable=SC2039
-    local count current name path
+    local count current name spy_path
 
     name=$1
     shift
@@ -76,11 +76,12 @@ wasSpyCalledWith() {
         return 1
     fi
 
-    path="$_shpy_spies_dir/$name/$current" \
     if [ -z "${_shpy_spies_dir:+is_set_and_not_null}" ]; then
       echo "Error: no spies have been created" >&2
       return 1
     fi
+
+    spy_path="$_shpy_spies_dir/$name/$current" \
         _shpyMatchArgs "$@"
 }
 
@@ -91,34 +92,35 @@ getArgsForCall() {
     fi
 
     # shellcheck disable=SC2039
-    local arg_file args call_index i name num_args path res
+    local arg_file args call_index i name num_args spy_path res
 
     name=$1
     call_index=$(($2 - 1))
 
-    path="$_shpy_spies_dir/$name"
     if [ -z "${_shpy_spies_dir:+is_set_and_not_null}" ]; then
       echo "Error: no spies have been created" >&2
       return 1
     fi
 
-    if [ ! -d "$path" ]; then
+    spy_path="$_shpy_spies_dir/$name"
+
+    if [ ! -d "$spy_path" ]; then
         echo "Error: spy '$name' has not been set up" >&2
         return 1
     fi
 
-    path="$path/$call_index"
-    if [ ! -d "$path" ]; then
+    spy_path="$spy_path/$call_index"
+    if [ ! -d "$spy_path" ]; then
         echo "Error: spy '$name' has not been called $((call_index + 1)) times" >&2
         return 1
     fi
 
-    num_args=$(find "$path" -maxdepth 1 -type f | wc -l)
+    num_args=$(find "$spy_path" -maxdepth 1 -type f | wc -l)
 
     i=0
     res=""
     while [ "$i" -le "$num_args" ]; do
-        arg_file="$path/$i"
+        arg_file="$spy_path/$i"
         if [ -f "$arg_file" ]; then
             args=$(cat "$arg_file")
             if printf "%s" "$args" | grep -qe "\\s"; then
@@ -192,14 +194,13 @@ _shpySetSpyCurent() {
 
 _shpyGetDirectoryContentsCount() {
     # shellcheck disable=SC2039
-    local path
-    path=$1
+    local directory_path
+    directory_path="$1"
 
-    set -- "$path"/*
-    if [ "$1" = "$path/*" ]; then
-        echo 0
+    if [ -d "$directory_path" ]; then
+      find "$directory_path" ! -path "$directory_path" -maxdepth 1 | wc -l
     else
-        echo $#
+      echo 0
     fi
 }
 
@@ -207,14 +208,15 @@ _shpyMatchArgs() {
     # shellcheck disable=SC2039
     local arg argCount i
 
-    argCount=$(_shpyGetDirectoryContentsCount "$path")
+    # `spy_path` is set in the environment before invoking this function
+    argCount=$(_shpyGetDirectoryContentsCount "$spy_path")
     if [ "$argCount" -ne $# ]; then
         return 1
     fi
 
     i=0
     while [ "$i" -lt "$argCount" ]; do
-        arg=$(cat "$path/$i")
+        arg=$(cat "$spy_path/$i")
         if [ "$arg" != "$1" ]; then
             return 1
         fi
@@ -240,16 +242,16 @@ _shpyRunSpy() {
 
 _shpySpySaveArgs() {
     # shellcheck disable=SC2039
-    local arg count i path
+    local arg count i spy_path
 
     count=$(getSpyCallCount "$name")
 
-    path="$_shpy_spies_dir/$name/$count"
-    shpy_ensure_dir "$path" || shpy_die "Error: \`shpy_ensure_dir '$path'\` failed"
+    spy_path="$_shpy_spies_dir/$name/$count"
+    shpy_ensure_dir "$spy_path" || shpy_die "Error: \`shpy_ensure_dir '$spy_path'\` failed"
 
     i=0
     for arg in "$@"; do
-        printf '%s' "$arg" >|"$path/$i"
+        printf '%s' "$arg" >|"$spy_path/$i"
         i=$(( i + 1 ))
     done
 }
