@@ -1,0 +1,43 @@
+version: '3.3'
+
+services:
+  base:
+    build: .
+    image: shpy:local
+  ash:
+    image: shpy:local
+    depends_on: [base]
+    command: sh /shpy/t/run_tests
+    volumes:
+      - ./:/shpy:ro
+  bash:
+    image: shpy:local
+    depends_on: [base]
+    command: bash /shpy/t/run_tests
+    volumes:
+      - ./:/shpy:ro
+  checkbashisms:
+    image: shpy:local
+    depends_on: [base]
+    command: sh -c 'checkbashisms /shpy/shpy /shpy/shpy-shunit2 /shpy/t/*'
+    volumes:
+      - ./:/shpy:ro
+  mksh:
+    image: shpy:local
+    depends_on: [base]
+    command: mksh /shpy/t/run_tests
+    volumes:
+      - ./:/shpy:ro
+  shellcheck:
+    image: shpy:local
+    depends_on: [base]
+    command: sh -c 'shellcheck /shpy/shpy /shpy/shpy-shunit2 /shpy/t/*'
+    volumes:
+      - ./:/shpy:ro
+  zsh:
+    image: shpy:local
+    depends_on: [base]
+    environment: ['SHUNIT_PARENT=run_tests']
+    command: zsh -o shwordsplit /shpy/t/run_tests
+    volumes:
+      - ./:/shpy:ro
