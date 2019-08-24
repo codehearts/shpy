@@ -168,6 +168,16 @@ _shpyInit() {
     _shpy_spies_dir=$(shpy_make_temp_dir) || shpy_die "Error: \`shpy_make_temp_dir\` failed"
 }
 
+_shpyDeinit() {
+    if [ -n "${_shpy_inited+is_set}" ]; then
+      unset -v _shpy_inited
+    fi
+
+    if [ -n "${_shpy_spies_dir+is_set}" ]; then
+      unset -v _shpy_spies_dir
+    fi
+}
+
 _shpyResetSpy() {
     shpy_remove_dir_tree "$_shpy_spies_dir/$1" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
 
