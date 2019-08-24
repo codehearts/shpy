@@ -1,10 +1,5 @@
 #!/bin/sh
 
-readonly TEST_DIR="$(dirname "$0")"
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/../shpy"
-
 testCalledWithNoArgs_ShouldReturnUsage() {
     # shellcheck disable=SC2039
     local output
@@ -56,10 +51,3 @@ testSpyRunTwice_ShouldReportTwoCalls() {
 
     assertEquals 2 "$(getSpyCallCount dosomething)"
 }
-
-oneTimeTearDown() {
-    cleanupSpies
-}
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/shunit2"

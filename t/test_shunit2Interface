@@ -1,13 +1,5 @@
 #!/bin/sh
 
-readonly TEST_DIR="$(dirname "$0")"
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/../shpy"
-# shellcheck source=/dev/null
-. "$TEST_DIR/../shpy-shunit2"
-
-readonly ANSI_COLOR_PATTERN="$(printf '\033\[[0-9];[0-9]\+m')"
 
 testAssertCallCountWrongArgumentCount() {
     # shellcheck disable=SC2039
@@ -246,10 +238,3 @@ testAssertNeverCalledFail_WhenCalledOnce() {
     printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
     assertTrue 'output begins with "ASSERT:"' $?
 }
-
-oneTimeTearDown() {
-    cleanupSpies
-}
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/shunit2"

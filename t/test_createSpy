@@ -1,10 +1,5 @@
 #!/bin/sh
 
-readonly TEST_DIR="$(dirname "$0")"
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/../shpy"
-
 testWithNoArguments_ShouldReturnUsage() {
     # shellcheck disable=SC2039
     local output
@@ -36,8 +31,8 @@ testWithNoArguments_ShouldDieWhenRequiredArgumentIsMissing() {
 testWithOneArgument_ShouldCreateFunction() {
     createSpy dosomething || fail 'createSpy dosomething'
 
-    command -V dosomething | grep -q function
-    assertTrue 'dosomething is a function' $?
+    dosomething
+    assertEquals 'dosomething is a function' 0 $?
 }
 
 testShouldStubReturnValue() {
@@ -265,11 +260,3 @@ testShouldResetCallCount() {
     assertTrue "\`createSpy dosomething\` succeeds" $?
     assertEquals 0 "$(getSpyCallCount dosomething)"
 }
-
-tearDown() {
-    cleanupSpies
-}
-
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/shunit2"

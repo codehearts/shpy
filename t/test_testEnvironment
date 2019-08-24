@@ -1,10 +1,5 @@
 #!/bin/sh
 
-readonly TEST_DIR="$(dirname "$0")"
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/../shpy"
-
 testTestEnvironmentHasSet_nounset() {
   # if nounset is set, this subshell will exit with a nonzero status
   # shellcheck disable=SC2154
@@ -12,6 +7,3 @@ testTestEnvironmentHasSet_nounset() {
 
   assertFalse 'nounset is not set in the test environment' $?
 }
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/shunit2"
