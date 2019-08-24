@@ -1,24 +1,14 @@
 #!/bin/sh
 
-# Disallow unset variables in the test runner
+# Disallow unset variables in tests
 set -o nounset
 
 # Determine the location of this script, and subsequently the test directory
 test_directory=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
 
-# Display the name and version (if available) of the shell under test
-"$SHELL" --version 2>/dev/null || printf '%s\n' "$SHELL"
-
-#
-# Shell args
-#
-
-# Default arguments to the shell under test
-# -u: set -o nounset
-shell_args='-u'
-
-# If the shell is zsh, add flags needed for use with shunit2
-[ "$(basename "$SHELL")" = "zsh"  ] && shell_args="$shell_args -o shwordsplit"
+# Define a global regex pattern to match an optional ANSI color code
+readonly ANSI_COLOR_PATTERN="$(printf '\\(\033\[[0-9];[0-9]\+m\\)\\?')"
+export ANSI_COLOR_PATTERN
 
 #
 # kcov args
@@ -30,40 +20,48 @@ shell_args='-u'
 kcov_args="--exclude-path=$test_directory $test_directory/../coverage"
 
 #
+# Testcase discovery function
+#
+
+readonly testcase_regex='^\s*(test[A-Za-z0-9_-]*\s*\(\))'
+
+# Outputs a list of all testcases found in $1 to stdout
+get_test_cases_from_file() {
+  grep -E "$testcase_regex" "$1" | sed 's/^\s*\([A-Za-z0-9_-]*\).*$/\1/g'
+}
+
+#
 # Run tests
 #
 
-# Find all test files
-find "$test_directory" -name 'test_*' -type f | {
-  # Stores the cumulative status of all tests run
-  cumulative_exit_status=0
-
+suite() {
   # Iterate through all test files
-  while IFS= read -r test_file
-  do
-    printf '\nRunning %s...\n' "$(basename "$test_file")"
+  test_files="$(find "$test_directory" -name 'test_*' -type f)"
+  for test_file in $test_files; do
+    for test_case in $(get_test_cases_from_file "$test_file"); do
+      suite_addTest "$test_case"
+    done
 
-    # Necessary to use shunit2 with zsh
-    SHUNIT_PARENT="$test_file"
-    export SHUNIT_PARENT
-
-    # Run the test file with the shell under test
-    test_runner="$SHELL $shell_args"
-
-    if [ "${USE_KCOV+is_set}" ]; then
-      # If $USE_KCOV is set, run the test through kcov for coverage reporting
-      $test_runner -c "kcov $kcov_args $test_file"
-    else
-      $test_runner "$test_file"
-    fi
-
-    # Track the cumulative exit status, which becomes non-zero if a test fails
-    cumulative_exit_status=$((cumulative_exit_status+$?))
+    # shellcheck source=/dev/null
+    . "$test_file"
   done
-
-  # Exit with a non-zero status is any test failed
-  exit $cumulative_exit_status
 }
 
-# Exit with a non-zero status if any test failed
-exit $?
+# Clean up spies and call the private deinitialization function after each test
+tearDown() {
+  cleanupSpies
+  _shpyDeinit
+}
+
+if [ "${USE_KCOV+is_set}" ]; then
+  # If $USE_KCOV is set, run the test through kcov for coverage reporting
+  false && "kcov $kcov_args $test_file"
+fi
+
+# Source shpy and shunit2 to begin running tests
+# shellcheck source=/dev/null
+. "$test_directory/../shpy"
+# shellcheck source=/dev/null
+. "$test_directory/../shpy-shunit2"
+# shellcheck source=/dev/null
+. "$(command -v shunit2)"
