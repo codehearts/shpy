@@ -1,10 +1,5 @@
 #!/bin/sh
 
-readonly TEST_DIR="$(dirname "$0")"
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/../shpy"
-
 testCalledWithNoArgs_ShouldReturnUsage() {
     # shellcheck disable=SC2039
     local output
@@ -86,10 +81,3 @@ testTwoArgs_ReturnsTrueWhenSpyCalledWithSameArgs() {
 
     assertTrue "\`wasSpyCalledWith dosomething somearg anotherarg\` is true" $?
 }
-
-oneTimeTearDown() {
-    cleanupSpies
-}
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/shunit2"

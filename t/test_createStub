@@ -1,22 +1,8 @@
 #!/bin/sh
 
-readonly TEST_DIR="$(dirname "$0")"
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/../shpy"
-
-createSpy() {
-    createSpyArg="$1"
-}
-
 testCreateStub_IsAliasForCreateSpy() {
-    # shellcheck disable=SC2039
-    local createSpyArg
+    createStub dosomething || fail 'createStub dosomething'
 
-    createStub someStub
-
-    assertEquals someStub "$createSpyArg"
+    dosomething
+    assertEquals 'dosomething is a function' 0 $?
 }
-
-# shellcheck source=/dev/null
-. "$TEST_DIR/shunit2"
