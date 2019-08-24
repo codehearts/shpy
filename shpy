@@ -54,7 +54,11 @@ getSpyCallCount() {
         return 1
     fi
 
-    _shpyGetDirectoryContentsCount "$_shpy_spies_dir/$1"
+    if [ -z "${_shpy_spies_dir:+is_set_and_not_null}" ]; then
+      echo 0
+    else
+      _shpyGetDirectoryContentsCount "$_shpy_spies_dir/$1"
+    fi
 }
 
 wasSpyCalledWith() {
@@ -155,7 +159,9 @@ examineNextSpyCall() {
 
 cleanupSpies() {
     if [ -n "${_shpy_spies_dir+is_set}" ]; then
-        shpy_remove_dir_tree "$_shpy_spies_dir" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
+      find "$_shpy_spies_dir" -maxdepth 1 -type f -exec sh -c '_shpyResetSpy "$1"' _ {} \;
+
+      shpy_remove_dir_tree "$_shpy_spies_dir" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
     fi
 }
 
@@ -208,7 +214,7 @@ _shpyGetDirectoryContentsCount() {
     directory_path="$1"
 
     if [ -d "$directory_path" ]; then
-      find "$directory_path" ! -path "$directory_path" -maxdepth 1 | wc -l
+      find "$directory_path" -maxdepth 1 ! -path "$directory_path" | wc -l
     else
       echo 0
     fi
