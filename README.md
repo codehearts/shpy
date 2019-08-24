@@ -12,6 +12,10 @@ Features at a glance:
 * See call count and check arguments passed to the spy
 * [Integrates](#shunit2-integration) with the [shunit2](https://github.com/kward/shunit2) testing framework
 
+## Contributing
+
+If you'd like to help with shpy's development, or just gain a better understanding of how it's managed, check out the [CONTRIBUTING.md](CONTRIBUTING.md)
+
 ## API
 
 To use **shpy** in your tests, source the `shpy` script:
