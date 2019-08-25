@@ -2,12 +2,12 @@
 
 So you're looking to contribute to shpy, eh? Do you think you're ready to face the dangers of gumshoeing shell corporations, sleuthing through pipes, and finding justice for those processes killed in cold blood? Grab your badge, it's time for your first mission!
 
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Development](#development)
-- [Testing](#testing)
-- [Submitting Changes](#submitting-changes)
-- [Getting in Touch](#getting-in-touch)
+- [Getting Started](#star2-getting-started)
+- [Project Structure](#herb-project-structure)
+- [Development](#computer-development)
+- [Testing](#alembic-testing)
+- [Submitting Changes](#incoming_envelope-submitting-changes)
+- [Getting in Touch](#phone-getting-in-touch)
 
 ## :star2: Getting Started
 
