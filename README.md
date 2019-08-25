@@ -1,9 +1,12 @@
-# shpy
+[![Build Status][build-badge]][build-link]
+[![Coverage][coverage-badge]][coverage-link]
+[![MIT License][license-badge]](LICENSE.md)
+
 Spies and stubs for shell unit testing
 
-| POSIX Compliance | Bash | Dash | Sh | Zsh | Coverage | License |
-| :--------------: | :--: | :--: | -- | :-: | :------: | :-----: |
-[![Build Status][lint-build-badge]][build-link] | [![Build Status][bash-build-badge]][build-link] | [![Build Status][dash-build-badge]][build-link] | [![Build Status][sh-build-badge]][build-link] | [![Build Status][zsh-build-badge]][build-link] | [![Coverage][coverage-badge]][coverage-link] | [![MIT License][license-badge]](LICENSE.md) |
+| Ash | Bash | Mksh | Zsh |
+| :-: | :--: | :--: | :-: |
+| [![Ash Build Status][ash-build-badge]][build-link] | [![Bash Build Status][bash-build-badge]][build-link] | [![Mksh Build Status][mksh-build-badge]][build-link] | [![Zsh Build Status][zsh-build-badge]][build-link] |
 
 Features at a glance:
 
@@ -73,9 +76,8 @@ function-local variables.  To be clear, **shpy** does not use any
 [coverage-link]:    https://codecov.io/gh/codehearts/shpy
 [license-badge]:    https://img.shields.io/badge/license-MIT-007EC7.svg
 [build-badge]:      https://travis-ci.org/codehearts/shpy.svg?branch=master
-[lint-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/1
+[ash-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/1
 [bash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/2
-[dash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/3
-[sh-build-badge]:   https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/4
-[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/5
+[mksh-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/4
+[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/6
 [build-link]:       https://travis-ci.org/codehearts/shpy

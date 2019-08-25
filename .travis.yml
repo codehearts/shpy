@@ -5,12 +5,20 @@ language: sh
 services:
   - docker
 
+env:
+  - SERVICE=ash
+  - SERVICE=bash
+  - SERVICE=checkbashisms
+  - SERVICE=mksh
+  - SERVICE=shellcheck
+  - SERVICE=zsh
+
+script:
+  - docker-compose run $SERVICE
+
 jobs:
   include:
-    - stage: Test
-      script: make lint
-    - script: make test_bash
-    - script: make test_dash
-    - script: make test_sh
-    - script: make test_zsh
-#    - script: make coverage && bash <(curl -s https://codecov.io/bash)
+    - script: docker-compose run kcov
+              && bash <(curl -s https://codecov.io/bash)
+      env:
+        - SERVICE=kcov
