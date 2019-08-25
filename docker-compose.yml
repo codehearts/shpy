@@ -10,19 +10,19 @@ services:
   ash:
     image: shpy:local
     depends_on: [base]
-    command: sh /shpy/t/run_tests
+    command: sh /shpy/test/run_tests
     volumes:
       - ./:/shpy:ro
   bash:
     image: shpy:local
     depends_on: [base]
-    command: bash /shpy/t/run_tests
+    command: bash /shpy/test/run_tests
     volumes:
       - ./:/shpy:ro
   checkbashisms:
     image: shpy:local
     depends_on: [base]
-    command: sh -c 'checkbashisms /shpy/shpy /shpy/shpy-shunit2 /shpy/t/*'
+    command: sh -c 'checkbashisms /shpy/shpy /shpy/shpy-shunit2 /shpy/test/*'
     volumes:
       - ./:/shpy:ro
   kcov:
@@ -38,24 +38,24 @@ services:
       - shunit:/usr/local/bin/shunit2:ro
       - ./coverage:/shpy/coverage
       - ./:/shpy:ro
-    command: --exclude-path=/usr/local/bin /shpy/coverage /shpy/t/run_tests
+    command: --exclude-path=/usr/local/bin /shpy/coverage /shpy/test/run_tests
   mksh:
     image: shpy:local
     depends_on: [base]
-    command: mksh /shpy/t/run_tests
+    command: mksh /shpy/test/run_tests
     volumes:
       - ./:/shpy:ro
   shellcheck:
     image: shpy:local
     depends_on: [base]
-    command: sh -c 'shellcheck /shpy/shpy /shpy/shpy-shunit2 /shpy/t/*'
+    command: sh -c 'shellcheck /shpy/shpy /shpy/shpy-shunit2 /shpy/test/*'
     volumes:
       - ./:/shpy:ro
   zsh:
     image: shpy:local
     depends_on: [base]
     environment: ['SHUNIT_PARENT=run_tests']
-    command: zsh -o shwordsplit /shpy/t/run_tests
+    command: zsh -o shwordsplit /shpy/test/run_tests
     volumes:
       - ./:/shpy:ro
 
