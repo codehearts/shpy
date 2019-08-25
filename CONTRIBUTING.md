@@ -44,12 +44,16 @@ Shpy is written in POSIX-compliant shell scripting, with the exception of the `l
 
 ## :alembic: Testing
 
-Your code can be tested under multiple shells using the Docker image. To run tests with all supported shells, as well as the analysis tools, you can run Docker compose as follows:
+Your code can be tested under multiple shells using the Docker image. To run tests with all supported shells, as well as the analysis tools and code coverage, you can run Docker compose as follows:
 
 ```sh
 docker-compose up --build \
   && docker-compose ps | grep -v 'Exit 0'
 ```
+
+If any services show a non-zero exit state, you can view the output from that service with `docker-compose logs <service>` (e.g. `docker-compose logs shellcheck`)
+
+Code coverage results will be available in the `coverage/` directory at the root of the repo. Opening `coverage/index.html` gives you a web interface to the results
 
 To run tests under a specific shell, or to run a specific analysis tool, you can run one of the following commands:
 
@@ -58,6 +62,7 @@ To run tests under a specific shell, or to run a specific analysis tool, you can
 | `docker-compose run ash` | Run all tests with `sh`, which on Alpine Linux is BusyBox's `ash` |
 | `docker-compose run bash` | Run all tests with `bash` |
 | `docker-compose run checkbashisms` | Check all sources and tests for bash-specific functionality |
+| `docker-compose run kcov` | Generate coverage reports for all sources and tests with `kcov` |
 | `docker-compose run mksh` | Run all tests with `mksh`, the successor to `pdksh` |
 | `docker-compose run shellcheck` | Run static analysis on all sources and tests for warnings and suggestions |
 | `docker-compose run zsh` | Run all tests with `zsh` |

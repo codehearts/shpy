@@ -4,6 +4,9 @@ services:
   base:
     build: .
     image: shpy:local
+    # Share /usr/local/bin via the "shunit" volume
+    volumes:
+      - shunit:/usr/local/bin
   ash:
     image: shpy:local
     depends_on: [base]
@@ -22,6 +25,20 @@ services:
     command: sh -c 'checkbashisms /shpy/shpy /shpy/shpy-shunit2 /shpy/t/*'
     volumes:
       - ./:/shpy:ro
+  kcov:
+    image: kcov/kcov:v33
+    depends_on: [base]
+    security_opt:
+      - seccomp=unconfined
+    environment:
+      # Add the shared "shunit" volume to the path
+      PATH: "${PATH}:/usr/local/bin/shunit2"
+    volumes:
+      # Mount the shared "shunit" volume from the base image
+      - shunit:/usr/local/bin/shunit2:ro
+      - ./coverage:/shpy/coverage
+      - ./:/shpy:ro
+    command: --exclude-path=/usr/local/bin /shpy/coverage /shpy/t/run_tests
   mksh:
     image: shpy:local
     depends_on: [base]
@@ -41,3 +58,8 @@ services:
     command: zsh -o shwordsplit /shpy/t/run_tests
     volumes:
       - ./:/shpy:ro
+
+volumes:
+  # Create a volume to share the shunit2 version from the base image
+  shunit:
+    driver: local
