@@ -80,11 +80,6 @@ wasSpyCalledWith() {
         return 1
     fi
 
-    if [ -z "${_shpy_spies_dir:+is_set_and_not_null}" ]; then
-      echo "Error: no spies have been created" >&2
-      return 1
-    fi
-
     spy_path="$_shpy_spies_dir/$name/$current" \
         _shpyMatchArgs "$@"
 }

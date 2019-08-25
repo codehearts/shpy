@@ -1,6 +1,6 @@
 #!/bin/sh
 
-testCalledWithNoArgs_ShouldReturnUsage() {
+testGetSpyCallCountCalledWithNoArgs_ShouldReturnUsage() {
     # shellcheck disable=SC2039
     local output
 
