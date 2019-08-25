@@ -29,7 +29,7 @@ These resources are a big help in understanding what POSIX compliance entails:
 
 ## :herb: Project Structure
 
-- `t/` - Testing directory
+- `test/` - Testing directory
   - `run_tests` - Script to run all tests, returns 0 on success
   - `test_*` - Individual test files, organized by functionality under test
 - `.travis.yml` - Configures continuous integration with Travis CI
