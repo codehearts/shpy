@@ -11,15 +11,6 @@ readonly ANSI_COLOR_PATTERN="$(printf '\\(\033\[[0-9];[0-9]\+m\\)\\?')"
 export ANSI_COLOR_PATTERN
 
 #
-# kcov args
-#
-
-# Default arguments to kcov, when coverage reporting is enabled
-# Exclude the test files from coverage reports
-# Write reports to a coverage/ directory in the root of the repo
-kcov_args="--exclude-path=$test_directory $test_directory/../coverage"
-
-#
 # Testcase discovery function
 #
 
@@ -52,11 +43,6 @@ tearDown() {
   cleanupSpies
   _shpyDeinit
 }
-
-if [ "${USE_KCOV+is_set}" ]; then
-  # If $USE_KCOV is set, run the test through kcov for coverage reporting
-  false && "kcov $kcov_args $test_file"
-fi
 
 # Source shpy and shunit2 to begin running tests
 # shellcheck source=/dev/null
