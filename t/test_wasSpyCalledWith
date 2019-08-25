@@ -1,6 +1,6 @@
 #!/bin/sh
 
-testCalledWithNoArgs_ShouldReturnUsage() {
+testWasSpyCalledWithNoArgs_ShouldReturnUsage() {
     # shellcheck disable=SC2039
     local output
 
@@ -11,7 +11,7 @@ testCalledWithNoArgs_ShouldReturnUsage() {
     assertTrue 'output begins with "Usage:"' $?
 }
 
-testCalledWithInvalidSpy_ShouldReturnError() {
+testWasSpyCalledWithInvalidSpy_ShouldReturnError() {
     # shellcheck disable=SC2039
     local output
 
@@ -60,15 +60,9 @@ testBlankArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
 
 testArgContainingWhitespace_ReturnsTrueWhenSpyCalledWithSameArg() {
     createSpy dosomething || fail 'createSpy dosomething'
-    dosomething ' some arg
-with embedded newlines
-	and tabs
-and trailing whitespace  '
+    dosomething "$(printf ' some arg\nwith embedded newlines\n	and tabs\nand trailing whitespace  ')"
 
-    wasSpyCalledWith dosomething ' some arg
-with embedded newlines
-	and tabs
-and trailing whitespace  '
+    wasSpyCalledWith dosomething "$(printf ' some arg\nwith embedded newlines\n	and tabs\nand trailing whitespace  ')"
 
     assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
 }

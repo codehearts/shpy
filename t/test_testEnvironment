@@ -2,8 +2,9 @@
 
 testTestEnvironmentHasSet_nounset() {
   # if nounset is set, this subshell will exit with a nonzero status
+  # `|| false` is needed for kcov v33 to mark this line as hit
   # shellcheck disable=SC2154
-  (printf '%s\n' "$nonexistent_variable") 2>/dev/null
+  (printf '%s\n' "$nonexistent_variable") 2>/dev/null || false
 
   assertFalse 'nounset is not set in the test environment' $?
 }
