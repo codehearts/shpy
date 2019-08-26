@@ -1,196 +1,141 @@
 #!/bin/sh
 
-testWithNoArguments_ShouldReturnUsage() {
-    # shellcheck disable=SC2039
-    local output
-    output=$(createSpy)
-
-    assertFalse 'returns error' $?
-    printf '%s\n' "$output" | grep -q '^Usage:'
-    assertTrue 'begins with "Usage:"' $?
+itDisplaysUsageWhenCreatingSpyWithoutArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: spy SPY_NAME' "$(createSpy 2>&1)"
 }
 
-testWithNoArguments_ShouldDieWithUnsupportedFlags() {
-    # shellcheck disable=SC2039
-    local output
-    output=$(createSpy -z 2>&1)
-
-    assertFalse 'returns error' $?
-    assertEquals 'Error: Unknown option -z' "$output"
+itReturns1WhenCreatingSpyWithoutArgs() {
+    createSpy >/dev/null
+    assertEquals 1 $?
 }
 
-testWithNoArguments_ShouldDieWhenRequiredArgumentIsMissing() {
-    # shellcheck disable=SC2039
-    local output
-    output=$(createSpy -r dosomething 2>&1)
-
-    assertFalse 'returns error' $?
-    assertEquals 'Error: Missing spy name' "$output"
+itDiesWhenCreatingSpyWithUnknownOption() {
+    assertDies 'createSpy -z' 'Error: Unknown option -z'
 }
 
-testWithOneArgument_ShouldCreateFunction() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itDiesWhenCreatingSpyWithRequiredArgMissing() {
+    assertDies 'createSpy -r dosomething' 'Error: Missing spy name'
+}
+
+itCreatesFunctionWhenCreatingSpyWithOneArg() {
+    doOrDie createSpy dosomething
 
     dosomething
-    assertEquals 'dosomething is a function' 0 $?
+    assertEquals 'function was not created for spy' 0 $?
 }
 
-testShouldStubReturnValue() {
-    createSpy -r 123 dosomething || fail 'createSpy dosomething'
+itStubsReturnValueOfCreatedSpy() {
+    doOrDie createSpy -r 123 dosomething
 
     dosomething
-
-    assertEquals 'return value equals passed val' 123 $?
+    assertEquals 'return value was not stubbed' 123 $?
 }
 
-testShouldStubReturnValue_PerSpy() {
-    createSpy -r 123 dosomething || fail 'createSpy -r 123 dosomething'
-    createSpy -r 234 domore || fail 'createSpy -r 234 domore'
+itStubsReturnValuesPerSpy() {
+    doOrDie createSpy -r 1 dosomething
+    doOrDie createSpy -r 2 domore
 
     dosomething
-    assertEquals 'dosomething return value is 123' 123 $?
+    assertEquals 'dosomething did not return the stubbed value' 1 $?
     domore
-    assertEquals 'domore return value is 234' 234 $?
+    assertEquals 'domore did not return the stubbed value' 2 $?
 }
 
-testShouldResetStubReturnValue() {
-    createSpy -r 123 dosomething || fail 'createSpy -r 123 dosomething'
+itStubsMultipleReturnValuesAsSequence() {
+    doOrDie createSpy -r 2 -r 1 -r 0 dosomething
+
+    dosomething
+    assertEquals 'first return value is not the first stubbed value' 2 $?
+
+    dosomething
+    assertEquals 'second return value is not the second stubbed value' 1 $?
+
+    dosomething
+    assertEquals 'third return value is not the third stubbed value' 0 $?
+
+    dosomething
+    assertEquals 'subsequent return values are not the last stubbed value' 0 $?
+}
+
+itResetsStubbedReturnValueWhenRecreatingSpy() {
+    doOrDie createSpy -r 123 dosomething
 
     createSpy dosomething
 
     dosomething
-    assertTrue 'dosomething returns the default -- success' $?
+    assertEquals 'stubbed return value was not reset' 0 $?
 }
 
-testShouldStubMultipleReturnValues() {
-    createSpy -r 2 -r 1 -r 0 dosomething || fail 'createSpy dosomething'
-
-    dosomething
-    assertEquals 'first return value equals first passed val' 2 $?
-
-    dosomething
-    assertEquals 'second return value equals second passed val' 1 $?
-
-    dosomething
-    assertEquals 'third return value equals third passed val' 0 $?
-
-    dosomething
-    assertEquals 'subsequent return values equal last passed val' 0 $?
+itStubsOutputOfCreatedSpy() {
+    doOrDie createSpy -o "$(printf 'some\noutput')" dosomething
+    assertEquals 'output was not stubbed' "$(printf 'some\noutput')" "$(dosomething)"
 }
 
-
-testShouldStubOutput() {
+itStubsMultipleOutputsAsSequence() {
     # shellcheck disable=SC2039
-    local output
-    # shellcheck disable=SC2039
-    local output_arg
-
-    output_arg="$(printf 'some\noutput')"
-    createSpy -o "$output_arg" dosomething || fail 'createSpy dosomething'
-
-    output=$(dosomething)
-
-    assertTrue "\`dosomething\` succeeds" $?
-    assertEquals 'output is the passed value' "$(printf 'some\noutput')" "$output"
-}
-
-testShouldStubMultipleOutputs() {
-    # shellcheck disable=SC2039
-    local first_output second_output third_output actual_output
+    local first_output second_output third_output
     first_output=$(printf "%s\\n%s" "first" "output")
     second_output="second OUTPUT"
     third_output="$(printf 'Third\nOutput')"
 
-    createSpy -o "${first_output}" -o "${second_output}" -o "${third_output}" dosomething || fail 'createSpy -o MULTIPLE dosomething'
+    doOrDie createSpy -o "$first_output" -o "$second_output" -o "$third_output" dosomething
   
-    actual_output=$(dosomething)
-    assertEquals 'first output equals first passed val' "${first_output}" "${actual_output}"
+    assertEquals 'first output is not the first stubbed value' "$first_output" "$(dosomething)"
 
-    actual_output=$(dosomething)
-    assertEquals 'second output equals second passed val' "${second_output}" "${actual_output}"
+    assertEquals 'second output is not the second stubbed value' "$second_output" "$(dosomething)"
 
-    actual_output=$(dosomething)
-    assertEquals 'third output equals third passed val' "${third_output}" "${actual_output}"
+    assertEquals 'third output is not the third stubbed value' "$third_output" "$(dosomething)"
 
-    actual_output=$(dosomething)
-    assertEquals 'subsequent outputs equal last passed val' "${third_output}" "${actual_output}"
+    assertEquals 'subsequent output is not the last stubbed value' "$third_output" "$(dosomething)"
 }
 
-testShouldResetStubOutput() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy -o 'some output' dosomething || fail 'createSpy dosomething'
+itResetsStubbedOutputWhenRecreatingSpy() {
+    doOrDie createSpy -o 'some output' dosomething
 
-    output=$(createSpy dosomething)
-
-    assertTrue "\`createSpy dosomething\` succeeds" $?
-    assertNull 'output is unset' "$output"
+    createSpy dosomething
+    assertNull 'stubbed output was not reset' "$(dosomething)"
 }
 
-testShouldStubErrorOutput() {
-    # shellcheck disable=SC2039
-    local error_output
-    # shellcheck disable=SC2039
-    local error_output_arg
-
-    error_output_arg="$(printf 'some\noutput')"
-    createSpy -e "$error_output_arg" dosomething || fail 'createSpy dosomething'
-
-    error_output=$(dosomething 2>&1 >/dev/null)
-
-    assertTrue "\`dosomething\` succeeds" $?
-    assertEquals 'error output is the passed value' "$(printf 'some\noutput')" "$error_output"
+itStubsErrorOutputOfCreatedSpy() {
+    doOrDie createSpy -e "$(printf 'some\noutput')" dosomething
+    assertEquals 'error output was not stubbed' "$(printf 'some\noutput')" "$(dosomething 2>&1 >/dev/null)"
 }
 
-testShouldStubMultipleErrorOutputs() {
+itStubsMultipleErrorOutputsAsSequence() {
     # shellcheck disable=SC2039
-    local first_err second_err third_err actual_err
-    first_err=$(printf "%s\\n%s" "first" "output")
-    second_err="second OUTPUT"
-    third_err="$(printf 'Third\nOutput')"
+    local first_output second_output third_output
+    first_output=$(printf "%s\\n%s" "first" "output")
+    second_output="second OUTPUT"
+    third_output="$(printf 'Third\nOutput')"
 
-    createSpy -e "${first_err}" -e "${second_err}" -e "${third_err}" dosomething || fail 'createSpy -e MULTIPLE dosomething'
+    doOrDie createSpy -e "$first_output" -e "$second_output" -e "$third_output" dosomething
   
-    actual_err=$(dosomething 2>&1 >/dev/null)
-    assertEquals 'first error output equals first passed val' "${first_err}" "${actual_err}"
+    assertEquals 'first error output is not the first stubbed value' "$first_output" "$(dosomething 2>&1 >/dev/null)"
 
-    actual_err=$(dosomething 2>&1 >/dev/null)
-    assertEquals 'second error output equals second passed val' "${second_err}" "${actual_err}"
+    assertEquals 'second error output is not the second stubbed value' "$second_output" "$(dosomething 2>&1 >/dev/null)"
 
-    actual_err=$(dosomething 2>&1 >/dev/null)
-    assertEquals 'third error output equals third passed val' "${third_err}" "${actual_err}"
+    assertEquals 'third error output is not the third stubbed value' "$third_output" "$(dosomething 2>&1 >/dev/null)"
 
-    actual_err=$(dosomething 2>&1 >/dev/null)
-    assertEquals 'subsequent error outputs equal last passed val' "${third_err}" "${actual_err}"
+    assertEquals 'subsequent error output is not the last stubbed value' "$third_output" "$(dosomething 2>&1 >/dev/null)"
 }
 
-testShouldResetStubErrorOutput() {
-    # shellcheck disable=SC2039
-    local error_output
-    createSpy -e 'some output' dosomething || fail 'createSpy dosomething'
+itResetsStubbedErrorOutputWhenRecreatingSpy() {
+    doOrDie createSpy -e 'some output' dosomething
 
-    error_output=$(createSpy dosomething)
-
-    assertTrue "\`createSpy dosomething\` succeeds" $?
-    assertNull 'output is unset' "$error_output"
+    createSpy dosomething
+    assertNull 'stubbed error output was not reset' "$(dosomething 2>&1 >/dev/null)"
 }
 
-testShouldStubOutputErrorLast() {
-    # shellcheck disable=SC2039
-    local combined_output
-    createSpy -o 'stdout' -e 'stderr' dosomething || fail 'createSpy dosomething'
-
-    combined_output=$(dosomething 2>&1)
-
-    assertTrue "\`dosomething\` succeeds" $?
-    assertEquals 'error output is after standard output' 'stdoutstderr' "$combined_output"
+itDisplaysStandardOutputBeforeErrorOutput() {
+    doOrDie createSpy -o 'stdout' -e 'stderr' dosomething
+    assertEquals 'stdout was not displayed before stderr' 'stdoutstderr' "$(dosomething 2>&1)"
 }
 
+# Helper method to run the same case with output defined in different orders
+# $1 - 0 to define all stdout before stderr, 1 to interleave the definitions
 do_multiple_outputs_test() {
-    interleave=$1
-
     # shellcheck disable=SC2039
-    local combined_output expected_output first_output second_output first_err second_err third_err test_label
+    local first_output second_output first_err second_err third_err test_label
 
     first_output="first stdout"
     second_output="Second STDOUT"
@@ -198,61 +143,48 @@ do_multiple_outputs_test() {
     second_err="Second ERR"
     third_err="THIRD err"
 
-    if [ "$interleave" -eq 1 ]; then
-        createSpy -o "$first_output" \
-                  -e "$first_err" \
-                  -o "$second_output" \
-                  -e "$second_err" \
-                  -e "$third_err" \
-            dosomething \
-          || fail 'createSpy dosomething'
+    if [ "$1" -eq "1" ]; then
+        doOrDie createSpy \
+            -o "$first_output" \
+            -e "$first_err" \
+            -o "$second_output" \
+            -e "$second_err" \
+            -e "$third_err" \
+            dosomething
 
-        test_label="Interleaved"
+        test_label="interleaved"
     else
-        createSpy -o "$first_output" \
-                  -o "$second_output" \
-                  -e "$first_err" \
-                  -e "$second_err" \
-                  -e "$third_err" \
-            dosomething \
-          || fail 'createSpy dosomething'
+        doOrDie createSpy \
+            -o "$first_output" \
+            -o "$second_output" \
+            -e "$first_err" \
+            -e "$second_err" \
+            -e "$third_err" \
+            dosomething
 
-        test_label="Grouped"
+        test_label="separated"
     fi
 
-    expected_output=$(printf "%s%s" "$first_output" "$first_err")
-    combined_output=$(dosomething 2>&1)
+    assertEquals "first combined output is not the first $test_label output values" "$first_output$first_err" "$(dosomething 2>&1)"
 
-    assertTrue "\`dosomething\` succeeds" $?
-    assertEquals "$test_label multiple outputs: combined output is correct for first call" "$expected_output" "$combined_output"
+    assertEquals "second combined output is not the second $test_label output values" "$second_output$second_err" "$(dosomething 2>&1)"
 
-    expected_output=$(printf "%s%s" "$second_output" "$second_err")
-    combined_output=$(dosomething 2>&1)
-
-    assertTrue "\`dosomething\` succeeds" $?
-    assertEquals "$test_label multiple outputs: combined output is correct for second call" "$expected_output" "$combined_output"
-
-    expected_output=$(printf "%s%s" "$second_output" "$third_err")
-    combined_output=$(dosomething 2>&1)
-
-    assertTrue "\`dosomething\` succeeds" $?
-    assertEquals "$test_label multiple outputs: combined output is correct for third call" "$expected_output" "$combined_output"
+    assertEquals "third combined output is not the third $test_label output values" "$second_output$third_err" "$(dosomething 2>&1)"
 }
 
-testShouldOutputMultipleCorrectlyWhenSpecsGrouped() {
+itOutputsStdoutBeforeStderrWhenOutputsAreDefinedInSeparateGroups() {
     do_multiple_outputs_test 0
 }
 
-testShouldOutputMultipleCorrectlyWhenSpecsInterleaved() {
+itOutputsStdoutBeforeStderrWhenOutputsAreDefinedIntervleaved() {
     do_multiple_outputs_test 1
 }
 
-testShouldResetCallCount() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itResetsCallCountWhenRecreatingSpy() {
+    doOrDie createSpy dosomething
     dosomething
 
     createSpy dosomething
 
-    assertTrue "\`createSpy dosomething\` succeeds" $?
-    assertEquals 0 "$(getSpyCallCount dosomething)"
+    assertEquals 'call count was not reset' 0 "$(getSpyCallCount dosomething)"
 }
