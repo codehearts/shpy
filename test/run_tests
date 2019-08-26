@@ -14,11 +14,31 @@ export ANSI_COLOR_PATTERN
 # Testcase discovery function
 #
 
-readonly testcase_regex='^\s*(test[A-Za-z0-9_-]*\s*\(\))'
+readonly testcase_regex='^\s*(it[A-Za-z0-9_-]*\s*\(\))'
 
 # Outputs a list of all testcases found in $1 to stdout
 get_test_cases_from_file() {
   grep -E "$testcase_regex" "$1" | sed 's/^\s*\([A-Za-z0-9_-]*\).*$/\1/g'
+}
+
+#
+# Test helpers
+#
+
+# Asserts that the given code calls shpy_die
+# $1 - Code expected to call shpy_die
+# $2 - Optional expected death message
+# $3 - Optional expected death exit status
+assertDies() {
+  ($1 >/dev/null 2>&1)
+  assertEquals 'Died with unexpected exit status' "${3:-1}" "$?"
+  assertEquals 'Died with unexpected message' "${2:-"Error: aborting"}" "$($1 2>&1)"
+}
+
+# Attempts to execute the given code and fails the test if an error occurs
+# $1... - Code to execute or fail from
+doOrDie() {
+    "$@" || fail "Failed to execute \`$*\`"
 }
 
 #

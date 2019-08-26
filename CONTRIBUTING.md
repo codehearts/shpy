@@ -6,6 +6,8 @@ So you're looking to contribute to shpy, eh? Do you think you're ready to face t
 - [Project Structure](#herb-project-structure)
 - [Development](#computer-development)
 - [Testing](#alembic-testing)
+  - [Writing Tests](#writing-tests)
+  - [Running Tests](#running-tests)
 - [Submitting Changes](#incoming_envelope-submitting-changes)
 - [Getting in Touch](#phone-getting-in-touch)
 
@@ -43,6 +45,40 @@ These resources are a big help in understanding what POSIX compliance entails:
 Shpy is written in POSIX-compliant shell scripting, with the exception of the `local` keyword. The only required development tool is [Docker](https://docker.com)
 
 ## :alembic: Testing
+
+### Writing Tests
+
+Tests are organized in the `test/` directory by function under test, with files named as `test_<function_under_test>`. Each file contains one function per unit test, prefixed with `it` and followed by a description of the test. An example from `test/test_createSpy`:
+
+```sh
+itReturns1WhenCreatingSpyWithoutArgs() {
+    createSpy >/dev/null
+    assertEquals 1 $?
+}
+```
+
+When writing tests, your assertion message should be lowercase and specify what went wrong, not what was expected. Remember that expected values come before actual values!
+
+```sh
+createSpy -o 'hello world' helloSpy
+assertEquals 'unexpected spy output' 'hello world' "$(helloSpy)"
+```
+
+Tests should verify the expected _stdout_, expected _stderr_, and expected _return value_, even if the expected output is nothing. In some cases it may make sense to omit some of these tests, and that's perfectly ok!
+
+The `assertDies` function is provided for tests that expect `shpy_die` to be called. This function takes the command to run as a string, an optional expected death message, and an optional expected exit status:
+
+```sh
+assertDies 'createSpy -z' 'Error: Unknown option -z' 1
+```
+
+The `doOrDie` function is provided to fail a test if the given code returns a non-zero exit status. Use this in situations where code is not expected to fail:
+
+```sh
+doOrDie createSpy mySpy
+```
+
+### Running Tests
 
 Your code can be tested under multiple shells using the Docker image. To run tests with all supported shells, as well as the analysis tools and code coverage, you can run Docker compose as follows:
 
