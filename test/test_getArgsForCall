@@ -1,123 +1,111 @@
 #!/bin/sh
 
-testCalledWithNoArgs_ShouldReturnUsage() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(getArgsForCall 2>&1 >/dev/null)
-
-    assertFalse "\`getArgsForCall\` is false" $?
-    printf '%s\n' "$output" | grep -q '^Usage:'
-    assertTrue 'output begins with "Usage:"' $?
+itDisplaysUsageWhenGettingCallArgsWithoutArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: getArgsForCall SPY CALL_NUMBER' "$(getArgsForCall 2>&1)"
 }
 
-testCalledWithOneArg_ShouldReturnUsage() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(getArgsForCall some_spy 2>&1 >/dev/null)
-
-    assertFalse "\`getArgsForCall some_spy\` is false" $?
-    printf '%s\n' "$output" | grep -q '^Usage:'
-    assertTrue 'output begins with "Usage:"' $?
+itReturns1WhenGettingCallArgsWithoutArgs() {
+    getArgsForCall >/dev/null 2>&1
+    assertEquals 1 $?
 }
 
-testCalledBeforeSpiesCreated_ShouldReturnError() {
-    # shellcheck disable=SC2039
-    local output
+itDisplaysUsageWhenGettingCallArgsWithOneArg() {
+    assertEquals 'usage message was not displayed' 'Usage: getArgsForCall SPY CALL_NUMBER' "$(getArgsForCall someSpy 2>&1)"
+}
 
-    output=$(getArgsForCall invalid_spy 1 2>&1 >/dev/null)
+itReturns1WhenGettingCallArgsWithOneArg() {
+    getArgsForCall someSpy >/dev/null 2>&1
+    assertEquals 1 $?
+}
 
-    assertFalse "\`getArgsForCall invalid_spy 1\` is false" $?
-    printf '%s\n' "$output" | grep -qx "Error: no spies have been created"
+itDisplaysErrorWhenGettingCallArgsBeforeSpyIsCreated() {
+    printf '%s\n' "$(getArgsForCall invalidSpy 1 2>&1 >/dev/null)" | grep -qx "Error: no spies have been created"
     assertTrue 'output contains incorrect error message' $?
 }
 
-testCalledWithInvalidSpy_ShouldReturnError() {
-    # shellcheck disable=SC2039
-    local output
+itReturns1WhenGettingCallArgsBeforeSpyIsCreated() {
+    getArgsForCall invalidSpy 1 >/dev/null 2>&1
+    assertEquals 1 $?
+}
 
-    createSpy some_spy || fail 'createSpy some_spy'
+itDisplaysErrorWhenGettingCallArgsForInvalidSpy() {
+    doOrDie createSpy someSpy
 
-    # Attempt to get arguments for a nonexistent spy
-    output=$(getArgsForCall invalid_spy 1 2>&1 >/dev/null)
-
-    assertFalse "\`getArgsForCall invalid_spy 1\` is false" $?
-    printf '%s\n' "$output" | grep -qx "Error: spy 'invalid_spy' has not been set up"
+    printf '%s\n' "$(getArgsForCall invalidSpy 1 2>&1 >/dev/null)" | grep -qx "Error: spy 'invalidSpy' has not been set up"
     assertTrue 'output contains incorrect error message' $?
 }
 
-testCalledWithInvalidCallNumber_ShouldReturnError() {
-    # shellcheck disable=SC2039
-    local output
+itReturns1WhenGettingCallArgsForInvalidSpy() {
+    doOrDie createSpy someSpy
 
-    createSpy some_spy || fail 'createSpy some_spy'
-
-    some_spy
-
-    output=$(getArgsForCall some_spy 999 2>&1 >/dev/null)
-
-    assertFalse "\`getArgsForCall some_spy 999\` is false" $?
-    printf '%s\n' "$output" | grep -q '^Error:'
-    assertTrue 'output begins with "Error:"' $?
+    getArgsForCall invalidSpy 1 >/dev/null 2>&1
+    assertEquals 1 $?
 }
 
-testNoArgs_ReturnsTrue() {
-    # shellcheck disable=SC2039
-    local output
+itDisplaysErrorWhenGettingCallArgsForInvalidCallNumber() {
+    doOrDie createSpy someSpy
+    someSpy
 
-    createSpy some_spy || fail 'createSpy some_spy'
-
-    some_spy
-    some_spy
-
-    output=$(getArgsForCall some_spy 1 2>&1)
-    assertTrue "\`getArgsForCall some_spy 1\` is true" $?
-    assertEquals "Output is empty" 0 ${#output}
-
-    output=$(getArgsForCall some_spy 2 2>&1 >/dev/null)
-    assertTrue "\`getArgsForCall some_spy 2\` is true" $?
-    assertEquals "Output is empty" 0 ${#output}
+    printf '%s\n' "$(getArgsForCall someSpy 999 2>&1 >/dev/null)" | grep -q '^Error:'
+    assertTrue 'output does not begin with "Error:"' $?
 }
 
-testShouldQuoteArgsCorrectly() {
-    # shellcheck disable=SC2039
-    local output tab_inside expected_output
+itReturns1WhenGettingCallArgsForInvalidCallNumber() {
+    doOrDie createSpy someSpy
+    someSpy
 
-    tab_inside=$(printf "%s\\t%s" "tab" "inside")
-    expected_output=$(printf '"foo bar" abc def "baz bat" "%s"' "$tab_inside")
-
-    createSpy some_spy || fail 'createSpy some_spy'
-
-    some_spy "foo" bar 'baz'
-    some_spy "foo bar" abc def 'baz bat' "$tab_inside"
-
-    output=$(getArgsForCall some_spy 1 2>&1)
-    assertEquals "First call output is correct" "foo bar baz" "$output"
-
-    output=$(getArgsForCall some_spy 2 2>&1)
-    assertEquals "Second call output is correct" "$expected_output" "$output"
+    getArgsForCall someSpy 999 >/dev/null 2>&1
+    assertEquals 1 $?
 }
 
-testMultipleCalls_ReturnsCorrectArgLists() {
-    # shellcheck disable=SC2039
-    local output
+itOutputsNothingWhenGettingCallArgsForCallWithoutArgs() {
+    doOrDie createSpy someSpy
+    someSpy
+    someSpy
 
-    createSpy some_spy || fail 'createSpy some_spy'
+    assertEquals 'output is not empty for call without args' '' "$(getArgsForCall someSpy 1 2>&1)"
 
-    some_spy foo
-    some_spy
-    some_spy -a "foo bar" -baz
+    assertEquals 'output is not empty for call without args' '' "$(getArgsForCall someSpy 2 2>&1)"
+}
 
-    output=$(getArgsForCall some_spy 1 2>&1)
-    assertTrue "\`getArgsForCall some_spy 1\` is true" $?
-    assertEquals "Output is correct" "foo" "$output"
+itReturns0WhenGettingCallArgsForCallWithoutArgs() {
+    doOrDie createSpy someSpy
+    someSpy
+    someSpy
 
-    output=$(getArgsForCall some_spy 2 2>&1)
-    assertTrue "\`getArgsForCall some_spy 2\` is true" $?
-    assertEquals "Output is empty" 0 ${#output}
+    getArgsForCall someSpy 1 >/dev/null 2>&1
+    assertTrue 'first call returned a non-zero status' $?
 
-    output=$(getArgsForCall some_spy 3 2>&1)
-    assertTrue "\`getArgsForCall some_spy 3\` is true" $?
-    assertEquals "Output is correct" '-a "foo bar" -baz' "$output"
+    getArgsForCall someSpy 2 >/dev/null 2>&1
+    assertTrue 'second call returned a non-zero status' $?
+}
+
+itOutputsNoQuotesAroundSingleWordArgsWhenGettingCallArgs() {
+    doOrDie createSpy someSpy
+    someSpy "foo" bar 'baz'
+
+    assertEquals 'args were not output without quotes' 'foo bar baz' "$(getArgsForCall someSpy 1 2>&1)"
+}
+
+itOutputsDoubleQuotesAroundMultiWordArgsWhenGettingCallArgs() {
+    doOrDie createSpy someSpy
+    someSpy "foo bar" abc def 'baz bat' "$(printf "tab\\tinside")"
+
+    assertEquals 'multi-word args were not output with double quotes' \
+        "$(printf '"foo bar" abc def "baz bat" "tab\tinside"')" \
+        "$(getArgsForCall someSpy 1 2>&1)"
+}
+
+itOutputsCorrectArgsForCallNumberWhenGettingCallArgs() {
+    doOrDie createSpy someSpy
+
+    someSpy foo
+    someSpy
+    someSpy -a "foo bar" -baz
+
+    assertEquals "incorrect args output for first call" "foo" "$(getArgsForCall someSpy 1 2>&1)"
+
+    assertEquals "incorrect args output for second call" '' "$(getArgsForCall someSpy 2 2>&1)"
+
+    assertEquals "incorrect args output for third call" '-a "foo bar" -baz' "$(getArgsForCall someSpy 3 2>&1)"
 }
