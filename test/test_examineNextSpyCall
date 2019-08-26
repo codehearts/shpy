@@ -1,57 +1,73 @@
 #!/bin/sh
 
-testCalledWithZeroArgs_ShouldReturnUsage() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(examineNextSpyCall 2>&1 >/dev/null)
-
-    assertFalse "\`examineNextSpyCall\` returns error" $?
-    printf '%s\n' "$output" | grep -q '^Usage:'
-    assertTrue 'begins with "Error:"' $?
+itDisplaysUsageWhenExaminingNextCallWithoutArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: examineNextSpyCall SPY' "$(examineNextSpyCall 2>&1)"
 }
 
-testCalledAfterZeroSpyCalls_ShouldSucceed() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itReturns1WhenExaminingNextCallWithoutArgs() {
+    examineNextSpyCall >/dev/null
+    assertEquals 1 $?
+}
 
+itDisplaysNothingWhenExaminingNextCallOfSpyNeverCalled() {
+    doOrDie createSpy dosomething
+    assertEquals 'unexpected output' '' "$(examineNextSpyCall dosomething 2>&1)"
+}
+
+itReturns0WhenExaminingNextCallOfSpyNeverCalled() {
+    doOrDie createSpy dosomething
     examineNextSpyCall dosomething
 
-    assertTrue "\`examineNextSpyCall\` returns true" $?
+    assertTrue "returned non-zero exit status" $?
 }
 
-testCalledAfterOneSpyCall_ShouldSucceed() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itDisplaysNothingWhenExaminingNextCallOfSpyCalledOnce() {
+    doOrDie createSpy dosomething
+    dosomething
+
+    assertEquals 'unexpected output' '' "$(examineNextSpyCall dosomething 2>&1)"
+}
+
+itReturns1WhenExaminingNextCallOfSpyCalledOnce() {
+    doOrDie createSpy dosomething
     dosomething
 
     examineNextSpyCall dosomething
 
-    assertTrue "\`examineNextSpyCall dosomething\` is true" $?
+    assertTrue "returned non-zero exit status" $?
 }
 
-testCalledAfterOneSpyCall_wasSpyCalledShouldReturnError() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething || fail 'createSpy dosomething'
+itDisplaysErrorWhenCheckingIfSpyWasCalledAfterExamingNextCallOnLastCall() {
+    doOrDie createSpy dosomething
+    dosomething
+
+    examineNextSpyCall dosomething >/dev/null
+
+    printf '%s' "$(wasSpyCalledWith dosomething 2>&1  >/dev/null)" | grep -q '^Error:'
+    assertTrue 'output begins with "Error:"' $?
+}
+
+itReturns1WhenCheckingIfSpyWasCalledAfterExamingNextCallOnLastCall() {
+    doOrDie createSpy dosomething
     dosomething
 
     examineNextSpyCall dosomething
-    output=$(wasSpyCalledWith dosomething 2>&1  >/dev/null)
+    wasSpyCalledWith dosomething >/dev/null 2>&1
 
-    assertFalse "\`wasSpyCalledWith dosomething\` returns error" $?
-    printf '%s' "$output" | grep -q '^Error:'
-    assertTrue 'output begins with Error:' $?
+    assertEquals 1 $?
 }
 
-testCalled_wasSpyCalledWithShouldMatchSecondCall() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itChecksTheNextCallWhenExamingNextSpyCall() {
+    doOrDie createSpy dosomething
+
     dosomething
     dosomething somearg
 
     wasSpyCalledWith dosomething
-    assertTrue "\`wasSpyCalledWith dosomething\` is true" $?
+    assertTrue "checking first spy call with no args gave wrong result" $?
 
     examineNextSpyCall dosomething
     wasSpyCalledWith dosomething somearg
 
-    assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
+    assertTrue "checking second spy call with args gave wrong result" $?
 }
