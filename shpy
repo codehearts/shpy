@@ -54,7 +54,7 @@ createStub() {
 
 getSpyCallCount() {
     if [ $# -eq 0 ]; then
-        echo 'Usage: getSpyCallCount SPY' >&2
+        echo 'Usage: getSpyCallCount SPY'
         return 1
     fi
 

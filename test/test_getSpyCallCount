@@ -1,53 +1,50 @@
 #!/bin/sh
 
-testGetSpyCallCountCalledWithNoArgs_ShouldReturnUsage() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(getSpyCallCount 2>&1 >/dev/null)
-
-    assertFalse "\`getSpyCallCount\` returns false" $?
-    printf '%s\n' "$output" | grep -q '^Usage:'
-    assertTrue 'output begins with "Usage:"' $?
+itDisplaysUsageWhenGettingCallCountWithoutArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: getSpyCallCount SPY' "$(getSpyCallCount 2>&1)"
 }
 
-testSpyNotRun_ShouldReportZeroCalls() {
-    createSpy dosomething || fail 'createSpy dosomething'
-
-    assertEquals 0 "$(getSpyCallCount dosomething)"
+itReturns1WhenGettingCallCountWithoutArgs() {
+    getSpyCallCount >/dev/null
+    assertEquals 1 $?
 }
 
-testSpyRunOnce_ShouldReportOneCall() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itOutputs0WhenGettingCallCountOfSpyNeverCalled() {
+    doOrDie createSpy dosomething
+    assertEquals '0' "$(getSpyCallCount dosomething 2>&1)"
+}
+
+itOutputs1WhenGettingCallCountOfSpyCalledOnce() {
+    doOrDie createSpy dosomething
 
     dosomething
 
-    assertEquals 1 "$(getSpyCallCount dosomething)"
+    assertEquals '1' "$(getSpyCallCount dosomething 2>&1)"
 }
 
-testSpyRunOnceFromSubshell_ShouldReportOneCall() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itOutputs2WhenGettingCallCountOfSpyCalledTwice() {
+    doOrDie createSpy dosomething
+
+    dosomething
+    dosomething
+
+    assertEquals '2' "$(getSpyCallCount dosomething 2>&1)"
+}
+
+itOutputs1WhenGettingCallCountOfSpyCalledOnceInSubshell() {
+    doOrDie createSpy dosomething
 
     (dosomething)
 
-    assertEquals 1 "$(getSpyCallCount dosomething)"
+    assertEquals '1' "$(getSpyCallCount dosomething 2>&1)"
 }
 
-testTwoSpies_ShouldHaveIndependentCallCounts() {
-    createSpy dosomething || fail 'createSpy dosomething'
-    createSpy dosomethingelse || fail 'createSpy dosomethingelse'
+itOutputsCorrectCallCountsForMultipleSpies() {
+    doOrDie createSpy dosomething
+    doOrDie createSpy dosomethingelse
 
     dosomething
 
-    assertEquals 1 "$(getSpyCallCount dosomething)"
-    assertEquals 0 "$(getSpyCallCount dosomethingelse)"
-}
-
-testSpyRunTwice_ShouldReportTwoCalls() {
-    createSpy dosomething || fail 'createSpy dosomething'
-
-    dosomething
-    dosomething
-
-    assertEquals 2 "$(getSpyCallCount dosomething)"
+    assertEquals 'call count output for wrong spy' '1' "$(getSpyCallCount dosomething 2>&1)"
+    assertEquals 'call count output for wrong spy' '0' "$(getSpyCallCount dosomethingelse 2>&1)"
 }
