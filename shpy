@@ -14,6 +14,10 @@ createSpy() {
 
     outputs_dir="$_shpy_spies_dir/outputs/$spy_name"
     errors_dir="$_shpy_spies_dir/errors/$spy_name"
+
+    # Create empty directories for stdout and stderr outputs
+    shpy_remove_dir_tree "$outputs_dir" || shpy_die "Error: \`shpy_remove_dir_tree '$outputs_dir'\` failed"
+    shpy_remove_dir_tree "$errors_dir" || shpy_die "Error: \`shpy_remove_dir_tree '$errors_dir'\` failed"
     shpy_ensure_dir "$outputs_dir" || shpy_die "Error: \`shpy_ensure_dir '$outputs_dir'\` failed"
     shpy_ensure_dir "$errors_dir" || shpy_die "Error: \`shpy_ensure_dir '$errors_dir'\` failed"
 
@@ -180,7 +184,7 @@ _shpyDeinit() {
 }
 
 _shpyResetSpy() {
-    shpy_remove_dir_tree "$_shpy_spies_dir/$1" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
+    shpy_remove_dir_tree "$_shpy_spies_dir/$1" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir/$1'\` failed"
 
     eval unset "${1}_val"
     eval unset "${1}_output"
