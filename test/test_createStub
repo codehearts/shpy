@@ -1,8 +1,8 @@
 #!/bin/sh
 
-testCreateStub_IsAliasForCreateSpy() {
-    createStub dosomething || fail 'createStub dosomething'
+itCreatesSpyWhenCreateStubIsCalled() {
+    doOrDie createStub dosomething
 
     dosomething
-    assertEquals 'dosomething is a function' 0 $?
+    assertEquals 'function was not created for spy' 0 $?
 }
