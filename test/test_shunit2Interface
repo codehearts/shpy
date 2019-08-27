@@ -1,240 +1,361 @@
 #!/bin/sh
 
+#
+# assertCallCount tests
+#
 
-testAssertCallCountWrongArgumentCount() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething
+itDisplaysUsageWhenAssertCallCountHasTooFewArgs() {
+    doOrDie createSpy dosomething
     dosomething
 
-    output=$(assertCallCount dosomething 2>&1)
-
-    assertFalse "\`assertCallCount dosomething\` fails" $?
-    assertEquals "Usage: assertCallCount [MESSAGE] SPY COUNT" "$output"
+    assertEquals 'usage message was not displayed' 'Usage: assertCallCount [MESSAGE] SPY COUNT' "$(assertCallCount dosomething 2>&1)"
 }
 
-testAssertCallCountFail() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething
+itReturns1WhenAssertCallCountHasTooFewArgs() {
+    doOrDie createSpy dosomething
     dosomething
 
-    output=$(assertCallCount dosomething 0)
+    assertCallCount dosomething >/dev/null
 
-    assertFalse "\`assertCallCount dosomething 0\` fails" $?
-    printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
-    assertTrue 'output begins with "ASSERT:"' $?
+    assertEquals 1 $?
 }
 
-testAssertCallCountPass() {
-    createSpy dosomething
+itDisplaysAssertionWhenAssertCallCountFails() {
+    doOrDie createSpy dosomething
+    dosomething
+
+    printf '%s' "$(assertCallCount dosomething 0)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:"' $?
+}
+
+itReturns1WhenAssertCallCountFails() {
+    doOrDie createSpy dosomething
+    dosomething
+
+    (assertCallCount dosomething 0 >/dev/null)
+    assertEquals 1 $?
+}
+
+itDisplaysNothingWhenAssertCallCountPasses() {
+    doOrDie createSpy dosomething
+
+    assertEquals 'call count assertion output unexpectedly' '' "$(assertCallCount dosomething 0 2>&1)"
+}
+
+itReturns0WhenAssertCallCountPasses() {
+    doOrDie createSpy dosomething
 
     assertCallCount dosomething 0
-
-    assertTrue "\`assertCallCount dosomething 0\` passes" $?
+    assertEquals 0 $?
 }
 
-testAssertCallCountFailWithMessage() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething
+itDisplaysAssertionWhenAssertCallCountFailsWithOptionalMessage() {
+    doOrDie createSpy dosomething
+
+    printf '%s' "$(assertCallCount "shpymsg" dosomething 999)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'assertion output does not begin with "ASSERT:"' $?
+}
+
+itDisplaysOptionalMessageWhenAssertCallCountFails() {
+    doOrDie createSpy dosomething
+
+    printf '%s' "$(assertCallCount "shpymsg" dosomething 999)" | grep -q "shpymsg"
+    assertTrue 'assertion output does not contain optional message' $?
+}
+
+itDisplaysNothingWhenAssertCallCountPassesWithOptionalMessage() {
+    doOrDie createSpy dosomething
+
+    assertEquals 'unexpected output' '' "$(assertCallCount "shpymsg" dosomething 0)"
+}
+
+itReturns0WhenAssertCallCountPassesWithOptionalMessage() {
+    doOrDie createSpy dosomething
+
+    assertCallCount 'message' dosomething 0
+    assertEquals 0 $?
+}
+
+#
+# assertCalledWith tests
+#
+
+itDisplaysUsageWhenAssertCalledWithHasTooFewArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: assertCalledWith SPY [ARG]...' "$(assertCalledWith 2>&1)"
+}
+
+itReturns1WhenAssertCalledWithHasTooFewArgs() {
+    assertCalledWith >/dev/null
+    assertEquals 1 $?
+}
+
+itDisplaysAssertionWhenAssertCalledWithFails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    printf '%s' "$(assertCalledWith dosomething 456 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:"' $?
+}
+
+itReturns1WhenAssertCalledWithFails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    (assertCalledWith dosomething 456 >/dev/null)
+    assertEquals 1 $?
+}
+
+itDisplaysNothingWhenAssertCalledWithPasses() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertEquals 'unexpected output' '' "$(assertCalledWith dosomething 123 1>&2)"
+}
+
+itReturns0WhenAssertCalledWithPasses() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertCalledWith dosomething 123
+    assertEquals 0 $?
+}
+
+itAdvancesToNextCallAfterAssertCalledWith() {
+    doOrDie createSpy dosomething
+    dosomething 1
+    dosomething 2
+
+    assertCalledWith dosomething 1
+    assertEquals 'first assertion was not for first call' 0 $?
+
+    assertCalledWith dosomething 2
+    assertEquals 'second assertion was not for second call' 0 $?
+}
+
+#
+# assertCalledWith_ tests
+#
+
+itDisplaysUsageWhenAssertCalledWith_HasTooFewArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: assertCalledWith_ MESSAGE SPY [ARG]...' "$(assertCalledWith_ 2>&1)"
+}
+
+itReturns1WhenAssertCalledWith_HasTooFewArgs() {
+    assertCalledWith_ >/dev/null
+    assertEquals 1 $?
+}
+
+itDisplaysAssertionWhenAssertCalledWith_Fails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    printf '%s' "$(assertCalledWith_ 'message' dosomething 456 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:"' $?
+}
+
+itDisplaysMessageWhenAssertCalledWith_Fails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    printf '%s' "$(assertCalledWith_ 'shpymsg' dosomething 456)" | grep -q "shpymsg"
+    assertTrue 'assertion output does not contain custom message' $?
+}
+
+itReturns1WhenAssertCalledWith_Fails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    (assertCalledWith_ 'message' dosomething 456 >/dev/null)
+    assertEquals 1 $?
+}
+
+itDisplaysNothingWhenAssertCalledWith_Passes() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertEquals 'unexpected output' '' "$(assertCalledWith_ 'message' dosomething 123)"
+}
+
+itReturns0WhenAssertCalledWith_Passes() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertCalledWith_ 'message' dosomething 123
+    assertEquals 0 $?
+}
+
+itAdvancesToNextCallAfterAssertCalledWith_() {
+    doOrDie createSpy dosomething
+    dosomething 1
+    dosomething 2
+
+    assertCalledWith_ 'message' dosomething 1
+    assertEquals 'first assertion was not for first call' 0 $?
+
+    assertCalledWith_ 'message' dosomething 2
+    assertEquals 'second assertion was not for second call' 0 $?
+}
+
+#
+# assertCalledOnce tests
+#
+
+itDisplaysUsageWhenAssertCalledOnceWithHasTooFewArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: assertCalledOnceWith SPY [ARG]...' "$(assertCalledOnceWith 2>&1)"
+}
+
+itReturns1WhenAssertCalledOnceWithHasTooFewArgs() {
+    assertCalledOnceWith >/dev/null
+    assertEquals 1 $?
+}
+
+itDisplaysAssertionWhenAssertCalledOnceWithFails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+    dosomething 456
+
+    printf '%s' "$(assertCalledOnceWith dosomething 123 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:"' $?
+}
+
+itReturns1WhenAssertCalledOnceWithFails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+    dosomething 456
+
+    (assertCalledOnceWith dosomething 123 >/dev/null)
+    assertEquals 1 $?
+}
+
+itDisplaysNothingWhenAssertCalledOnceWithPasses() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertEquals 'unexpected output' '' "$(assertCalledOnceWith dosomething 123 2>&1)"
+}
+
+itReturns0WhenAssertCalledOnceWithPasses() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertCalledOnceWith dosomething 123
+    assertEquals 0 $?
+}
+
+#
+# assertCalledOnceWith_ tests
+#
+
+itDisplaysUsageWhenAssertCalledOnceWith_HasTooFewArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]...' "$(assertCalledOnceWith_ 2>&1)"
+}
+
+itReturns1WhenAssertCalledOnceWith_HasTooFewArgs() {
+    assertCalledOnceWith_ >/dev/null
+    assertEquals 1 $?
+}
+
+itDisplaysAssertionWhenAssertCalledOnceWith_Fails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    printf '%s' "$(assertCalledOnceWith_ 'message' dosomething 456 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:"' $?
+}
+
+itDisplaysMessageWhenAssertCalledOnceWith_Fails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    printf '%s' "$(assertCalledOnceWith_ 'shpymsg' dosomething 456)" | grep -q "shpymsg"
+    assertTrue 'assertion output does not contain custom message' $?
+}
+
+itReturns1WhenAssertCalledOnceWith_Fails() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    (assertCalledOnceWith_ 'message' dosomething 456 >/dev/null)
+    assertEquals 1 $?
+}
+
+itDisplaysNothingWhenAssertCalledOnceWith_Passes() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertEquals 'unexpected output' '' "$(assertCalledOnceWith_ 'message' dosomething 123 2>&1)"
+}
+
+itReturns0WhenAssertCalledOnceWith_Passes() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertCalledOnceWith_ 'message' dosomething 123
+    assertEquals 0 $?
+}
+
+#
+# assertNeverCalled tests
+#
+
+itDisplaysUsageWhenAssertNeverCalledHasTooFewArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: assertNeverCalled [MESSAGE] SPY' "$(assertNeverCalled 2>&1)"
+}
+
+itReturns1WhenAssertNeverCalledHasTooFewArgs() {
+    assertNeverCalled >/dev/null
+    assertEquals 1 $?
+}
+
+itDisplaysAssertionWhenAssertNeverCalledFails() {
+    doOrDie createSpy dosomething
     dosomething
 
-    output=$(assertCallCount "shpymsg" dosomething 0)
-
-    assertFalse "\`assertCallCount \"shpymsg\" dosomething 0\` fails" $?
-    printf '%s' "$output" | grep "^${ANSI_COLOR_PATTERN}ASSERT" | grep -q "shpymsg"
-    assertTrue 'output begins with "ASSERT:" and contains "shpymsg"' $?
+    printf '%s' "$(assertNeverCalled dosomething 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:"' $?
 }
 
-testAssertCallCountPassWithMessage() {
-    createSpy dosomething
+itReturns1WhenAssertNeverCalledFails() {
+    doOrDie createSpy dosomething
+    dosomething
 
-    assertCallCount "shpymsg" dosomething 0
-
-    assertTrue "\`assertCallCount \"shpymsg\" dosomething 0\` passes" $?
+    (assertNeverCalled dosomething >/dev/null)
+    assertEquals 1 $?
 }
 
-testAssertCalledWithWrongArgumentCount() {
-    # shellcheck disable=SC2039
-    local output
+itDisplaysNothingWhenAssertNeverCalledPasses() {
+    doOrDie createSpy dosomething
 
-    output=$(assertCalledWith 2>&1)
-
-    assertFalse "\`assertCalledWith\` fails" $?
-    assertEquals "Usage: assertCalledWith SPY [ARG]..." "$output"
+    assertEquals 'unexpected output' '' "$(assertNeverCalled dosomething 2>&1)"
 }
 
-testAssertCalledWithFailure() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething
-    dosomething somearg
-
-    output=$(assertCalledWith dosomething anotherarg 2>/dev/null)
-
-    assertFalse "\`assertCalledWith anotherarg\` fails" $?
-    printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
-    assertTrue 'output begins with "ASSERT:"' $?
-}
-
-testAssertCalledWithPass() {
-    createSpy dosomething
-    dosomething somearg
-
-    assertCalledWith dosomething somearg
-
-    assertTrue "\`assertCalledWith somearg\` passes" $?
-}
-
-testAssertCalledWith_AdvancesToTheNextCall() {
-    createSpy dosomething
-    dosomething somearg
-    dosomething anotherarg
-
-    assertCalledWith dosomething somearg
-    assertTrue "\`assertCalledWith dosomething somearg\` passes" $?
-
-    assertCalledWith dosomething anotherarg
-    assertTrue "\`assertCalledWith dosomething anotherarg\` passes" $?
-}
-
-testAssertCalledWith_WrongArgumentCount() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(assertCalledWith_ "shpymsg" 2>&1)
-
-    assertFalse "\`assertCalledWith_ \"shpymsg\"\` fails" $?
-    assertEquals "Usage: assertCalledWith_ MESSAGE SPY [ARG]..." "$output"
-}
-
-testAssertCalledWith_Failure() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething
-    dosomething somearg
-
-    output=$(assertCalledWith_ "shpymsg" dosomething anotherarg 2>/dev/null)
-
-    assertFalse "\`assertCalledWith_ \"shpymsg\" dosomething anotherarg\` fails" $?
-    printf '%s' "$output" | grep "^${ANSI_COLOR_PATTERN}ASSERT" | grep -q "shpymsg"
-    assertTrue 'output begins with "ASSERT:" and contains "shpymsg"' $?
-}
-
-testAssertCalledWith_Pass() {
-    createSpy dosomething
-    dosomething somearg
-
-    assertCalledWith_ "shpymsg" dosomething somearg
-
-    assertTrue "\`assertCalledWith_ \"shpymsg\" dosomething somearg\` passes" $?
-}
-
-testAssertCalledWith__AdvancesToTheNextCall() {
-    createSpy dosomething
-    dosomething somearg
-    dosomething anotherarg
-
-    assertCalledWith_ "shpymsg" dosomething somearg
-    assertTrue "\`assertCalledWith_ \"shpymsg\" dosomething somearg\` passes" $?
-
-    assertCalledWith_ "shpymsg" dosomething anotherarg
-    assertTrue "\`assertCalledWith_  \"shpymsg\" dosomething anotherarg\` passes" $?
-}
-
-testAssertCalledOnceWithWrongArgumentCount() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(assertCalledOnceWith 2>&1)
-
-    assertFalse "\`assertCalledOnceWith\` fails" $?
-    assertEquals "Usage: assertCalledOnceWith SPY [ARG]..." "$output"
-}
-
-testAssertCalledOnceWithFail_WhenCalledMoreThanOnce() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething
-    dosomething somearg
-    dosomething anotherarg
-
-    output=$(assertCalledOnceWith dosomething somearg)
-
-    assertFalse "\`assertCalledOnceWith dosomething somearg\` fails" $?
-    printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
-    assertTrue 'output begins with "ASSERT:"' $?
-}
-
-testAssertCalledOnceWithPass() {
-    createSpy dosomething
-    dosomething somearg
-
-    assertCalledOnceWith dosomething somearg
-
-    assertTrue "\`assertCalledOnceWith dosomething somearg\` passes" $?
-}
-
-testAssertCalledOnceWith_WrongArgumentCount() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(assertCalledOnceWith_ "shpymsg" 2>&1)
-
-    assertFalse "\`assertCalledOnceWith_ \"shpymsg\"\` fails" $?
-    assertEquals "Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]..." "$output"
-}
-
-testAssertCalledOnceWith_Fail_WhenCalledMoreThanOnce() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething
-    dosomething somearg
-    dosomething anotherarg
-
-    output=$(assertCalledOnceWith_ "shpymsg" dosomething somearg)
-
-    assertFalse "\`assertCalledOnceWith_ \"shpymsg\" dosomething somearg\` fails" $?
-    printf '%s' "$output" | grep "^${ANSI_COLOR_PATTERN}ASSERT" | grep -q "shpymsg"
-    assertTrue 'output begins with "ASSERT:" and contains "shpymsg"' $?
-}
-
-testAssertCalledOnceWith_Pass() {
-    createSpy dosomething
-    dosomething somearg
-
-    assertCalledOnceWith_ "shpymsg" dosomething somearg
-
-    assertTrue "\`assertCalledOnceWith_ \"shpymsg\" dosomething somearg\` passes" $?
-}
-
-testAssertNeverCalledWrongArgumentCount() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(assertNeverCalled 2>&1)
-
-    assertFalse "\`assertNeverCalled\` fails" $?
-    assertEquals "Usage: assertNeverCalled [MESSAGE] SPY" "$output"
-}
-
-testAssertNeverCalledPass_WhenNotCalled() {
-    createSpy dosomething
+itReturns0WhenAssertNeverCalledPasses() {
+    doOrDie createSpy dosomething
 
     assertNeverCalled dosomething
-
-    assertTrue "\`assertNeverCalled dosomething\` passes" $?
+    assertEquals 0 $?
 }
 
-testAssertNeverCalledFail_WhenCalledOnce() {
-    # shellcheck disable=SC2039
-    local output
-    createSpy dosomething
+itDisplaysAssertionWhenAssertNeverCalledFailsWithOptionalMessage() {
+    doOrDie createSpy dosomething
     dosomething
 
-    output=$(assertNeverCalled dosomething)
-    assertFalse "\`assertNeverCalled dosomething\` fails" $?
-    printf '%s' "$output" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
-    assertTrue 'output begins with "ASSERT:"' $?
+    printf '%s' "$(assertNeverCalled "shpymsg" dosomething)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'assertion output does not begin with "ASSERT:"' $?
+}
+
+itDisplaysOptionalMessageWhenAssertNeverCalledFails() {
+    doOrDie createSpy dosomething
+    dosomething
+
+    printf '%s' "$(assertNeverCalled "shpymsg" dosomething)" | grep -q "shpymsg"
+    assertTrue 'assertion output does not contain optional message' $?
+}
+
+itReturns1WhenAssertNeverCalledFailsWithOptionalMessage() {
+    doOrDie createSpy dosomething
+    dosomething
+
+    (assertNeverCalled 'message' dosomething >/dev/null)
+    assertEquals 1 $?
 }

@@ -2,7 +2,7 @@
 
 assertCallCount() {
     if [ $# -lt 2 ] || [ $# -gt 3 ]; then
-        echo 'Usage: assertCallCount [MESSAGE] SPY COUNT' >&2
+        echo 'Usage: assertCallCount [MESSAGE] SPY COUNT'
         return 1
     fi
 
@@ -17,7 +17,7 @@ assertCallCount() {
 
 assertCalledWith() {
     if [ $# -lt 1 ]; then
-        echo 'Usage: assertCalledWith SPY [ARG]...' >&2
+        echo 'Usage: assertCalledWith SPY [ARG]...'
         return 1
     fi
 
@@ -35,7 +35,7 @@ assertCalledWith() {
 
 assertCalledWith_() {
     if [ $# -lt 2 ]; then
-        echo 'Usage: assertCalledWith_ MESSAGE SPY [ARG]...' >&2
+        echo 'Usage: assertCalledWith_ MESSAGE SPY [ARG]...'
         return 1
     fi
 
@@ -58,7 +58,7 @@ assertCalledOnceWith() {
     ${_SHUNIT_LINENO_}
 
     if [ $# -lt 1 ]; then
-        echo 'Usage: assertCalledOnceWith SPY [ARG]...' >&2
+        echo 'Usage: assertCalledOnceWith SPY [ARG]...'
         return 1
     fi
 
@@ -68,7 +68,7 @@ assertCalledOnceWith() {
 
 assertCalledOnceWith_() {
     if [ $# -lt 2 ]; then
-        echo 'Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]...' >&2
+        echo 'Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]...'
         return 1
     fi
 
@@ -78,7 +78,7 @@ assertCalledOnceWith_() {
 
 assertNeverCalled() {
     if [ $# -lt 1 ] || [ $# -gt 2 ]; then
-        echo 'Usage: assertNeverCalled [MESSAGE] SPY' >&2
+        echo 'Usage: assertNeverCalled [MESSAGE] SPY'
         return 1
     fi
 
