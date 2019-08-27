@@ -1,26 +1,24 @@
 #!/bin/sh
 
-testCanStubTouchCommand() {
-    createSpy touch
-
+itCanStubSystemCommands() {
+    doOrDie createSpy touch
     touch nonexistent_file
 
-    assertCalledOnceWith touch nonexistent_file
+    assertCalledOnceWith_ 'failed to verify call count and args for system spy' touch nonexistent_file
 
     [ -f nonexistent_file ]
-    assertFalse 'nonexistent_file is not a file' $?
+    assertFalse 'file was created; "touch" was not stubbed' $?
 }
 
-# mkdir is trikier because the implementation of shpy calls mkdir
-testCanStubMkdirCommand() {
-    createSpy -r 123 mkdir
-
+# mkdir is used internally by shpy, so the spy must not be used internally
+itCanStubSystemCommandsUsedByShpy() {
+    doOrDie createSpy -r 123 mkdir
     mkdir -p nonexistent_dir
 
-    assertEquals "\`mkdir\` returns val passed to createSpy" 123 $?
+    assertEquals 'return value was not stubbed' 123 $?
 
-    assertCalledOnceWith mkdir -p nonexistent_dir
+    assertCalledOnceWith_ 'failed to verify call count and args for system spy' mkdir -p nonexistent_dir
 
     [ -d nonexistent_dir ]
-    assertFalse 'nonexistent_dir is not a dir' $?
+    assertFalse 'directory was created; "mkdir" was not stubbed' $?
 }
