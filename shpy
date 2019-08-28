@@ -67,7 +67,7 @@ getSpyCallCount() {
 
 wasSpyCalledWith() {
     if [ $# -eq 0 ]; then
-        echo 'Usage: wasSpyCalledWith SPY [ARG]...' >&2
+        echo 'Usage: wasSpyCalledWith SPY [ARG]...'
         return 1
     fi
 
