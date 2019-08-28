@@ -1,77 +1,110 @@
 #!/bin/sh
 
-testWasSpyCalledWithNoArgs_ShouldReturnUsage() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(wasSpyCalledWith 2>&1 >/dev/null)
-
-    assertFalse "\`wasSpyCalledWith\` is false" $?
-    printf '%s\n' "$output" | grep -q '^Usage:'
-    assertTrue 'output begins with "Usage:"' $?
+itDisplaysUsageWhenWasSpyCalledWithHasTooFewArgs() {
+    assertEquals 'usage message was not displayed' 'Usage: wasSpyCalledWith SPY [ARG]...' "$(wasSpyCalledWith 2>&1)"
 }
 
-testWasSpyCalledWithInvalidSpy_ShouldReturnError() {
-    # shellcheck disable=SC2039
-    local output
-
-    output=$(wasSpyCalledWith invalid_spy 2>&1 >/dev/null)
-
-    assertFalse "\`wasSpyCalledWith invalid_spy\` is false" $?
-    printf '%s\n' "$output" | grep -q '^Error:'
-    assertTrue 'output begins with "Error:"' $?
+itReturns1WhenWasSpyCalledWithHasTooFewArgs() {
+    wasSpyCalledWith >/dev/null
+    assertEquals 1 $?
 }
 
-testNoArgs_ReturnsTrueWhenSpyCalledWithNoArgs() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itDisplaysErrorWhenWasSpyCalledWithHasInvalidSpy() {
+    printf '%s\n' "$(wasSpyCalledWith invalidSpy 2>&1 >/dev/null)" | grep -q '^Error:'
+    assertTrue 'output does not begin with "Error:"' $?
+}
+
+itReturns1WhenWasSpyCalledWithHasInvalidSpy() {
+    wasSpyCalledWith invalidSpy >/dev/null 2>&1
+    assertEquals 1 $?
+}
+
+itDisplaysNothingWhenWasSpyCalledWithPassesWithNoSpyArgs() {
+    doOrDie createSpy dosomething
+    dosomething
+
+    assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 2>&1)"
+}
+
+itReturns0WhenWasSpyCalledWithPassesWithNoSpyArgs() {
+    doOrDie createSpy dosomething
     dosomething
 
     wasSpyCalledWith dosomething
-
-    assertTrue "\`wasSpyCalledWith dosomething\` is true" $?
+    assertEquals 0 $?
 }
 
-testOneArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
-    createSpy dosomething || fail 'createSpy dosomething'
+itDisplaysNothingWhenWasSpyCalledWithPassesWithOneSpyArg() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 123 2>&1)"
+}
+
+itReturns0WhenWasSpyCalledWithPassesWithOneSpyArgs() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    wasSpyCalledWith dosomething 123
+    assertEquals 0 $?
+}
+
+itDisplaysNothingWhenWasSpyCalledWithPassesWithTwoSpyArgs() {
+    doOrDie createSpy dosomething
+    dosomething 123 456
+
+    assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 123 456 2>&1)"
+}
+
+itReturns0WhenWasSpyCalledWithPassesWithTwoSpyArgs() {
+    doOrDie createSpy dosomething
+    dosomething 123 456
+
+    wasSpyCalledWith dosomething 123 456
+    assertEquals 0 $?
+}
+
+itDisplaysNothingWhenWasSpyCalledWithFailsWithNonexistentSpyArgs() {
+    doOrDie createSpy dosomething
     dosomething
 
-    wasSpyCalledWith dosomething somearg
-
-    assertFalse "\`wasSpyCalledWith dosomething somearg\` is false" $?
+    assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 123 2>&1)"
 }
 
-testOneArg_ReturnsTrueWhenSpyCalledWithSameArg() {
-    createSpy dosomething || fail 'createSpy dosomething'
-    dosomething somearg
+itReturns1WhenWasSpyCalledWithPassesWithNonexistentSpyArgs() {
+    doOrDie createSpy dosomething
+    dosomething
 
-    wasSpyCalledWith dosomething somearg
-
-    assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
+    wasSpyCalledWith dosomething 123
+    assertEquals 1 $?
 }
 
-testBlankArg_ReturnsFalseWhenSpyCalledWithNoArgs() {
-    createSpy dosomething || fail 'createSpy dosomething'
-    dosomething ""
+itDisplaysNothingWhenWasSpyCalledWithFailsMatchingEmptyStringToNoArgs() {
+    doOrDie createSpy dosomething
+    dosomething ''
+
+    assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 2>&1)"
+}
+
+itReturns1WhenWasSpyCalledWithFailsMatchingEmptyStringToNoArgs() {
+    doOrDie createSpy dosomething
+    dosomething ''
 
     wasSpyCalledWith dosomething
-
-    assertFalse "\`wasSpyCalledWith dosomething\` is false" $?
+    assertEquals 1 $?
 }
 
-testArgContainingWhitespace_ReturnsTrueWhenSpyCalledWithSameArg() {
-    createSpy dosomething || fail 'createSpy dosomething'
-    dosomething "$(printf ' some arg\nwith embedded newlines\n	and tabs\nand trailing whitespace  ')"
+itDisplaysNothingWhenWasSpyCalledWithPassesWithWhitespaceInArgs() {
+    doOrDie createSpy dosomething
+    dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')"
 
-    wasSpyCalledWith dosomething "$(printf ' some arg\nwith embedded newlines\n	and tabs\nand trailing whitespace  ')"
-
-    assertTrue "\`wasSpyCalledWith dosomething somearg\` is true" $?
+    assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')" 2>&1)"
 }
 
-testTwoArgs_ReturnsTrueWhenSpyCalledWithSameArgs() {
-    createSpy dosomething || fail 'createSpy dosomething'
-    dosomething somearg anotherarg
+itReturns0WhenWasSpyCalledWithPassesWithWhitespaceInArgs() {
+    doOrDie createSpy dosomething
+    dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')"
 
-    wasSpyCalledWith dosomething somearg anotherarg
-
-    assertTrue "\`wasSpyCalledWith dosomething somearg anotherarg\` is true" $?
+    wasSpyCalledWith dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')"
+    assertEquals 0 $?
 }
