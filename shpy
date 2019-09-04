@@ -339,16 +339,25 @@ _shpySpyGetReturnValue() {
 
 ##### External Interface #####
 
+# Break path caching to ensure spies come first in the path
+_shpy_break_path_cache() {
+    PATH="$PATH"
+    export PATH
+}
+
 shpy_make_temp_dir() {
-    command mktemp -d shpy.XXXXXX
+    command -p mktemp -d shpy.XXXXXX
+    _shpy_break_path_cache
 }
 
 shpy_ensure_dir() {
-    command mkdir -p -- "$1"
+    command -p mkdir -p -- "$1"
+    _shpy_break_path_cache
 }
 
 shpy_remove_dir_tree() {
-    command rm -rf -- "$1"
+    command -p rm -rf -- "$1"
+    _shpy_break_path_cache
 }
 
 shpy_die() {
