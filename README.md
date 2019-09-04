@@ -23,9 +23,14 @@ If you'd like to help with shpy's development, or just gain a better understandi
 
 ## API
 
-To use **shpy** in your tests, source the `shpy` script:
+To use **shpy** in your tests, set `SHPY_PATH` to the location of `shpy` and source the script:
 
-	. path/to/shpy
+```
+SHPY_PATH=path/to/shpy
+export SHPY_PATH
+
+. path/to/shpy
+```
 	
 A summary of functions:
 

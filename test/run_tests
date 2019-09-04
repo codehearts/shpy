@@ -75,6 +75,10 @@ tearDown() {
   cleanupSpies
 }
 
+# Define the path to shpy
+SHPY_PATH="$test_directory/../shpy"
+export SHPY_PATH
+
 # Source shpy and shunit2 to begin running tests
 # shellcheck source=/dev/null
 . "$test_directory/../shpy"
