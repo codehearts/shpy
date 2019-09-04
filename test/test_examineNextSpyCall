@@ -47,9 +47,29 @@ itDisplaysErrorWhenCheckingIfSpyWasCalledAfterExamingNextCallOnLastCall() {
     assertTrue 'output begins with "Error:"' $?
 }
 
+itDisplaysErrorWhenCheckingIfSpyWasCalledAfterExamingNextCallOnLastCallInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
+
+    examineNextSpyCall dosomething >/dev/null
+
+    printf '%s' "$(wasSpyCalledWith dosomething 2>&1  >/dev/null)" | grep -q '^Error:'
+    assertTrue 'output begins with "Error:" from new shell' $?
+}
+
 itReturns1WhenCheckingIfSpyWasCalledAfterExamingNextCallOnLastCall() {
     doOrDie createSpy dosomething
     dosomething
+
+    examineNextSpyCall dosomething
+    wasSpyCalledWith dosomething >/dev/null 2>&1
+
+    assertEquals 1 $?
+}
+
+itReturns1WhenCheckingIfSpyWasCalledAfterExamingNextCallOnLastCallInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
 
     examineNextSpyCall dosomething
     wasSpyCalledWith dosomething >/dev/null 2>&1
@@ -64,10 +84,25 @@ itChecksTheNextCallWhenExamingNextSpyCall() {
     dosomething somearg
 
     wasSpyCalledWith dosomething
-    assertTrue "checking first spy call with no args gave wrong result" $?
+    assertTrue 'checking first spy call with no args gave wrong result' $?
 
     examineNextSpyCall dosomething
     wasSpyCalledWith dosomething somearg
 
-    assertTrue "checking second spy call with args gave wrong result" $?
+    assertTrue 'checking second spy call with args gave wrong result' $?
+}
+
+itChecksTheNextCallWhenExamingNextSpyCallInNewShell() {
+    doOrDie createSpy dosomething
+
+    runInNewShell dosomething
+    runInNewShell dosomething somearg
+
+    wasSpyCalledWith dosomething
+    assertTrue 'checking first spy call with no args gave wrong result in new shell' $?
+
+    examineNextSpyCall dosomething
+    wasSpyCalledWith dosomething somearg
+
+    assertTrue 'checking second spy call with args gave wrong result in new shell' $?
 }

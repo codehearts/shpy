@@ -10,6 +10,12 @@ test_directory=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
 readonly ANSI_COLOR_PATTERN="$(printf '\\(\033\[[0-9];[0-9]\+m\\)\\?')"
 export ANSI_COLOR_PATTERN
 
+# Determine the current shell executable by parsing the current process info
+# Ignore shellcheck's recommendation to use pgrep, as it may not be available
+# shellcheck disable=SC2009
+SHELL="$(ps -e | grep -Eo "\b$$\b.+[0-9:.]+\s+\S+\b")"
+SHELL="${SHELL##* }"
+
 #
 # Testcase discovery function
 #
@@ -39,6 +45,12 @@ assertDies() {
 # $1... - Code to execute or fail from
 doOrDie() {
     "$@" || fail "Failed to execute \`$*\`"
+}
+
+# Runs the given command in a new process of the parent shell
+# $1... - Command to execute
+runInNewShell() {
+  $SHELL -c "$*"
 }
 
 #

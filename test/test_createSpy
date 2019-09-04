@@ -31,6 +31,13 @@ itStubsReturnValueOfCreatedSpy() {
     assertEquals 'return value was not stubbed' 123 $?
 }
 
+itStubsReturnValueOfCreatedSpyInNewShell() {
+    doOrDie createSpy -r 123 dosomething
+
+    runInNewShell dosomething
+    assertEquals 'return value was not stubbed in new shell' 123 $?
+}
+
 itStubsReturnValuesPerSpy() {
     doOrDie createSpy -r 1 dosomething
     doOrDie createSpy -r 2 domore
@@ -39,6 +46,16 @@ itStubsReturnValuesPerSpy() {
     assertEquals 'dosomething did not return the stubbed value' 1 $?
     domore
     assertEquals 'domore did not return the stubbed value' 2 $?
+}
+
+itStubsReturnValuesPerSpyInNewShell() {
+    doOrDie createSpy -r 1 dosomething
+    doOrDie createSpy -r 2 domore
+
+    runInNewShell dosomething
+    assertEquals 'dosomething did not return the stubbed value in new shell' 1 $?
+    runInNewShell domore
+    assertEquals 'domore did not return the stubbed value in new shell' 2 $?
 }
 
 itStubsMultipleReturnValuesAsSequence() {
@@ -57,6 +74,22 @@ itStubsMultipleReturnValuesAsSequence() {
     assertEquals 'subsequent return values are not the last stubbed value' 0 $?
 }
 
+itStubsMultipleReturnValuesAsSequenceInNewShell() {
+    doOrDie createSpy -r 2 -r 1 -r 0 dosomething
+
+    runInNewShell dosomething
+    assertEquals 'first return value is not the first stubbed value in new shell' 2 $?
+
+    runInNewShell dosomething
+    assertEquals 'second return value is not the second stubbed value in new shell' 1 $?
+
+    runInNewShell dosomething
+    assertEquals 'third return value is not the third stubbed value in new shell' 0 $?
+
+    runInNewShell dosomething
+    assertEquals 'subsequent return values are not the last stubbed value in new shell' 0 $?
+}
+
 itResetsStubbedReturnValueWhenRecreatingSpy() {
     doOrDie createSpy -r 123 dosomething
 
@@ -69,6 +102,11 @@ itResetsStubbedReturnValueWhenRecreatingSpy() {
 itStubsOutputOfCreatedSpy() {
     doOrDie createSpy -o "$(printf 'some\noutput')" dosomething
     assertEquals 'output was not stubbed' "$(printf 'some\noutput')" "$(dosomething)"
+}
+
+itStubsOutputOfCreatedSpyInNewShell() {
+    doOrDie createSpy -o "$(printf 'some\noutput')" dosomething
+    assertEquals 'output was not stubbed in new shell' "$(printf 'some\noutput')" "$(runInNewShell dosomething)"
 }
 
 itStubsMultipleOutputsAsSequence() {
@@ -89,6 +127,24 @@ itStubsMultipleOutputsAsSequence() {
     assertEquals 'subsequent output is not the last stubbed value' "$third_output" "$(dosomething)"
 }
 
+itStubsMultipleOutputsAsSequenceInNewShell() {
+    # shellcheck disable=SC2039
+    local first_output second_output third_output
+    first_output=$(printf "%s\\n%s" "first" "output")
+    second_output="second OUTPUT"
+    third_output="$(printf 'Third\nOutput')"
+
+    doOrDie createSpy -o "$first_output" -o "$second_output" -o "$third_output" dosomething
+  
+    assertEquals 'first output is not the first stubbed value in new shell' "$first_output" "$(runInNewShell dosomething)"
+
+    assertEquals 'second output is not the second stubbed value in new shell' "$second_output" "$(runInNewShell dosomething)"
+
+    assertEquals 'third output is not the third stubbed value in new shell' "$third_output" "$(runInNewShell dosomething)"
+
+    assertEquals 'subsequent output is not the last stubbed value in new shell' "$third_output" "$(runInNewShell dosomething)"
+}
+
 itResetsStubbedOutputWhenRecreatingSpy() {
     doOrDie createSpy -o 'some output' dosomething
 
@@ -99,6 +155,11 @@ itResetsStubbedOutputWhenRecreatingSpy() {
 itStubsErrorOutputOfCreatedSpy() {
     doOrDie createSpy -e "$(printf 'some\noutput')" dosomething
     assertEquals 'error output was not stubbed' "$(printf 'some\noutput')" "$(dosomething 2>&1 >/dev/null)"
+}
+
+itStubsErrorOutputOfCreatedSpyInNewShell() {
+    doOrDie createSpy -e "$(printf 'some\noutput')" dosomething
+    assertEquals 'error output was not stubbed in new shell' "$(printf 'some\noutput')" "$(runInNewShell dosomething 2>&1 >/dev/null)"
 }
 
 itStubsMultipleErrorOutputsAsSequence() {
@@ -117,6 +178,24 @@ itStubsMultipleErrorOutputsAsSequence() {
     assertEquals 'third error output is not the third stubbed value' "$third_output" "$(dosomething 2>&1 >/dev/null)"
 
     assertEquals 'subsequent error output is not the last stubbed value' "$third_output" "$(dosomething 2>&1 >/dev/null)"
+}
+
+itStubsMultipleErrorOutputsAsSequenceInNewShell() {
+    # shellcheck disable=SC2039
+    local first_output second_output third_output
+    first_output=$(printf "%s\\n%s" "first" "output")
+    second_output="second OUTPUT"
+    third_output="$(printf 'Third\nOutput')"
+
+    doOrDie createSpy -e "$first_output" -e "$second_output" -e "$third_output" dosomething
+  
+    assertEquals 'first error output is not the first stubbed value in new shell' "$first_output" "$(runInNewShell dosomething 2>&1 >/dev/null)"
+
+    assertEquals 'second error output is not the second stubbed value in new shell' "$second_output" "$(runInNewShell dosomething 2>&1 >/dev/null)"
+
+    assertEquals 'third error output is not the third stubbed value in new shell' "$third_output" "$(runInNewShell dosomething 2>&1 >/dev/null)"
+
+    assertEquals 'subsequent error output is not the last stubbed value in new shell' "$third_output" "$(runInNewShell dosomething 2>&1 >/dev/null)"
 }
 
 itResetsStubbedErrorOutputWhenRecreatingSpy() {
