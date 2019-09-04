@@ -70,10 +70,9 @@ suite() {
   done
 }
 
-# Clean up spies and call the private deinitialization function after each test
+# Clean up spies after each test
 tearDown() {
   cleanupSpies
-  _shpyDeinit
 }
 
 # Source shpy and shunit2 to begin running tests
