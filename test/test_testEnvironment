@@ -8,3 +8,30 @@ itRunsTestsWithNounset() {
 
   assertFalse 'nounset is not set in the test environment' $?
 }
+
+itReturns1WhenShpyPathVariableIsNotSet() {
+    # shellcheck disable=SC2039
+    local original_shpy_path
+    original_shpy_path="$SHPY_PATH"
+    unset SHPY_PATH
+
+    # shellcheck source=/dev/null
+    . "$original_shpy_path"
+    assertEquals 1 $?
+
+    SHPY_PATH="$original_shpy_path"
+    export SHPY_PATH
+}
+
+itDisplaysErrorMessageWhenShpyPathVariableIsNotSet() {
+    # shellcheck disable=SC2039
+    local original_shpy_path
+    original_shpy_path="$SHPY_PATH"
+    unset SHPY_PATH
+
+    # shellcheck source=/dev/null
+    assertEquals 'Error: SHPY_PATH is not set as the path to shpy' "$(. "$original_shpy_path" 2>&1 >/dev/null)"
+
+    SHPY_PATH="$original_shpy_path"
+    export SHPY_PATH
+}

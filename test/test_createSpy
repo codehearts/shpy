@@ -267,3 +267,23 @@ itResetsCallCountWhenRecreatingSpy() {
 
     assertEquals 'call count was not reset' 0 "$(getSpyCallCount dosomething)"
 }
+
+# This tests exists so kcov can see what is covered by the spy scripts
+itSupportsSourcingSpies() {
+    doOrDie createSpy -o 'hello' -e 'world' -o 'goodnight' -e 'moon' dosomething
+
+    # Set arguments for the sourced spy
+    set -- arg1 arg2
+
+    # shellcheck source=/dev/null
+    assertEquals 'first call output was not stubbed' 'helloworld' "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
+
+    # shellcheck source=/dev/null
+    assertEquals 'second call output was not stubbed' 'goodnightmoon' "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
+
+    # shellcheck source=/dev/null
+    assertEquals 'third call output was not stubbed' 'goodnightmoon' "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
+
+    wasSpyCalledWith dosomething arg1 arg2
+    assertTrue 'args were not recorded' $?
+}

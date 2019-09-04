@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# Ensure SHPY_PATH is set
+if [ -z "${SHPY_PATH:+is_set_and_not_null}" ]; then
+  printf 'Error: SHPY_PATH is not set as the path to shpy\n' >&2
+  return 1
+fi
+
 createSpy() {
     if [ $# -eq 0 ]; then
         echo 'Usage: spy SPY_NAME'
@@ -162,6 +168,10 @@ cleanupSpies() {
     fi
 
     if [ -n "${_shpy_spies_dir+is_set}" ]; then
+      # Remove the shpy bin directory from the path using parameter expansion
+      PATH="${PATH%$_shpy_spies_dir/bin:*}${PATH#*$_shpy_spies_dir/bin:}"
+      export PATH
+
       find "$_shpy_spies_dir" -maxdepth 1 -type f -exec sh -c '_shpyResetSpy "$1"' _ {} \;
 
       shpy_remove_dir_tree "$_shpy_spies_dir" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
@@ -177,6 +187,15 @@ _shpyInit() {
 
     _shpy_inited=1
     _shpy_spies_dir=$(shpy_make_temp_dir) || shpy_die "Error: \`shpy_make_temp_dir\` failed"
+
+    # Ensure child shell processes have access to these variables
+    export _shpy_inited
+    export _shpy_spies_dir
+
+    # Create the shpy bin directory and prepend it to the path
+    shpy_ensure_dir "$_shpy_spies_dir/bin/"
+    PATH="$_shpy_spies_dir/bin:$PATH"
+    export PATH
 }
 
 _shpyResetSpy() {
@@ -189,7 +208,15 @@ _shpyResetSpy() {
 }
 
 _shpyInjectSpyFunction() {
-    eval "$1() { _shpyRunSpy '$1' \"\$@\"; }"
+    # shellcheck disable=SC2039
+    local spy_file
+
+    spy_file="$_shpy_spies_dir/bin/$1"
+
+    printf '#!/usr/bin/env sh\n' > "$spy_file"
+    printf '. %s\n' "$SHPY_PATH" >> "$spy_file"
+    printf '_shpyRunSpy "%s" "$@"\n' "$1" >> "$spy_file"
+    chmod +x "$spy_file"
 }
 
 _shpyGetSpyCurent() {
@@ -201,6 +228,7 @@ _shpyGetSpyCurent() {
 
 _shpySetSpyCurent() {
     eval "_shpy_$1_current=$2"
+    eval export "_shpy_$1_current"
 }
 
 _shpyGetDirectoryContentsCount() {
@@ -315,6 +343,7 @@ _shpySpyPrintErrorOutput() {
 
 _shpySpySetReturnValue() {
     eval "_shpy_${1}_val=\$2"
+    eval export "_shpy_${1}_val"
 }
 
 _shpySpyGetReturnValue() {
