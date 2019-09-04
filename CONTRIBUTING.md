@@ -66,6 +66,8 @@ assertEquals 'unexpected spy output' 'hello world' "$(helloSpy)"
 
 Tests should verify the expected _stdout_, expected _stderr_, and expected _return value_, even if the expected output is nothing. In some cases it may make sense to omit some of these tests, and that's perfectly ok!
 
+If your test involves calling a spy, you should create a second test case for the same condition that runs the spy in a new shell with `runInNewShell`. This ensures shpy works for sourced _and_ executed scripts
+
 The `assertDies` function is provided for tests that expect `shpy_die` to be called. This function takes the command to run as a string, an optional expected death message, and an optional expected exit status:
 
 ```sh
@@ -76,6 +78,15 @@ The `doOrDie` function is provided to fail a test if the given code returns a no
 
 ```sh
 doOrDie createSpy mySpy
+```
+
+The `runInNewShell` function is provided to run a command in a new process of the parent shell. This is useful to simulate shell scripts that are executed rather than sourced:
+
+```sh
+runInNewShell mySpy --some --args
+
+# To preserve argument whitespace, you may need to wrap your command in quotes
+runInNewShell 'mySpy --message "hello world" file1 file2'
 ```
 
 ### Running Tests

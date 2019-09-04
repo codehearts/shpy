@@ -5,18 +5,11 @@
 #
 
 itDisplaysUsageWhenAssertCallCountHasTooFewArgs() {
-    doOrDie createSpy dosomething
-    dosomething
-
     assertEquals 'usage message was not displayed' 'Usage: assertCallCount [MESSAGE] SPY COUNT' "$(assertCallCount dosomething 2>&1)"
 }
 
 itReturns1WhenAssertCallCountHasTooFewArgs() {
-    doOrDie createSpy dosomething
-    dosomething
-
     assertCallCount dosomething >/dev/null
-
     assertEquals 1 $?
 }
 
@@ -28,9 +21,25 @@ itDisplaysAssertionWhenAssertCallCountFails() {
     assertTrue 'output does not begin with "ASSERT:"' $?
 }
 
+itDisplaysAssertionWhenAssertCallCountFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
+
+    printf '%s' "$(assertCallCount dosomething 0)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:" from new shell' $?
+}
+
 itReturns1WhenAssertCallCountFails() {
     doOrDie createSpy dosomething
     dosomething
+
+    (assertCallCount dosomething 0 >/dev/null)
+    assertEquals 1 $?
+}
+
+itReturns1WhenAssertCallCountFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
 
     (assertCallCount dosomething 0 >/dev/null)
     assertEquals 1 $?
@@ -97,9 +106,25 @@ itDisplaysAssertionWhenAssertCalledWithFails() {
     assertTrue 'output does not begin with "ASSERT:"' $?
 }
 
+itDisplaysAssertionWhenAssertCalledWithFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    printf '%s' "$(assertCalledWith dosomething 456 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:" from new shell' $?
+}
+
 itReturns1WhenAssertCalledWithFails() {
     doOrDie createSpy dosomething
     dosomething 123
+
+    (assertCalledWith dosomething 456 >/dev/null)
+    assertEquals 1 $?
+}
+
+itReturns1WhenAssertCalledWithFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
 
     (assertCalledWith dosomething 456 >/dev/null)
     assertEquals 1 $?
@@ -112,9 +137,24 @@ itDisplaysNothingWhenAssertCalledWithPasses() {
     assertEquals 'unexpected output' '' "$(assertCalledWith dosomething 123 1>&2)"
 }
 
+itDisplaysNothingWhenAssertCalledWithPassesInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    assertEquals 'unexpected output from new shell' '' "$(assertCalledWith dosomething 123 1>&2)"
+}
+
 itReturns0WhenAssertCalledWithPasses() {
     doOrDie createSpy dosomething
     dosomething 123
+
+    assertCalledWith dosomething 123
+    assertEquals 0 $?
+}
+
+itReturns0WhenAssertCalledWithPassesInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
 
     assertCalledWith dosomething 123
     assertEquals 0 $?
@@ -130,6 +170,18 @@ itAdvancesToNextCallAfterAssertCalledWith() {
 
     assertCalledWith dosomething 2
     assertEquals 'second assertion was not for second call' 0 $?
+}
+
+itAdvancesToNextCallAfterAssertCalledWithInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 1
+    runInNewShell dosomething 2
+
+    assertCalledWith dosomething 1
+    assertEquals 'first assertion was not for first call in new shell' 0 $?
+
+    assertCalledWith dosomething 2
+    assertEquals 'second assertion was not for second call in new shell' 0 $?
 }
 
 #
@@ -153,6 +205,14 @@ itDisplaysAssertionWhenAssertCalledWith_Fails() {
     assertTrue 'output does not begin with "ASSERT:"' $?
 }
 
+itDisplaysAssertionWhenAssertCalledWith_FailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    printf '%s' "$(assertCalledWith_ 'message' dosomething 456 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:" from new shell' $?
+}
+
 itDisplaysMessageWhenAssertCalledWith_Fails() {
     doOrDie createSpy dosomething
     dosomething 123
@@ -161,9 +221,25 @@ itDisplaysMessageWhenAssertCalledWith_Fails() {
     assertTrue 'assertion output does not contain custom message' $?
 }
 
+itDisplaysMessageWhenAssertCalledWith_FailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    printf '%s' "$(assertCalledWith_ 'shpymsg' dosomething 456)" | grep -q "shpymsg"
+    assertTrue 'assertion output does not contain custom message from new shell' $?
+}
+
 itReturns1WhenAssertCalledWith_Fails() {
     doOrDie createSpy dosomething
     dosomething 123
+
+    (assertCalledWith_ 'message' dosomething 456 >/dev/null)
+    assertEquals 1 $?
+}
+
+itReturns1WhenAssertCalledWith_FailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
 
     (assertCalledWith_ 'message' dosomething 456 >/dev/null)
     assertEquals 1 $?
@@ -176,9 +252,24 @@ itDisplaysNothingWhenAssertCalledWith_Passes() {
     assertEquals 'unexpected output' '' "$(assertCalledWith_ 'message' dosomething 123)"
 }
 
+itDisplaysNothingWhenAssertCalledWith_PassesInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    assertEquals 'unexpected output from new shell' '' "$(assertCalledWith_ 'message' dosomething 123)"
+}
+
 itReturns0WhenAssertCalledWith_Passes() {
     doOrDie createSpy dosomething
     dosomething 123
+
+    assertCalledWith_ 'message' dosomething 123
+    assertEquals 0 $?
+}
+
+itReturns0WhenAssertCalledWith_PassesInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
 
     assertCalledWith_ 'message' dosomething 123
     assertEquals 0 $?
@@ -194,6 +285,18 @@ itAdvancesToNextCallAfterAssertCalledWith_() {
 
     assertCalledWith_ 'message' dosomething 2
     assertEquals 'second assertion was not for second call' 0 $?
+}
+
+itAdvancesToNextCallAfterAssertCalledWith_InNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 1
+    runInNewShell dosomething 2
+
+    assertCalledWith_ 'message' dosomething 1
+    assertEquals 'first assertion was not for first call in new shell' 0 $?
+
+    assertCalledWith_ 'message' dosomething 2
+    assertEquals 'second assertion was not for second call in new shell' 0 $?
 }
 
 #
@@ -218,10 +321,28 @@ itDisplaysAssertionWhenAssertCalledOnceWithFails() {
     assertTrue 'output does not begin with "ASSERT:"' $?
 }
 
+itDisplaysAssertionWhenAssertCalledOnceWithFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+    runInNewShell dosomething 456
+
+    printf '%s' "$(assertCalledOnceWith dosomething 123 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:" from new shell' $?
+}
+
 itReturns1WhenAssertCalledOnceWithFails() {
     doOrDie createSpy dosomething
     dosomething 123
     dosomething 456
+
+    (assertCalledOnceWith dosomething 123 >/dev/null)
+    assertEquals 1 $?
+}
+
+itReturns1WhenAssertCalledOnceWithFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+    runInNewShell dosomething 456
 
     (assertCalledOnceWith dosomething 123 >/dev/null)
     assertEquals 1 $?
@@ -234,9 +355,24 @@ itDisplaysNothingWhenAssertCalledOnceWithPasses() {
     assertEquals 'unexpected output' '' "$(assertCalledOnceWith dosomething 123 2>&1)"
 }
 
+itDisplaysNothingWhenAssertCalledOnceWithPassesInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    assertEquals 'unexpected output from new shell' '' "$(assertCalledOnceWith dosomething 123 2>&1)"
+}
+
 itReturns0WhenAssertCalledOnceWithPasses() {
     doOrDie createSpy dosomething
     dosomething 123
+
+    assertCalledOnceWith dosomething 123
+    assertEquals 0 $?
+}
+
+itReturns0WhenAssertCalledOnceWithPassesInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
 
     assertCalledOnceWith dosomething 123
     assertEquals 0 $?
@@ -263,6 +399,14 @@ itDisplaysAssertionWhenAssertCalledOnceWith_Fails() {
     assertTrue 'output does not begin with "ASSERT:"' $?
 }
 
+itDisplaysAssertionWhenAssertCalledOnceWith_FailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    printf '%s' "$(assertCalledOnceWith_ 'message' dosomething 456 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:" from new shell' $?
+}
+
 itDisplaysMessageWhenAssertCalledOnceWith_Fails() {
     doOrDie createSpy dosomething
     dosomething 123
@@ -271,9 +415,25 @@ itDisplaysMessageWhenAssertCalledOnceWith_Fails() {
     assertTrue 'assertion output does not contain custom message' $?
 }
 
+itDisplaysMessageWhenAssertCalledOnceWith_FailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    printf '%s' "$(assertCalledOnceWith_ 'shpymsg' dosomething 456)" | grep -q "shpymsg"
+    assertTrue 'assertion output does not contain custom message from new shell' $?
+}
+
 itReturns1WhenAssertCalledOnceWith_Fails() {
     doOrDie createSpy dosomething
     dosomething 123
+
+    (assertCalledOnceWith_ 'message' dosomething 456 >/dev/null)
+    assertEquals 1 $?
+}
+
+itReturns1WhenAssertCalledOnceWith_FailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
 
     (assertCalledOnceWith_ 'message' dosomething 456 >/dev/null)
     assertEquals 1 $?
@@ -286,9 +446,24 @@ itDisplaysNothingWhenAssertCalledOnceWith_Passes() {
     assertEquals 'unexpected output' '' "$(assertCalledOnceWith_ 'message' dosomething 123 2>&1)"
 }
 
+itDisplaysNothingWhenAssertCalledOnceWith_PassesInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    assertEquals 'unexpected output from new shell' '' "$(assertCalledOnceWith_ 'message' dosomething 123 2>&1)"
+}
+
 itReturns0WhenAssertCalledOnceWith_Passes() {
     doOrDie createSpy dosomething
     dosomething 123
+
+    assertCalledOnceWith_ 'message' dosomething 123
+    assertEquals 0 $?
+}
+
+itReturns0WhenAssertCalledOnceWith_PassesInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
 
     assertCalledOnceWith_ 'message' dosomething 123
     assertEquals 0 $?
@@ -315,9 +490,25 @@ itDisplaysAssertionWhenAssertNeverCalledFails() {
     assertTrue 'output does not begin with "ASSERT:"' $?
 }
 
+itDisplaysAssertionWhenAssertNeverCalledFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
+
+    printf '%s' "$(assertNeverCalled dosomething 2>/dev/null)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'output does not begin with "ASSERT:" from new shell' $?
+}
+
 itReturns1WhenAssertNeverCalledFails() {
     doOrDie createSpy dosomething
     dosomething
+
+    (assertNeverCalled dosomething >/dev/null)
+    assertEquals 1 $?
+}
+
+itReturns1WhenAssertNeverCalledFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
 
     (assertNeverCalled dosomething >/dev/null)
     assertEquals 1 $?
@@ -344,6 +535,14 @@ itDisplaysAssertionWhenAssertNeverCalledFailsWithOptionalMessage() {
     assertTrue 'assertion output does not begin with "ASSERT:"' $?
 }
 
+itDisplaysAssertionWhenAssertNeverCalledFailsWithOptionalMessageInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
+
+    printf '%s' "$(assertNeverCalled "shpymsg" dosomething)" | grep -q "^${ANSI_COLOR_PATTERN}ASSERT"
+    assertTrue 'assertion output does not begin with "ASSERT:" from new shell' $?
+}
+
 itDisplaysOptionalMessageWhenAssertNeverCalledFails() {
     doOrDie createSpy dosomething
     dosomething
@@ -352,9 +551,25 @@ itDisplaysOptionalMessageWhenAssertNeverCalledFails() {
     assertTrue 'assertion output does not contain optional message' $?
 }
 
+itDisplaysOptionalMessageWhenAssertNeverCalledFailsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
+
+    printf '%s' "$(assertNeverCalled "shpymsg" dosomething)" | grep -q "shpymsg"
+    assertTrue 'assertion output does not contain optional message from new shell' $?
+}
+
 itReturns1WhenAssertNeverCalledFailsWithOptionalMessage() {
     doOrDie createSpy dosomething
     dosomething
+
+    (assertNeverCalled 'message' dosomething >/dev/null)
+    assertEquals 1 $?
+}
+
+itReturns1WhenAssertNeverCalledFailsWithOptionalMessageInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
 
     (assertNeverCalled 'message' dosomething >/dev/null)
     assertEquals 1 $?

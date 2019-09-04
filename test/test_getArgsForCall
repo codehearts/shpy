@@ -50,9 +50,25 @@ itDisplaysErrorWhenGettingCallArgsForInvalidCallNumber() {
     assertTrue 'output does not begin with "Error:"' $?
 }
 
+itDisplaysErrorWhenGettingCallArgsForInvalidCallNumberInNewShell() {
+    doOrDie createSpy someSpy
+    runInNewShell someSpy
+
+    printf '%s\n' "$(getArgsForCall someSpy 999 2>&1 >/dev/null)" | grep -q '^Error:'
+    assertTrue 'output does not begin with "Error:" from new shell' $?
+}
+
 itReturns1WhenGettingCallArgsForInvalidCallNumber() {
     doOrDie createSpy someSpy
     someSpy
+
+    getArgsForCall someSpy 999 >/dev/null 2>&1
+    assertEquals 1 $?
+}
+
+itReturns1WhenGettingCallArgsForInvalidCallNumberInNewShell() {
+    doOrDie createSpy someSpy
+    runInNewShell someSpy
 
     getArgsForCall someSpy 999 >/dev/null 2>&1
     assertEquals 1 $?
@@ -68,6 +84,16 @@ itOutputsNothingWhenGettingCallArgsForCallWithoutArgs() {
     assertEquals 'output is not empty for call without args' '' "$(getArgsForCall someSpy 2 2>&1)"
 }
 
+itOutputsNothingWhenGettingCallArgsForCallWithoutArgsInNewShell() {
+    doOrDie createSpy someSpy
+    runInNewShell someSpy
+    runInNewShell someSpy
+
+    assertEquals 'output is not empty for call without args in new shell' '' "$(getArgsForCall someSpy 1 2>&1)"
+
+    assertEquals 'output is not empty for call without args in new shell' '' "$(getArgsForCall someSpy 2 2>&1)"
+}
+
 itReturns0WhenGettingCallArgsForCallWithoutArgs() {
     doOrDie createSpy someSpy
     someSpy
@@ -80,9 +106,28 @@ itReturns0WhenGettingCallArgsForCallWithoutArgs() {
     assertTrue 'second call returned a non-zero status' $?
 }
 
+itReturns0WhenGettingCallArgsForCallWithoutArgsInNewShell() {
+    doOrDie createSpy someSpy
+    runInNewShell someSpy
+    runInNewShell someSpy
+
+    getArgsForCall someSpy 1 >/dev/null 2>&1
+    assertTrue 'first call returned a non-zero status in new shell' $?
+
+    getArgsForCall someSpy 2 >/dev/null 2>&1
+    assertTrue 'second call returned a non-zero status in new shell' $?
+}
+
 itOutputsNoQuotesAroundSingleWordArgsWhenGettingCallArgs() {
     doOrDie createSpy someSpy
     someSpy "foo" bar 'baz'
+
+    assertEquals 'args were not output without quotes' 'foo bar baz' "$(getArgsForCall someSpy 1 2>&1)"
+}
+
+itOutputsNoQuotesAroundSingleWordArgsWhenGettingCallArgsInNewShell() {
+    doOrDie createSpy someSpy
+    runInNewShell someSpy "foo" bar 'baz'
 
     assertEquals 'args were not output without quotes' 'foo bar baz' "$(getArgsForCall someSpy 1 2>&1)"
 }
@@ -96,6 +141,15 @@ itOutputsDoubleQuotesAroundMultiWordArgsWhenGettingCallArgs() {
         "$(getArgsForCall someSpy 1 2>&1)"
 }
 
+itOutputsDoubleQuotesAroundMultiWordArgsWhenGettingCallArgsInNewShell() {
+    doOrDie createSpy someSpy
+    runInNewShell "someSpy \"foo bar\" abc def 'baz bat' \"$(printf "tab\\tinside")\""
+
+    assertEquals 'multi-word args were not output with double quotes in new shell' \
+        "$(printf '"foo bar" abc def "baz bat" "tab\tinside"')" \
+        "$(getArgsForCall someSpy 1 2>&1)"
+}
+
 itOutputsCorrectArgsForCallNumberWhenGettingCallArgs() {
     doOrDie createSpy someSpy
 
@@ -103,9 +157,23 @@ itOutputsCorrectArgsForCallNumberWhenGettingCallArgs() {
     someSpy
     someSpy -a "foo bar" -baz
 
-    assertEquals "incorrect args output for first call" "foo" "$(getArgsForCall someSpy 1 2>&1)"
+    assertEquals 'incorrect args output for first call' "foo" "$(getArgsForCall someSpy 1 2>&1)"
 
-    assertEquals "incorrect args output for second call" '' "$(getArgsForCall someSpy 2 2>&1)"
+    assertEquals 'incorrect args output for second call' '' "$(getArgsForCall someSpy 2 2>&1)"
 
-    assertEquals "incorrect args output for third call" '-a "foo bar" -baz' "$(getArgsForCall someSpy 3 2>&1)"
+    assertEquals 'incorrect args output for third call' '-a "foo bar" -baz' "$(getArgsForCall someSpy 3 2>&1)"
+}
+
+itOutputsCorrectArgsForCallNumberWhenGettingCallArgsInNewShell() {
+    doOrDie createSpy someSpy
+
+    runInNewShell someSpy foo
+    runInNewShell someSpy
+    runInNewShell 'someSpy -a "foo bar" -baz'
+
+    assertEquals 'incorrect args output for first call in new shell' "foo" "$(getArgsForCall someSpy 1 2>&1)"
+
+    assertEquals 'incorrect args output for second call in new shell' '' "$(getArgsForCall someSpy 2 2>&1)"
+
+    assertEquals 'incorrect args output for third call in new shell' '-a "foo bar" -baz' "$(getArgsForCall someSpy 3 2>&1)"
 }

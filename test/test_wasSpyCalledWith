@@ -26,9 +26,24 @@ itDisplaysNothingWhenWasSpyCalledWithPassesWithNoSpyArgs() {
     assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 2>&1)"
 }
 
+itDisplaysNothingWhenWasSpyCalledWithPassesWithNoSpyArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
+
+    assertEquals 'unexpected output from new shell' '' "$(wasSpyCalledWith dosomething 2>&1)"
+}
+
 itReturns0WhenWasSpyCalledWithPassesWithNoSpyArgs() {
     doOrDie createSpy dosomething
     dosomething
+
+    wasSpyCalledWith dosomething
+    assertEquals 0 $?
+}
+
+itReturns0WhenWasSpyCalledWithPassesWithNoSpyArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
 
     wasSpyCalledWith dosomething
     assertEquals 0 $?
@@ -41,9 +56,24 @@ itDisplaysNothingWhenWasSpyCalledWithPassesWithOneSpyArg() {
     assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 123 2>&1)"
 }
 
-itReturns0WhenWasSpyCalledWithPassesWithOneSpyArgs() {
+itDisplaysNothingWhenWasSpyCalledWithPassesWithOneSpyArgInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    assertEquals 'unexpected output from new shell' '' "$(wasSpyCalledWith dosomething 123 2>&1)"
+}
+
+itReturns0WhenWasSpyCalledWithPassesWithOneSpyArg() {
     doOrDie createSpy dosomething
     dosomething 123
+
+    wasSpyCalledWith dosomething 123
+    assertEquals 0 $?
+}
+
+itReturns0WhenWasSpyCalledWithPassesWithOneSpyArgInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
 
     wasSpyCalledWith dosomething 123
     assertEquals 0 $?
@@ -56,9 +86,24 @@ itDisplaysNothingWhenWasSpyCalledWithPassesWithTwoSpyArgs() {
     assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 123 456 2>&1)"
 }
 
+itDisplaysNothingWhenWasSpyCalledWithPassesWithTwoSpyArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123 456
+
+    assertEquals 'unexpected output from new shell' '' "$(wasSpyCalledWith dosomething 123 456 2>&1)"
+}
+
 itReturns0WhenWasSpyCalledWithPassesWithTwoSpyArgs() {
     doOrDie createSpy dosomething
     dosomething 123 456
+
+    wasSpyCalledWith dosomething 123 456
+    assertEquals 0 $?
+}
+
+itReturns0WhenWasSpyCalledWithPassesWithTwoSpyArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123 456
 
     wasSpyCalledWith dosomething 123 456
     assertEquals 0 $?
@@ -71,9 +116,24 @@ itDisplaysNothingWhenWasSpyCalledWithFailsWithNonexistentSpyArgs() {
     assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 123 2>&1)"
 }
 
+itDisplaysNothingWhenWasSpyCalledWithFailsWithNonexistentSpyArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
+
+    assertEquals 'unexpected output from new shell' '' "$(wasSpyCalledWith dosomething 123 2>&1)"
+}
+
 itReturns1WhenWasSpyCalledWithPassesWithNonexistentSpyArgs() {
     doOrDie createSpy dosomething
     dosomething
+
+    wasSpyCalledWith dosomething 123
+    assertEquals 1 $?
+}
+
+itReturns1WhenWasSpyCalledWithPassesWithNonexistentSpyArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething
 
     wasSpyCalledWith dosomething 123
     assertEquals 1 $?
@@ -86,9 +146,24 @@ itDisplaysNothingWhenWasSpyCalledWithFailsMatchingEmptyStringToNoArgs() {
     assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething 2>&1)"
 }
 
+itDisplaysNothingWhenWasSpyCalledWithFailsMatchingEmptyStringToNoArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething '""'
+
+    assertEquals 'unexpected output from new shell' '' "$(wasSpyCalledWith dosomething 2>&1)"
+}
+
 itReturns1WhenWasSpyCalledWithFailsMatchingEmptyStringToNoArgs() {
     doOrDie createSpy dosomething
     dosomething ''
+
+    wasSpyCalledWith dosomething
+    assertEquals 1 $?
+}
+
+itReturns1WhenWasSpyCalledWithFailsMatchingEmptyStringToNoArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething '""'
 
     wasSpyCalledWith dosomething
     assertEquals 1 $?
@@ -101,9 +176,24 @@ itDisplaysNothingWhenWasSpyCalledWithPassesWithWhitespaceInArgs() {
     assertEquals 'unexpected output' '' "$(wasSpyCalledWith dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')" 2>&1)"
 }
 
+itDisplaysNothingWhenWasSpyCalledWithPassesWithWhitespaceInArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell "dosomething '$(printf ' line 1\nline 2\n\tline 3\nline 4  ')'"
+
+    assertEquals 'unexpected output from new shell' '' "$(wasSpyCalledWith dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')" 2>&1)"
+}
+
 itReturns0WhenWasSpyCalledWithPassesWithWhitespaceInArgs() {
     doOrDie createSpy dosomething
     dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')"
+
+    wasSpyCalledWith dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')"
+    assertEquals 0 $?
+}
+
+itReturns0WhenWasSpyCalledWithPassesWithWhitespaceInArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell "dosomething '$(printf ' line 1\nline 2\n\tline 3\nline 4  ')'"
 
     wasSpyCalledWith dosomething "$(printf ' line 1\nline 2\n\tline 3\nline 4  ')"
     assertEquals 0 $?
