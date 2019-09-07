@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 itDisplaysUsageWhenGettingCallArgsWithoutArgs() {
     assertEquals 'usage message was not displayed' 'Usage: getArgsForCall SPY CALL_NUMBER' "$(getArgsForCall 2>&1)"

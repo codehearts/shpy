@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 itRunsTestsWithNounset() {
   # if nounset is set, this subshell will exit with a nonzero status

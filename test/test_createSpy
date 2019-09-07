@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 itDisplaysUsageWhenCreatingSpyWithoutArgs() {
     assertEquals 'usage message was not displayed' 'Usage: spy SPY_NAME' "$(createSpy 2>&1)"
