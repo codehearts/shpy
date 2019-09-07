@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # Ensure SHPY_PATH is set
 if [ -z "${SHPY_PATH:+is_set_and_not_null}" ]; then

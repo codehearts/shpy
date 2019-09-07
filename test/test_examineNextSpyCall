@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 itDisplaysUsageWhenExaminingNextCallWithoutArgs() {
     assertEquals 'usage message was not displayed' 'Usage: examineNextSpyCall SPY' "$(examineNextSpyCall 2>&1)"
