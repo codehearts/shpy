@@ -21,6 +21,9 @@ RUN apk --no-cache add \
 # Create a non-root `shpy` user
 RUN addgroup -S shpy && adduser -S shpy -G shpy
 
+# Define the shpy path globally
+ENV SHPY_PATH /shpy/shpy
+
 # Copy in shellcheck and shunit2
 COPY --from=shellcheck --chown=shpy /bin/shellcheck /usr/local/bin/shellcheck
 COPY --from=shunit --chown=shpy /shunit2/shunit2 /usr/local/bin/shunit2

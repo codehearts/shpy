@@ -31,6 +31,8 @@ export SHPY_PATH
 
 . path/to/shpy
 ```
+
+When using the Docker image, `SHPY_PATH` is preset as `/shpy/shpy` for convenience
 	
 A summary of functions:
 
