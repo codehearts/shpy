@@ -98,6 +98,13 @@ docker-compose up --build \
   && docker-compose ps | grep -v 'Exit 0'
 ```
 
+To run tests for the "renamer" example, set the `CMD` environment variable like so:
+
+```sh
+CMD=/shpy/examples/renamer/test.sh docker-compose up --build \
+  && docker-compose ps | grep -v 'Exit 0'
+```
+
 If any services show a non-zero exit state, you can view the output from that service with `docker-compose logs <service>` (e.g. `docker-compose logs shellcheck`)
 
 Code coverage results will be available in the `coverage/` directory at the root of the repo. Opening `coverage/index.html` gives you a web interface to the results

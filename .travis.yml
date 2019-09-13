@@ -12,6 +12,10 @@ env:
   - SERVICE=mksh
   - SERVICE=shellcheck
   - SERVICE=zsh
+  - SERVICE=ash CMD=/shpy/examples/renamer/test.sh
+  - SERVICE=bash CMD=/shpy/examples/renamer/test.sh
+  - SERVICE=mksh CMD=/shpy/examples/renamer/test.sh
+  - SERVICE=zsh CMD=/shpy/examples/renamer/test.sh
 
 script:
   - docker-compose run $SERVICE
