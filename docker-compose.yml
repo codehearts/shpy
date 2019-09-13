@@ -10,13 +10,13 @@ services:
   ash:
     image: shpy:local
     depends_on: [base]
-    command: sh /shpy/test/run_tests
+    command: sh ${CMD:-/shpy/test/run_tests}
     volumes:
       - ./:/shpy:ro
   bash:
     image: shpy:local
     depends_on: [base]
-    command: bash /shpy/test/run_tests
+    command: bash ${CMD:-/shpy/test/run_tests}
     volumes:
       - ./:/shpy:ro
   checkbashisms:
@@ -42,7 +42,7 @@ services:
   mksh:
     image: shpy:local
     depends_on: [base]
-    command: mksh /shpy/test/run_tests
+    command: mksh ${CMD:-/shpy/test/run_tests}
     volumes:
       - ./:/shpy:ro
   shellcheck:
@@ -55,7 +55,7 @@ services:
     image: shpy:local
     depends_on: [base]
     environment: ['SHUNIT_PARENT=run_tests']
-    command: zsh -o shwordsplit /shpy/test/run_tests
+    command: zsh -o shwordsplit ${CMD:-/shpy/test/run_tests}
     volumes:
       - ./:/shpy:ro
 
