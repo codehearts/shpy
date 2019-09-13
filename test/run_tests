@@ -16,6 +16,11 @@ export ANSI_COLOR_PATTERN
 SHELL="$(ps -e | grep -Eo "\b$$\b.+[0-9:.]+\s+\S+\b")"
 SHELL="${SHELL##* }"
 
+# Use bash if kcov is collecting coverage because no other shell is supported
+if [ -n "${KCOV_BASH_COMMAND:+is_set}" ]; then
+  SHELL=bash
+fi
+
 #
 # Testcase discovery function
 #

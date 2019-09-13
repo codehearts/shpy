@@ -1,12 +1,9 @@
-version: '3.3'
+version: '3.4'
 
 services:
   base:
     build: .
     image: shpy:local
-    # Share /usr/local/bin via the "shunit" volume
-    volumes:
-      - shunit:/usr/local/bin
   ash:
     image: shpy:local
     depends_on: [base]
@@ -22,23 +19,17 @@ services:
   checkbashisms:
     image: shpy:local
     depends_on: [base]
-    command: sh -c 'checkbashisms /shpy/shpy /shpy/shpy-shunit2 /shpy/test/*'
+    command: sh -c 'checkbashisms /shpy/shpy /shpy/shpy-shunit2 /shpy/test/* /shpy/examples/renamer/*renamer*'
     volumes:
       - ./:/shpy:ro
   kcov:
-    image: kcov/kcov:v33
-    depends_on: [base]
-    security_opt:
-      - seccomp=unconfined
-    environment:
-      # Add the shared "shunit" volume to the path
-      PATH: "${PATH}:/usr/local/bin/shunit2"
+    build:
+      context: .
+      target: kcov
+    command: kcov --exclude-path=/usr/local/bin --exclude-pattern=.yml /shpy/coverage ${CMD:-/shpy/test/run_tests}
     volumes:
-      # Mount the shared "shunit" volume from the base image
-      - shunit:/usr/local/bin/shunit2:ro
       - ./coverage:/shpy/coverage
       - ./:/shpy:ro
-    command: --exclude-path=/usr/local/bin /shpy/coverage /shpy/test/run_tests
   mksh:
     image: shpy:local
     depends_on: [base]
@@ -48,7 +39,7 @@ services:
   shellcheck:
     image: shpy:local
     depends_on: [base]
-    command: sh -c 'shellcheck /shpy/shpy /shpy/shpy-shunit2 /shpy/test/*'
+    command: sh -c 'shellcheck -x /shpy/shpy /shpy/shpy-shunit2 /shpy/test/* /shpy/examples/renamer/*renamer*'
     volumes:
       - ./:/shpy:ro
   zsh:
@@ -58,8 +49,3 @@ services:
     command: zsh -o shwordsplit ${CMD:-/shpy/test/run_tests}
     volumes:
       - ./:/shpy:ro
-
-volumes:
-  # Create a volume to share the shunit2 version from the base image
-  shunit:
-    driver: local
