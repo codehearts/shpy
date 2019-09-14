@@ -4,26 +4,92 @@
 [![Coverage][coverage-badge]][coverage-link]
 [![MIT License][license-badge]](LICENSE.md)
 
-Spies and stubs for shell unit testing
+POSIX compliant<sup>*</sup> spies and stubs for shell unit testing
 
-| Ash | Bash | Mksh | Zsh |
+| ash | bash | mksh | zsh |
 | :-: | :--: | :--: | :-: |
 | [![Ash Build Status][ash-build-badge]][build-link] | [![Bash Build Status][bash-build-badge]][build-link] | [![Mksh Build Status][mksh-build-badge]][build-link] | [![Zsh Build Status][zsh-build-badge]][build-link] |
 
 Features at a glance:
 
-* Create spies for any command or function in the shell environment
-* Stub stdout and return value of spies
-* See call count and check arguments passed to the spy
-* [Integrates](#shunit2-integration) with the [shunit2](https://github.com/kward/shunit2) testing framework
+- Create spies for any command or function in the shell environment
+- Stub the stdout, stderr, and return value of spies
+- See the call count and check arguments passed to spies
+- [Integrates](#shunit2-integration) with the [shunit2](https://github.com/kward/shunit2) testing framework
+
+## Table of Contents
+
+- [Why Unit Test Shell Scripts?](#why-unit-test-shell-scripts)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [API Reference](#api-reference)
+  - [shunit2 Integration](#shunit2-integration)
+- [A Word On Shell Portability](#a-word-on-shell-portability)
+
+## Why Unit Test Shell Scripts?
+
+Like other scripting languages, shell scripts can become complex and difficult to maintain over time. Unit tests help to avoid regressions and verify the correctness of functionality, but where do spies come in?
+
+Spies are useful for limiting the dependencies and scope of a test. Code that utilizes system binaries or shell functions can be tested without running the underlying implementations, allowing tests to focus solely on the system under test
+
+## Usage
+
+Let's try out shpy! If you don't want to install shpy locally you can run the official [Docker](https://www.docker.com) image like so:
+
+```sh
+docker run -it --rm shpy/shpy:1.0.0
+```
+
+To use shpy, the `SHPY_PATH` environment variable must be set as the path to shpy and the shpy script must be sourced. If you're using the Docker image, `SHPY_PATH` is already set and shpy is located at `/shpy/shpy`
+
+```sh
+SHPY_PATH=path/to/shpy
+. path/to/shpy
+```
+
+Let's create a spy for the `touch` command and call it!
+
+```sh
+createSpy touch
+touch my-new-file
+ls my-new-file # No such file or directory, touch wasn't actually called
+```
+
+The call to `touch` was _stubbed out_ with a test dummy in place of the actual implementation. Spies record data about the calls made to them, allowing you to check the call count or call args
+
+```sh
+getSpyCallCount touch # 1
+wasSpyCalledWith touch my-new-file # true
+wasSpyCalledWith touch my-old-file # false
+getArgsForCall touch 1 # my-new-file
+```
+
+Spies can also simulate successful or unsuccessful calls, like so:
+
+```sh
+createSpy -o 'call me once, shame on you' -e '' -r 0 \
+          -e 'call me twice, shame on me' -o '' -r 1 touch
+touch my-new-file # outputs "call me once, shame on you" to stdout, returns true
+touch my-new-file # outputs "call me twice, shame on me" to stderr, returns false
+```
+
+When you're done playing with shpy, it's only polite to clean up after yourself
+
+```sh
+cleanupSpies
+touch my-new-file
+ls my-new-file # my-new-file, touch was actually called!
+```
+
+Your shell environment is back to normal, and you've got a new tool at your disposal! :mortar_board:
 
 ## Contributing
 
-If you'd like to help with shpy's development, or just gain a better understanding of how it's managed, check out the [CONTRIBUTING.md](CONTRIBUTING.md)
+If you'd like to help with shpy's development, or just gain a better understanding of the internals, check out the [contributor guidelines](CONTRIBUTING.md)
 
-## API
+## API Reference
 
-To use **shpy** in your tests, set `SHPY_PATH` to the location of `shpy` and source the script:
+To use shpy in your tests, set `SHPY_PATH` to the location of `shpy` and source the script:
 
 ```
 SHPY_PATH=path/to/shpy
@@ -51,7 +117,7 @@ Function | Description
 
 ### shunit2 Integration
 
-To use **shpy** asserts in your **shunit2** tests, you must also source the
+To use shpy asserts in your shunit2 tests, you must also source the
 `shpy-shunit2` script:
 
 	. path/to/shpy
@@ -68,18 +134,17 @@ Function                                              | Description
 `assertCalledOnceWith_ MESSAGE SPY [ARG]...` | Same as `assertCalledOnceWith`, with a specific assertion message
 `assertNeverCalled [MESSAGE] SPY`            | Assert the spy was never invoked
 
-Use the `oneTimeTearDown` hook provided by **shunit2** to clean up any spies:
+Use the `tearDown` hook provided by shunit2 to remove all spies after each test
 
-    oneTimeTearDown() {
-        cleanupSpies
-    }
+```sh
+tearDown() {
+  cleanupSpies
+}
+```
 
 ## A Word On Shell Portability
 
-While **shunit2** remains strictly [POSIX
-compliant](http://shellhaters.herokuapp.com/posix), **shpy** relies on [portable but more modern shell features](http://apenwarr.ca/log/?m=201102#28), such as
-function-local variables.  To be clear, **shpy** does not use any
-[Bashisms](https://wiki.ubuntu.com/DashAsBinSh).
+shpy relies on [portable but more modern shell features](http://apenwarr.ca/log/?m=201102#28), such as the `local` keyword. To be clear, shpy does not use any [Bashisms](https://wiki.ubuntu.com/DashAsBinSh)
 
 [coverage-badge]:   https://codecov.io/gh/codehearts/shpy/branch/master/graph/badge.svg
 [coverage-link]:    https://codecov.io/gh/codehearts/shpy
