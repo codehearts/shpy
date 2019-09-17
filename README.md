@@ -32,6 +32,8 @@ Like other scripting languages, shell scripts can become complex and difficult t
 
 Spies are useful for limiting the dependencies and scope of a test. Code that utilizes system binaries or shell functions can be tested without running the underlying implementations, allowing tests to focus solely on the system under test
 
+The benefits of spies are even greater when testing code that relies on a network. For an example of using spies to stub `curl` and make unit tests completely offline, see [examples/coverfetch](examples/coverfetch)
+
 ## Usage
 
 Let's try out shpy! If you don't want to install shpy locally you can run the official [Docker](https://www.docker.com) image like so:

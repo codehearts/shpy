@@ -19,7 +19,7 @@ services:
   checkbashisms:
     image: shpy:local
     depends_on: [base]
-    command: sh -c 'checkbashisms /shpy/shpy /shpy/shpy-shunit2 /shpy/test/* /shpy/examples/renamer/*renamer*'
+    command: sh -c 'checkbashisms /shpy/shpy /shpy/shpy-shunit2 /shpy/test/* /shpy/examples/renamer/*renamer* /shpy/examples/coverfetch/*coverfetch*'
     volumes:
       - ./:/shpy:ro
   kcov:
@@ -39,7 +39,7 @@ services:
   shellcheck:
     image: shpy:local
     depends_on: [base]
-    command: sh -c 'shellcheck -x /shpy/shpy /shpy/shpy-shunit2 /shpy/test/* /shpy/examples/renamer/*renamer*'
+    command: sh -c 'shellcheck -x /shpy/shpy /shpy/shpy-shunit2 /shpy/test/* /shpy/examples/renamer/*renamer* /shpy/examples/coverfetch/*coverfetch*'
     volumes:
       - ./:/shpy:ro
   zsh:

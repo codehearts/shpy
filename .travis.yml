@@ -16,6 +16,10 @@ env:
   - SERVICE=bash CMD=/shpy/examples/renamer/test.sh
   - SERVICE=mksh CMD=/shpy/examples/renamer/test.sh
   - SERVICE=zsh CMD=/shpy/examples/renamer/test.sh
+  - SERVICE=ash CMD=/shpy/examples/coverfetch/test.sh
+  - SERVICE=bash CMD=/shpy/examples/coverfetch/test.sh
+  - SERVICE=mksh CMD=/shpy/examples/coverfetch/test.sh
+  - SERVICE=zsh CMD=/shpy/examples/coverfetch/test.sh
 
 script:
   - docker-compose run $SERVICE
