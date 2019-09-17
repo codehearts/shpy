@@ -98,10 +98,10 @@ docker-compose up --build \
   && docker-compose ps | grep -v 'Exit 0'
 ```
 
-To run tests for the "renamer" example, set the `CMD` environment variable like so:
+To run tests for an example, set the `CMD` environment variable as follows, where `<example>` is the name of the example (renamer, coverfetch)
 
 ```sh
-CMD=/shpy/examples/renamer/test.sh docker-compose up --build \
+CMD=/shpy/examples/<example>/test.sh docker-compose up --build \
   && docker-compose ps | grep -v 'Exit 0'
 ```
 

@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+
+# Display usage info with wrong number of args
+if [ $# -ne 2 ]; then
+  printf 'Usage: %s ARTIST ALBUM\n' "$0"
+  printf 'Fetches cover art from the Cover Art Archive and MusicBrainz\n'
+  printf 'The album art is saved to cover.png in the current directory\n'
+  printf 'Exits with 1 if the album lookup fails, 2 if the art download fails\n'
+  exit 1
+fi
+
+coverfetch() {
+  artist="$1"
+  album="$2"
+
+  # Query MusicBrainz for information about this artist/album pair
+  mb_response="$(
+    curl --silent --get -d 'limit=1' -d 'fmt=json' \
+    -A 'shpy/1.0 ( https://github.com/codehearts/shpy )' \
+    --data-urlencode "query=artist:'$artist' AND release:'$album'" \
+    http://musicbrainz.org/ws/2/release/
+  )"
+  
+  # Extract the MBID for the album from the API response
+  # This regex extracts `abc-123` from `"releases":[{"id":"abc-123"`
+  mbid="$(
+    echo "$mb_response" \
+    | sed -En 's/^.*"releases":\[\{"id":"([a-z0-9-]+)".*$/\1/p'
+  )"
+
+  # Display an error and return 1 if no MBID could be extracted
+  if [ -z "$mbid" ]; then
+    printf 'Failed to obtain MBID from MusicBrainz database\n' >&2
+    return 1
+  fi
+
+  # Use the MBID to download the album artwork from Cover Art Archive
+  http_status="$(
+    curl --silent --location --get \
+    --output 'cover.png' --write-out '%{http_code}' \
+    "http://coverartarchive.org/release/$mbid/front-500.png"
+  )"
+
+  # Display an error and return 2 if the request received a non-200 response
+  if [ "$http_status" != "200" ]; then
+    printf 'Failed to download cover art from Cover Art Archive\n' >&2
+    return 2
+  fi
+}
+
+coverfetch "$@"

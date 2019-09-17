@@ -42,8 +42,10 @@ FROM alpine:3.10.1
 
 # Install shells and tools available as Alpine packages
 # Ncurses is installed for `tput`, which is used by shunit to colorize output
+# Curl is installed for the `coverfetch` example
 RUN apk --no-cache add \
       ncurses=6.1_p20190518-r0 \
+      curl=7.66.0-r0 \
       checkbashisms=2.19.5-r0 \
       bash=5.0.0-r0 \
       mksh=57-r0 \
