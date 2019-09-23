@@ -24,13 +24,13 @@ ENV SHPY_PATH /shpy/shpy
 # Copy in shunit2
 COPY --from=shunit --chown=shpy /shunit2/shunit2 /usr/local/bin/shunit2
 
-# Create /shpy/ for the non-root user and run as them
-RUN mkdir /shpy/ && chown shpy:shpy /shpy/
+# Create /shpy/ and /app/ for the non-root user and run as them
+RUN mkdir /shpy/ /app/ && chown shpy:shpy /shpy/ /app/
 USER shpy
 
 # Copy the current shpy sources
 COPY --chown=shpy ./ /shpy/
-WORKDIR /home/shpy/
+WORKDIR /app/
 
 # By default, run `/bin/sh` (which is `dash` under Debian)
 CMD ["/bin/sh"]
@@ -61,13 +61,13 @@ ENV SHPY_PATH /shpy/shpy
 COPY --from=shellcheck --chown=shpy /bin/shellcheck /usr/local/bin/shellcheck
 COPY --from=shunit --chown=shpy /shunit2/shunit2 /usr/local/bin/shunit2
 
-# Create /shpy/ for the non-root user and run as them
-RUN mkdir /shpy/ && chown shpy:shpy /shpy/
+# Create /shpy/ and /app/ for the non-root user and run as them
+RUN mkdir /shpy/ /app/ && chown shpy:shpy /shpy/ /app/
 USER shpy
 
 # Copy the current shpy sources
 COPY --chown=shpy ./ /shpy/
-WORKDIR /home/shpy/
+WORKDIR /app/
 
 # By default, run `/bin/sh` (which is `ash` under BusyBox in Alpine Linux)
 CMD ["/bin/sh"]
