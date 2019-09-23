@@ -2,7 +2,7 @@
 
 [![Build Status][build-badge]][build-link]
 [![Coverage][coverage-badge]][coverage-link]
-[![MIT License][license-badge]](LICENSE.md)
+[![MIT License][license-badge]](https://github.com/codehearts/shpy/blob/master/LICENSE.md)
 
 POSIX compliant<sup>*</sup> spies and stubs for shell unit testing
 
@@ -30,9 +30,9 @@ Features at a glance:
 
 Like other scripting languages, shell scripts can become complex and difficult to maintain over time. Unit tests help to avoid regressions and verify the correctness of functionality, but where do spies come in?
 
-Spies are useful for limiting the dependencies and scope of a test. Code that utilizes system binaries or shell functions can be tested without running the underlying implementations, allowing tests to focus solely on the system under test
+Spies are useful for limiting the dependencies and scope of a test. Code that utilizes system binaries or shell functions can be tested without running the underlying implementations, allowing tests to focus solely on the system under test. To see this in action, see [examples/renamer](https://github.com/codehearts/shpy/blob/master/examples/renamer)
 
-The benefits of spies are even greater when testing code that relies on a network. For an example of using spies to stub `curl` and make unit tests completely offline, see [examples/coverfetch](examples/coverfetch)
+The benefits of spies are even greater when testing code that relies on a network. For an example of using spies to stub `curl` and make unit tests completely offline, see [examples/coverfetch](https://github.com/codehearts/shpy/blob/master/examples/coverfetch)
 
 ## Usage
 
@@ -87,7 +87,7 @@ Your shell environment is back to normal, and you've got a new tool at your disp
 
 ## Contributing
 
-If you'd like to help with shpy's development, or just gain a better understanding of the internals, check out the [contributor guidelines](CONTRIBUTING.md)
+If you'd like to help with shpy's development, or just gain a better understanding of the internals, check out the [contributor guidelines](https://github.com/codehearts/shpy/blob/master/CONTRIBUTING.md)
 
 ## API Reference
 
