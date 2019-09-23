@@ -20,6 +20,7 @@ Features at a glance:
 ## Table of Contents
 
 - [Why Unit Test Shell Scripts?](#why-unit-test-shell-scripts)
+- [Docker Image](#docker-image)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [API Reference](#api-reference)
@@ -33,6 +34,31 @@ Like other scripting languages, shell scripts can become complex and difficult t
 Spies are useful for limiting the dependencies and scope of a test. Code that utilizes system binaries or shell functions can be tested without running the underlying implementations, allowing tests to focus solely on the system under test. To see this in action, see [examples/renamer](https://github.com/codehearts/shpy/blob/master/examples/renamer)
 
 The benefits of spies are even greater when testing code that relies on a network. For an example of using spies to stub `curl` and make unit tests completely offline, see [examples/coverfetch](https://github.com/codehearts/shpy/blob/master/examples/coverfetch)
+
+## Docker Image
+
+Shpy is available as [shpy/shpy](https://hub.docker.com/r/shpy/shpy) on Docker Hub. The latest master node is published as `shpy/shpy:latest`, while tagged releases are available as `shpy/shpy:1.0.0`. To use `kcov`, append `-kcov` to the tag or use the `kcov` tag for the latest master node
+
+To use the shpy image, mount your code into `/app` and specify the command you want to run
+
+```sh
+docker --rm -v$PWD:/app:ro shpy/shpy:1.0.0 zsh /app/tests/run_my_tests.sh
+#           ^-your project                 ^--------your command---------
+```
+
+The following scripts and binaries are provided by this image
+
+| Name | Type | Location |
+| :--- | :--- | :------- |
+| shpy | script |  `/shpy/shpy` |
+| shpy-shunit2 | script | `/shpy/shpy-shunit2` |
+| shunit2 | script | `/usr/local/bin/shunit2` |
+| ash | binary | `/bin/sh` |
+| bash | binary | `/bin/bash` |
+| checkbashisms | binary | `/usr/bin/checkbashisms` |
+| mksh | binary | `/bin/mksh` |
+| shellcheck | binary | `/usr/local/bin/shellcheck` |
+| zsh | binary | `/bin/zsh` |
 
 ## Usage
 
