@@ -39,7 +39,7 @@ The benefits of spies are even greater when testing code that relies on a networ
 
 Shpy is available as [shpy/shpy](https://hub.docker.com/r/shpy/shpy) on Docker Hub. The latest master node is published as `shpy/shpy:latest`, while tagged releases are available as `shpy/shpy:1.0.0`. To use `kcov`, append `-kcov` to the tag or use the `kcov` tag for the latest master node
 
-To use the shpy image, mount your code into `/app` and specify the command you want to run
+To use the shpy image, mount your code into `/app` and specify the command you want to run. When using kcov, you can also mount `/coverage` and output your coverage reports to that directory
 
 ```sh
 docker --rm -v$PWD:/app:ro shpy/shpy:1.0.0 zsh /app/tests/run_my_tests.sh

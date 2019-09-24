@@ -27,9 +27,9 @@ services:
     build:
       context: .
       target: kcov
-    command: kcov --exclude-path=/usr/local/bin --exclude-pattern=.yml /shpy/coverage ${CMD:-/shpy/test/run_tests}
+    command: kcov --exclude-path=/usr/local/bin --exclude-pattern=.yml /coverage ${CMD:-/shpy/test/run_tests}
     volumes:
-      - ./coverage:/shpy/coverage
+      - ./coverage:/coverage
       - ./:/shpy:ro
   mksh:
     image: shpy:local

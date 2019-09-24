@@ -24,9 +24,12 @@ env:
 script:
   - docker-compose run $SERVICE
 
-jobs:
-  include:
-    - script: docker-compose run kcov
-              && bash <(curl -s https://codecov.io/bash)
-      env:
-        - SERVICE=kcov
+# jobs:
+#   include:
+#     - script: docker-compose build kcov
+#               && docker-compose run kcov
+#               && CMD=/shpy/examples/renamer/test.sh docker-compose run kcov
+#               && CMD=/shpy/examples/coverfetch/test.sh docker-compose run kcov
+#               && bash <(curl -s https://codecov.io/bash)
+#       env:
+#         - SERVICE=kcov
