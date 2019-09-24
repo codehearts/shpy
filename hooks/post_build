@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+# Versioned kcov releases are released as "1.0.0-kcov"
+kcov_tag="$DOCKER_TAG-kcov"
+
+# Latest kcov releases are released as "kcov"
+if [ "$DOCKER_TAG" = 'latest' ]; then
+  kcov_tag='kcov'
+fi
+
+# Push the kcov version of the shpy image
+docker build --target kcov -t "shpy/shpy$kcov_tag" .
+docker push "shpy/shpy$kcov_tag"
