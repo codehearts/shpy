@@ -24,8 +24,8 @@ ENV SHPY_PATH /shpy/shpy
 # Copy in shunit2
 COPY --from=shunit --chown=shpy /shunit2/shunit2 /usr/local/bin/shunit2
 
-# Create /shpy/ and /app/ for the non-root user and run as them
-RUN mkdir /shpy/ /app/ && chown shpy:shpy /shpy/ /app/
+# Create /shpy, /app, /coverage for the non-root user and run as them
+RUN mkdir /shpy /app /coverage && chown shpy:shpy /shpy /app /coverage
 USER shpy
 
 # Copy the current shpy sources
