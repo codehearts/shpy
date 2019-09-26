@@ -5,31 +5,36 @@ language: sh
 services:
   - docker
 
-env:
-  - SERVICE=ash
-  - SERVICE=bash
-  - SERVICE=checkbashisms
-  - SERVICE=mksh
-  - SERVICE=shellcheck
-  - SERVICE=zsh
-  - SERVICE=ash CMD=/shpy/examples/renamer/test.sh
-  - SERVICE=bash CMD=/shpy/examples/renamer/test.sh
-  - SERVICE=mksh CMD=/shpy/examples/renamer/test.sh
-  - SERVICE=zsh CMD=/shpy/examples/renamer/test.sh
-  - SERVICE=ash CMD=/shpy/examples/coverfetch/test.sh
-  - SERVICE=bash CMD=/shpy/examples/coverfetch/test.sh
-  - SERVICE=mksh CMD=/shpy/examples/coverfetch/test.sh
-  - SERVICE=zsh CMD=/shpy/examples/coverfetch/test.sh
+install: docker-compose build base
 
 script:
-  - docker-compose run $SERVICE
+  - docker-compose run $TRAVIS_JOB_NAME
+  - CMD=/shpy/examples/renamer/test.sh docker-compose run $TRAVIS_JOB_NAME
+  - CMD=/shpy/examples/coverfetch/test.sh docker-compose run $TRAVIS_JOB_NAME
 
-# jobs:
-#   include:
-#     - script: docker-compose build kcov
-#               && docker-compose run kcov
-#               && CMD=/shpy/examples/renamer/test.sh docker-compose run kcov
-#               && CMD=/shpy/examples/coverfetch/test.sh docker-compose run kcov
-#               && bash <(curl -s https://codecov.io/bash)
-#       env:
-#         - SERVICE=kcov
+stages:
+  - ash
+  - bash
+  - mksh
+  - zsh
+  - coverage and lint
+
+matrix:
+  include:
+    - stage: ash
+      name: ash
+    - stage: bash
+      name: bash
+    - stage: mksh
+      name: mksh
+    - stage: zsh
+      name: zsh
+    - stage: coverage and lint
+      script:
+        - docker-compose run checkbashisms
+        - docker-compose run shellcheck
+        # - docker-compose build kcov
+        # - docker-compose run kcov
+        # - CMD=/shpy/examples/renamer/test.sh docker-compose run kcov
+        # - CMD=/shpy/examples/coverfetch/test.sh docker-compose run kcov
+        # - bash <(curl -s https://codecov.io/bash)
