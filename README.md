@@ -180,6 +180,6 @@ shpy relies on [portable but more modern shell features](http://apenwarr.ca/log/
 [build-badge]:      https://travis-ci.org/codehearts/shpy.svg?branch=master
 [ash-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/1
 [bash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/2
-[mksh-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/4
-[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/6
+[mksh-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/3
+[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/4
 [build-link]:       https://travis-ci.org/codehearts/shpy
