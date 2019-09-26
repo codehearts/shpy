@@ -30,11 +30,13 @@ matrix:
     - stage: zsh
       name: zsh
     - stage: coverage and lint
+      install:
+        - docker-compose build
+        - docker-compose run -u root --entrypoint chown kcov shpy:shpy /coverage
       script:
         - docker-compose run checkbashisms
         - docker-compose run shellcheck
-        # - docker-compose build kcov
-        # - docker-compose run kcov
-        # - CMD=/shpy/examples/renamer/test.sh docker-compose run kcov
-        # - CMD=/shpy/examples/coverfetch/test.sh docker-compose run kcov
-        # - bash <(curl -s https://codecov.io/bash)
+        - docker-compose run kcov
+        - CMD=/shpy/examples/renamer/test.sh docker-compose run kcov
+        - CMD=/shpy/examples/coverfetch/test.sh docker-compose run kcov
+        - bash <(curl -s https://codecov.io/bash)
