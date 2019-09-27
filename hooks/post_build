@@ -9,5 +9,5 @@ if [ "$DOCKER_TAG" = 'latest' ]; then
 fi
 
 # Push the kcov version of the shpy image
-docker build --target kcov -t "shpy/shpy$kcov_tag" .
-docker push "shpy/shpy$kcov_tag"
+docker build --target kcov -t "shpy/shpy:$kcov_tag" .
+docker push "shpy/shpy:$kcov_tag"
