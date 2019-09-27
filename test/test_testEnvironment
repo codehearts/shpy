@@ -16,7 +16,7 @@ itReturns1WhenShpyPathVariableIsNotSet() {
     unset SHPY_PATH
 
     # shellcheck source=/dev/null
-    . "$original_shpy_path"
+    . "$original_shpy_path" >/dev/null 2>&1
     assertEquals 1 $?
 
     SHPY_PATH="$original_shpy_path"
