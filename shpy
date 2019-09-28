@@ -107,25 +107,42 @@ getSpyCallCount() {
 
 wasSpyCalledWith() {
     if [ $# -eq 0 ]; then
-        echo 'Usage: wasSpyCalledWith SPY [ARG]...'
+        echo 'Usage: wasSpyCalledWith name [arg ...]'
+        echo
+        echo 'Returns 0 if the current spy call under examination has the given args'
         return 1
     fi
 
     # shellcheck disable=SC2039
-    local count current name spy_path
+    local arg_index arg_count current_spy_call_index spy_name spy_path
 
-    name=$1
+    spy_name=$1
     shift
 
-    current=$(_shpyGetSpyCurent "$name")
-    count=$(getSpyCallCount "$name")
-    if [ "$current" -ge "$count" ]; then
-        echo "Error: spy '$name' has not been called $current time(s)" >&2
+    current_spy_call_index=$(_shpyGetCurrentSpyCallIndex "$spy_name")
+    if [ "$current_spy_call_index" -ge "$(getSpyCallCount "$spy_name")" ]; then
+        printf 'Error: Spy %s has not been called %s time(s)\n' \
+          "$spy_name" "$current_spy_call_index" >&2
         return 1
     fi
 
-    spy_path="$_shpy_spies_dir/$name/$current" \
-        _shpyMatchArgs "$@"
+    # Get the path to the current call index being examined and its arg count
+    spy_path="$_shpy_spies_dir/$spy_name/$current_spy_call_index"
+    arg_count=$(_shpyGetDirectoryContentsCount "$spy_path")
+
+    # Check if the number of arguments to this call match
+    [ "$arg_count" -ne "$#" ] && return 1
+
+    # Check if the first args match, second arg, and so on
+    arg_index=0
+    while [ "$arg_index" -lt "$arg_count" ]; do
+        [ "$(cat "$spy_path/$arg_index")" != "$1" ] && return 1
+
+        shift
+        arg_index=$(( arg_index + 1 ))
+    done
+
+    return 0
 }
 
 getArgsForCall() {
@@ -192,7 +209,7 @@ examineNextSpyCall() {
         return 1
     fi
 
-    current=$(_shpyGetSpyCurent "$1")
+    current=$(_shpyGetCurrentSpyCallIndex "$1")
     _shpySetSpyCurent "$1" $(( current + 1 ))
 }
 
@@ -263,11 +280,10 @@ _shpyCreateSpyExecutable() {
     chmod +x "$spy_file"
 }
 
-_shpyGetSpyCurent() {
-    # shellcheck disable=SC2039
-    local current
-    eval current="\${_shpy_${1}_current-0}"
-    printf '%s\n' "$current"
+# Outputs the index of the current spy call under examination
+# $1 - Name of the spy
+_shpyGetCurrentSpyCallIndex() {
+    eval printf '%s\\n' "\${_shpy_$1_current-0}"
 }
 
 _shpySetSpyCurent() {
@@ -283,30 +299,6 @@ _shpyGetDirectoryContentsCount() {
     else
       echo 0
     fi
-}
-
-_shpyMatchArgs() {
-    # shellcheck disable=SC2039
-    local arg argCount i
-
-    # `spy_path` is set in the environment before invoking this function
-    argCount=$(_shpyGetDirectoryContentsCount "$spy_path")
-    if [ "$argCount" -ne $# ]; then
-        return 1
-    fi
-
-    i=0
-    while [ "$i" -lt "$argCount" ]; do
-        arg=$(cat "$spy_path/$i")
-        if [ "$arg" != "$1" ]; then
-            return 1
-        fi
-
-        shift
-        i=$(( i + 1 ))
-    done
-
-    return 0
 }
 
 # Runs the spy with given arguments
