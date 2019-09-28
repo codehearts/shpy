@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
 itDisplaysUsageWhenCreatingSpyWithoutArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: spy SPY_NAME' "$(createSpy 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: createSpy [[-r status] [-o output] [-e output] ...] name' \
+      "$(createSpy 2>&1 | head -n1)"
 }
 
 itReturns1WhenCreatingSpyWithoutArgs() {
@@ -13,8 +15,15 @@ itDiesWhenCreatingSpyWithUnknownOption() {
     assertDies 'createSpy -z' 'Error: Unknown option -z'
 }
 
-itDiesWhenCreatingSpyWithRequiredArgMissing() {
-    assertDies 'createSpy -r dosomething' 'Error: Missing spy name'
+itDisplaysUsageWhenCreatingSpyWithRequiredArgMissing() {
+    assertEquals 'usage message was not displayed' \
+      'Usage: createSpy [[-r status] [-o output] [-e output] ...] name' \
+      "$(createSpy -r dosomething 2>&1 | head -n1)"
+}
+
+itReturns1WhenCreatingSpyWithRequiredArgMissing() {
+    createSpy -r dosomething >/dev/null
+    assertEquals 1 $?
 }
 
 itCreatesFunctionWhenCreatingSpyWithOneArg() {
@@ -207,7 +216,9 @@ itResetsStubbedErrorOutputWhenRecreatingSpy() {
 
 itDisplaysStandardOutputBeforeErrorOutput() {
     doOrDie createSpy -o 'stdout' -e 'stderr' dosomething
-    assertEquals 'stdout was not displayed before stderr' 'stdoutstderr' "$(dosomething 2>&1)"
+    assertEquals 'stdout was not displayed before stderr' \
+      "$(printf 'stdout\nstderr')" \
+      "$(dosomething 2>&1)"
 }
 
 # Helper method to run the same case with output defined in different orders
@@ -244,11 +255,17 @@ do_multiple_outputs_test() {
         test_label="separated"
     fi
 
-    assertEquals "first combined output is not the first $test_label output values" "$first_output$first_err" "$(dosomething 2>&1)"
+    assertEquals "first combined output is not the first $test_label output values" \
+      "$(printf '%s\n%s' "$first_output" "$first_err")" \
+      "$(dosomething 2>&1)"
 
-    assertEquals "second combined output is not the second $test_label output values" "$second_output$second_err" "$(dosomething 2>&1)"
+    assertEquals "second combined output is not the second $test_label output values" \
+      "$(printf '%s\n%s' "$second_output" "$second_err")" \
+      "$(dosomething 2>&1)"
 
-    assertEquals "third combined output is not the third $test_label output values" "$second_output$third_err" "$(dosomething 2>&1)"
+    assertEquals "third combined output is not the third $test_label output values" \
+      "$(printf '%s\n%s' "$second_output" "$third_err")" \
+      "$(dosomething 2>&1)"
 }
 
 itOutputsStdoutBeforeStderrWhenOutputsAreDefinedInSeparateGroups() {
@@ -276,13 +293,19 @@ itSupportsSourcingSpies() {
     set -- arg1 arg2
 
     # shellcheck source=/dev/null
-    assertEquals 'first call output was not stubbed' 'helloworld' "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
+    assertEquals 'first call output was not stubbed' \
+      "$(printf 'hello\nworld')" \
+      "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
 
     # shellcheck source=/dev/null
-    assertEquals 'second call output was not stubbed' 'goodnightmoon' "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
+    assertEquals 'second call output was not stubbed' \
+      "$(printf 'goodnight\nmoon')" \
+      "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
 
     # shellcheck source=/dev/null
-    assertEquals 'third call output was not stubbed' 'goodnightmoon' "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
+    assertEquals 'third call output was not stubbed' \
+      "$(printf 'goodnight\nmoon')" \
+      "$(. "${_shpy_spies_dir:-shpy dir is not set}/bin/dosomething" 2>&1)"
 
     wasSpyCalledWith dosomething arg1 arg2
     assertTrue 'args were not recorded' $?
