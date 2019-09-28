@@ -137,7 +137,7 @@ Function | Description
 `createSpy -o output name`      | Sets output sent to stdout when the spy is invoked<br>Can be passed multiple times to set an output sequence<br>Once the sequence finishes, the last value is always output<br>When used with `-e`, standard out is written to first
 `createSpy -e output name`      | Sets output sent to stderr when the spy is invoked<br>Can be passed multiple times to set an error output sequence<br>Once the sequence finishes, the last value is always output<br>When used with `-o`, standard out is written to first
 `createStub name`               | Alias for `createSpy`
-`getSpyCallCount SPY`           | Outputs the number of invocations of a spy
+`getSpyCallCount name`          | Outputs the number of invocations of a spy
 `wasSpyCalledWith SPY [ARG]...` | Verify a spy was called with the given arguments on its first invocation
 `getArgsForCall SPY NUM`        | Outputs the arguments from an invocation of a spy (first call is 1)<br>Single-word arguments are always listed without quotes<br>Multi-word arguments are always listed with double-quotes
 `examineNextSpyCall SPY`        | Advances the invocation to check when calling `wasSpyCalledWith`<br>This causes `wasSpyCalledWith` to verify the second invocation, etc
