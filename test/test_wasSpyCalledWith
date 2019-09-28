@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
 itDisplaysUsageWhenWasSpyCalledWithHasTooFewArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: wasSpyCalledWith SPY [ARG]...' "$(wasSpyCalledWith 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: wasSpyCalledWith name [arg ...]' \
+      "$(wasSpyCalledWith 2>&1 | head -n1)"
 }
 
 itReturns1WhenWasSpyCalledWithHasTooFewArgs() {
