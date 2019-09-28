@@ -95,16 +95,14 @@ createStub() {
 }
 
 getSpyCallCount() {
-    if [ $# -eq 0 ]; then
-        echo 'Usage: getSpyCallCount SPY'
+    if [ $# -ne 1 ]; then
+        echo 'Usage: getSpyCallCount name'
+        echo
+        echo 'Outputs the number of calls made to the spy'
         return 1
     fi
 
-    if [ -z "${_shpy_spies_dir:+is_set_and_not_null}" ]; then
-      echo 0
-    else
-      _shpyGetDirectoryContentsCount "$_shpy_spies_dir/$1"
-    fi
+    _shpyGetDirectoryContentsCount "${_shpy_spies_dir:-shpy_dir_not_set}/$1"
 }
 
 wasSpyCalledWith() {
@@ -277,13 +275,11 @@ _shpySetSpyCurent() {
     eval export "_shpy_$1_current"
 }
 
+# Outputs the number of files in the given directory
+# $1 - Path to the directory
 _shpyGetDirectoryContentsCount() {
-    # shellcheck disable=SC2039
-    local directory_path
-    directory_path="$1"
-
-    if [ -d "$directory_path" ]; then
-      find "$directory_path" -maxdepth 1 ! -path "$directory_path" | wc -l
+    if [ -d "$1" ]; then
+      find "$1" -maxdepth 1 ! -path "$1" | wc -l
     else
       echo 0
     fi

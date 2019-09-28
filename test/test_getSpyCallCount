@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
 itDisplaysUsageWhenGettingCallCountWithoutArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: getSpyCallCount SPY' "$(getSpyCallCount 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: getSpyCallCount name' \
+      "$(getSpyCallCount 2>&1 | head -n1)"
 }
 
 itReturns1WhenGettingCallCountWithoutArgs() {
