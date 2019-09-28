@@ -50,6 +50,23 @@ These resources are a big help in understanding what POSIX compliance entails:
 
 Shpy is written in POSIX-compliant shell scripting, with the exception of the `local` keyword. The only required development tool is [Docker](https://docker.com)
 
+When a spy is first created, `_shpy_inited` is set in the environment and a temporary working directory is created. A bin directory is also created and prepended to the path. Spies are created by writing these files into the temporary directory:
+
+- `$_shpy_spies_dir/`
+  - `bin/`
+    - `$spy_name`: Executable shell script to run the spy
+  - `outputs/$spy_name/`
+    - Contains numbered files, starting from 0, for the spy's output to stdout
+  - `errors/$spy_name/`
+    - Contains numbered files, starting from 0, for the spy's output to stderr
+  - `$spy_name/`
+    - Contains numbered directories, starting from 0, for each call to the spy
+      - Contains numbered files, starting from 0, containing each individual argument to a call of the spy
+
+The follow environment variables are also set and exported for each spy:
+
+- `_shpy_${spy_name}_status_codes`: Space-delimited list of status codes to return for a spy, defaults to `"0"`
+
 ## :alembic: Testing
 
 ### Writing Tests
