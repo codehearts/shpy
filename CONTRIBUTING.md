@@ -34,6 +34,12 @@ These resources are a big help in understanding what POSIX compliance entails:
 - `test/` - Testing directory
   - `run_tests` - Script to run all tests, returns 0 on success
   - `test_*` - Individual test files, organized by functionality under test
+- `examples/` - Practical examples of shpy usage
+  - `*/` - An individual example project, such as `coverfetch`
+    - `README.md` - Basic example overview and walkthrough of writing the tests
+    - `*` - Documented shell script for the example, such as `coverfetch`
+    - `test.sh` - Documented tests for the example
+- `hooks/` - Hooks for the automated Docker image builds
 - `.travis.yml` - Configures continuous integration with Travis CI
 - `Dockerfile` - Defines the shpy image used in testing and production
 - `docker-compose.yml` - Coordinates execution of multiple shpy containers for testing
