@@ -140,7 +140,7 @@ Function | Description
 `getSpyCallCount name`          | Outputs the number of invocations of a spy
 `wasSpyCalledWith name [arg ...]` | Returns 0 if the current spy call under examination has the given args
 `getArgsForCall name call`      | Prints the arguments from a call to a spy (first call is 1)<br>Single-word arguments are always listed without quotes<br>Multi-word arguments are always listed with double-quotes
-`examineNextSpyCall SPY`        | Advances the invocation to check when calling `wasSpyCalledWith`<br>This causes `wasSpyCalledWith` to verify the second invocation, etc
+`examineNextSpyCall name`       | Examine the next spy invocation when calling `wasSpyCalledWith`<br>This causes `wasSpyCalledWith` to verify the second invocation, etc
 `cleanupSpies`                  | Clean up any temporary directories created for spies
 
 ### shunit2 Integration

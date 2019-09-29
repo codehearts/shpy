@@ -196,16 +196,17 @@ getArgsForCall() {
 }
 
 examineNextSpyCall() {
-    # shellcheck disable=SC2039
-    local current
-
-    if [ $# -eq 0 ]; then
-        echo 'Usage: examineNextSpyCall SPY'
+    if [ $# -ne 1 ]; then
+        echo 'Usage: examineNextSpyCall name'
+        echo
+        echo 'Examine the next spy invocation when calling wasSpyCalledWith'
+        echo ''
+        echo 'This causes wasSpyCalledWith to verify the second invocation, etc'
         return 1
     fi
 
-    current=$(_shpyGetCurrentSpyCallIndex "$1")
-    _shpySetSpyCurent "$1" $(( current + 1 ))
+    _shpySetDirectoryContentsCount \
+      "$1" $(( $(_shpyGetCurrentSpyCallIndex "$1") + 1 ))
 }
 
 cleanupSpies() {
@@ -281,9 +282,12 @@ _shpyGetCurrentSpyCallIndex() {
     eval printf '%s\\n' "\${_shpy_$1_current-0}"
 }
 
-_shpySetSpyCurent() {
+# Sets and exports the index of the current spy call under examination
+# $1 - Name of the spy
+# $2 - Call index to examine
+_shpySetDirectoryContentsCount() {
     eval "_shpy_$1_current=$2"
-    eval export "_shpy_$1_current"
+    export "_shpy_$1_current"
 }
 
 # Outputs the number of files in the given directory
