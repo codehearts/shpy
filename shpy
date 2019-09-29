@@ -42,10 +42,10 @@ Options:
     outputs_dir="$_shpy_spies_dir/outputs/$spy_name"
     errors_dir="$_shpy_spies_dir/errors/$spy_name"
 
-    (shpy_remove_dir_tree "$outputs_dir" && shpy_ensure_dir "$outputs_dir") \
-      || shpy_die "Error: Failed to create empty spy stdout directory"
-    (shpy_remove_dir_tree "$errors_dir" && shpy_ensure_dir "$errors_dir") \
-      || shpy_die "Error: Failed to create empty spy stderr directory"
+    (_shpy_rmdir "$outputs_dir" && _shpy_mkdir "$outputs_dir") \
+      || _shpy_die "Error: Failed to create empty spy stdout directory"
+    (_shpy_rmdir "$errors_dir" && _shpy_mkdir "$errors_dir") \
+      || _shpy_die "Error: Failed to create empty spy stderr directory"
 
     outputs_count=0
     errors_count=0
@@ -69,16 +69,16 @@ Options:
               # Add a space when `status_code` isn't null to avoid leading space
               status_codes="${status_codes-}${status_codes:+ }$OPTARG"
               ;;
-            *) shpy_die "Error: Unknown option -$OPTARG" ;;
+            *) _shpy_die "Error: Unknown option -$OPTARG" ;;
         esac
     done
 
     # If there is not one remaining argument for the spy name, display usage
     if [ $# -ne $OPTIND ]; then
-      shpy_remove_dir_tree "$outputs_dir" \
-        || shpy_die "Error: Failed to remove stdout directory for spy"
-      shpy_remove_dir_tree "$errors_dir" \
-        || shpy_die "Error: Failed to remove stderr directory for spy"
+      _shpy_rmdir "$outputs_dir" \
+        || _shpy_die "Error: Failed to remove stdout directory for spy"
+      _shpy_rmdir "$errors_dir" \
+        || _shpy_die "Error: Failed to remove stderr directory for spy"
 
       printf '%s\n' "$usage"
       return 1
@@ -225,8 +225,8 @@ cleanupSpies() {
       find "$_shpy_spies_dir" \
         -maxdepth 1 -type f -exec sh -c '_shpyResetSpy "$1"' _ {} \;
 
-      shpy_remove_dir_tree "$_shpy_spies_dir" \
-        || shpy_die "Error: Failed to clean up temporary shpy working dir"
+      _shpy_rmdir "$_shpy_spies_dir" \
+        || _shpy_die "Error: Failed to clean up temporary shpy working dir"
 
       unset -v _shpy_spies_dir
     fi
@@ -245,15 +245,15 @@ _shpyInit() {
 
     # Mark shpy as initialized and create a temp directory to work from
     _shpy_inited=1
-    _shpy_spies_dir=$(shpy_make_temp_dir) \
-      || shpy_die "Error: Failed to create shpy working directory"
+    _shpy_spies_dir=$(_shpy_create_working_dir) \
+      || _shpy_die "Error: Failed to create shpy working directory"
 
     # Ensure child shell processes have access to these variables
     export _shpy_inited
     export _shpy_spies_dir
 
     # Create the shpy bin directory and prepend it to the path
-    shpy_ensure_dir "$_shpy_spies_dir/bin/"
+    _shpy_mkdir "$_shpy_spies_dir/bin/"
     PATH="$_shpy_spies_dir/bin:$PATH"
     export PATH
 }
@@ -261,8 +261,8 @@ _shpyInit() {
 # Removes the spy directory and resets all environment variables for the spy
 # $1 - Name of the spy to reset
 _shpyResetSpy() {
-    shpy_remove_dir_tree "$_shpy_spies_dir/$1" \
-      || shpy_die "Error: Failed to remove spy directory"
+    _shpy_rmdir "$_shpy_spies_dir/$1" \
+      || _shpy_die "Error: Failed to remove spy directory"
 
     unset "_shpy_$1_status_codes" "_shpy_$1_current"
 }
@@ -327,8 +327,8 @@ _shpySaveSpyCallArgs() {
 
     # Create a directory for the arguments to the call
     spy_call_path="$_shpy_spies_dir/$1/$current_call_index"
-    shpy_ensure_dir "$spy_call_path" \
-      || shpy_die "Error: Failed to create directory for spy arguments"
+    _shpy_mkdir "$spy_call_path" \
+      || _shpy_die "Error: Failed to create directory for spy arguments"
 
     # Remove the spy name from the front of the arguments list
     shift
@@ -413,30 +413,36 @@ _shpySetSpyStatusCodeSequence() {
     export "_shpy_$1_status_codes"
 }
 
-##### External Interface #####
-
 # Break path caching to ensure spies come first in the path
 _shpy_break_path_cache() {
     PATH="$PATH"
     export PATH
 }
 
-shpy_make_temp_dir() {
+# Runs the system `mktemp` binary to create the shpy working directory
+_shpy_create_working_dir() {
     command -p mktemp -d shpy.XXXXXX
     _shpy_break_path_cache
 }
 
-shpy_ensure_dir() {
+# Runs the system `mkdir -p` binary to create a directory and its parents
+# $1 - Path of the directory to create
+_shpy_mkdir() {
     command -p mkdir -p -- "$1"
     _shpy_break_path_cache
 }
 
-shpy_remove_dir_tree() {
+# Runs the system `rm -rf` binary to remove a directory and its contents
+# $1 - Path to the directory to remove
+_shpy_rmdir() {
     command -p rm -rf -- "$1"
     _shpy_break_path_cache
 }
 
-shpy_die() {
-    echo "${1:-"Error: aborting"}" >&2
+# Displays an error message and exits with an error status code
+# $1 (optional) - Error message to display, default "Error: Aborting"
+# $2 (optional) - Status code to exit with, default 1
+_shpy_die() {
+    echo "${1:-"Error: Aborting"}" >&2
     exit "${2:-1}"
 }

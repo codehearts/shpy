@@ -50,15 +50,17 @@ These resources are a big help in understanding what POSIX compliance entails:
 
 Shpy is written in POSIX-compliant shell scripting, with the exception of the `local` keyword. The only required development tool is [Docker](https://docker.com)
 
-When a spy is first created, `_shpy_inited` is set in the environment and a temporary working directory is created. A bin directory is also created and prepended to the path. Spies are created by writing these files into the temporary directory:
+When a spy is first created, `_shpy_inited` is set in the environment and a temporary working directory is created. A bin directory is also created and prepended to the path
+
+Spies are implemented with the following metadata written to disk
 
 - `$_shpy_spies_dir/`
   - `bin/`
     - `$spy_name`: Executable shell script to run the spy
   - `outputs/$spy_name/`
-    - Contains numbered files, starting from 0, for the spy's output to stdout
+    - Contains numbered files, starting from 0, for the spy's output to stdout when called
   - `errors/$spy_name/`
-    - Contains numbered files, starting from 0, for the spy's output to stderr
+    - Contains numbered files, starting from 0, for the spy's output to stderr when called
   - `$spy_name/`
     - Contains numbered directories, starting from 0, for each call to the spy
       - Contains numbered files, starting from 0, containing each individual argument to a call of the spy
@@ -66,6 +68,7 @@ When a spy is first created, `_shpy_inited` is set in the environment and a temp
 The follow environment variables are also set and exported for each spy:
 
 - `_shpy_${spy_name}_status_codes`: Space-delimited list of status codes to return for a spy, defaults to `"0"`
+- `_shpy_${spy_name}_current`: Index of the current call to the spy being examined, used by `wasSpyCalledWith`
 
 ## :alembic: Testing
 
@@ -91,7 +94,7 @@ Tests should verify the expected _stdout_, expected _stderr_, and expected _retu
 
 If your test involves calling a spy, you should create a second test case for the same condition that runs the spy in a new shell with `runInNewShell`. This ensures shpy works for sourced _and_ executed scripts
 
-The `assertDies` function is provided for tests that expect `shpy_die` to be called. This function takes the command to run as a string, an optional expected death message, and an optional expected exit status:
+The `assertDies` function is provided for tests that expect `_shpy_die` to be called. This function takes the command to run as a string, an optional expected death message, and an optional expected exit status:
 
 ```sh
 assertDies 'createSpy -z' 'Error: Unknown option -z' 1
