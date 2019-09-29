@@ -141,7 +141,7 @@ Function | Description
 `wasSpyCalledWith name [arg ...]` | Returns 0 if the current spy call under examination has the given args
 `getArgsForCall name call`      | Prints the arguments from a call to a spy (first call is 1)<br>Single-word arguments are always listed without quotes<br>Multi-word arguments are always listed with double-quotes
 `examineNextSpyCall name`       | Examine the next spy invocation when calling `wasSpyCalledWith`<br>This causes `wasSpyCalledWith` to verify the second invocation, etc
-`cleanupSpies`                  | Clean up any temporary directories created for spies
+`cleanupSpies`                  | Clean up any metadata on disk or in the environment for a spy
 
 ### shunit2 Integration
 
