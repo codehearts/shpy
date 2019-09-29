@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
 itDisplaysUsageWhenGettingCallArgsWithoutArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: getArgsForCall SPY CALL_NUMBER' "$(getArgsForCall 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: getArgsForCall name call' \
+      "$(getArgsForCall 2>&1 | head -n1)"
 }
 
 itReturns1WhenGettingCallArgsWithoutArgs() {
@@ -10,7 +12,9 @@ itReturns1WhenGettingCallArgsWithoutArgs() {
 }
 
 itDisplaysUsageWhenGettingCallArgsWithOneArg() {
-    assertEquals 'usage message was not displayed' 'Usage: getArgsForCall SPY CALL_NUMBER' "$(getArgsForCall someSpy 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: getArgsForCall name call' \
+      "$(getArgsForCall someSpy 2>&1 | head -n1)"
 }
 
 itReturns1WhenGettingCallArgsWithOneArg() {
@@ -19,7 +23,7 @@ itReturns1WhenGettingCallArgsWithOneArg() {
 }
 
 itDisplaysErrorWhenGettingCallArgsBeforeSpyIsCreated() {
-    printf '%s\n' "$(getArgsForCall invalidSpy 1 2>&1 >/dev/null)" | grep -qx "Error: no spies have been created"
+    printf '%s\n' "$(getArgsForCall invalidSpy 1 2>&1 >/dev/null)" | grep -qx "Error: No spies have been created"
     assertTrue 'output contains incorrect error message' $?
 }
 
@@ -31,7 +35,7 @@ itReturns1WhenGettingCallArgsBeforeSpyIsCreated() {
 itDisplaysErrorWhenGettingCallArgsForInvalidSpy() {
     doOrDie createSpy someSpy
 
-    printf '%s\n' "$(getArgsForCall invalidSpy 1 2>&1 >/dev/null)" | grep -qx "Error: spy 'invalidSpy' has not been set up"
+    printf '%s\n' "$(getArgsForCall invalidSpy 1 2>&1 >/dev/null)" | grep -qx 'Error: Spy "invalidSpy" has not been called 1 time(s)'
     assertTrue 'output contains incorrect error message' $?
 }
 

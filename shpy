@@ -147,57 +147,52 @@ wasSpyCalledWith() {
 
 getArgsForCall() {
     if [ $# -ne 2 ]; then
-        echo 'Usage: getArgsForCall SPY CALL_NUMBER' >&2
+        echo 'Usage: getArgsForCall name call' >&2
+        echo
+        echo 'Prints the arguments from a call to a spy (first call is 1)'
+        echo
+        echo 'Single-word arguments are always listed without quotes'
+        echo 'Multi-word arguments are always listed with double-quotes'
         return 1
     fi
 
     # shellcheck disable=SC2039
-    local arg_file args call_index i name num_args spy_path res
+    local spy_name spy_path call_index arg_index arg all_args
 
-    name=$1
-    call_index=$(($2 - 1))
+    spy_name=$1
+    call_index=$2
 
+    # Check if any spies currently exist
     if [ -z "${_shpy_spies_dir:+is_set_and_not_null}" ]; then
-      echo "Error: no spies have been created" >&2
+      echo "Error: No spies have been created" >&2
       return 1
     fi
 
-    spy_path="$_shpy_spies_dir/$name"
-
+    # Set the path to this spy's metadata and check if the call index exists
+    spy_path="$_shpy_spies_dir/$spy_name/$(( call_index - 1 ))"
     if [ ! -d "$spy_path" ]; then
-        echo "Error: spy '$name' has not been set up" >&2
+        printf 'Error: Spy "%s" has not been called %s time(s)' \
+          "$spy_name" "$call_index" >&2
         return 1
     fi
 
-    spy_path="$spy_path/$call_index"
-    if [ ! -d "$spy_path" ]; then
-        echo "Error: spy '$name' has not been called $((call_index + 1)) times" >&2
-        return 1
-    fi
+    # Iterate over all arguments to this call to build a space-delimited list
+    arg_index=0
+    while [ "$arg_index" -le "$(_shpyGetDirectoryContentsCount "$spy_path")" ]; do
+        if [ -f "$spy_path/$arg_index" ]; then
+            arg=$(cat "$spy_path/$arg_index")
 
-    num_args=$(find "$spy_path" -maxdepth 1 -type f | wc -l)
+            # If the argument contains spaces, wrap it in double quotes
+            printf "%s" "$arg" | grep -qe '\s' && arg="\"$arg\""
 
-    i=0
-    res=""
-    while [ "$i" -le "$num_args" ]; do
-        arg_file="$spy_path/$i"
-        if [ -f "$arg_file" ]; then
-            args=$(cat "$arg_file")
-            if printf "%s" "$args" | grep -qe "\\s"; then
-                args="\"$args\""
-            fi
-
-            if [ ${#res} -gt 0 ]; then
-                res=$(printf "%s %s" "$res" "$args")
-            else
-                res="$args"
-            fi
+            # Add a space when `arguments` isn't null to avoid leading space
+            all_args="${all_args-}${all_args:+ }$arg"
         fi
 
-        i=$((i + 1))
+        arg_index=$(( arg_index + 1 ))
     done
 
-    echo "$res"
+    echo "${all_args-}"
 }
 
 examineNextSpyCall() {
