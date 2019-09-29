@@ -2,12 +2,12 @@
 
 assertCallCount() {
     if [ $# -lt 2 ] || [ $# -gt 3 ]; then
-        echo 'Usage: assertCallCount [MESSAGE] SPY COUNT'
+        echo 'Usage: assertCallCount [message] spy count'
+        echo
+        echo 'Assert the number of times the spy was invoked'
         return 1
     fi
 
-    # shellcheck disable=SC2039
-    local val
     if [ $# -eq 2 ]; then
         assertEquals "$2" "$(getSpyCallCount "$1")"
     else
@@ -17,68 +17,80 @@ assertCallCount() {
 
 assertCalledWith() {
     if [ $# -lt 1 ]; then
-        echo 'Usage: assertCalledWith SPY [ARG]...'
+        echo 'Usage: assertCalledWith spy [arg ...]'
+        echo
+        echo 'Assert the arguments for the first invocation of the spy'
+        echo
+        echo 'Subsequent calls will assert the second invocation, etc'
         return 1
     fi
 
     # shellcheck disable=SC2039
-    local val
+    local status_code
 
     wasSpyCalledWith "$@"
-    assertTrue $?
-    val=$?
+    status_code=$?
 
     examineNextSpyCall "$1"
 
-    return $val
+    assertTrue $status_code
+
 }
 
 assertCalledWith_() {
     if [ $# -lt 2 ]; then
-        echo 'Usage: assertCalledWith_ MESSAGE SPY [ARG]...'
+        echo 'Usage: assertCalledWith_ message spy [arg ...]'
+        echo
+        echo 'Assert the arguments for the first invocation of the spy'
+        echo 'When the assertion fails, the custom error message is used'
+        echo
+        echo 'Subsequent calls will assert the second invocation, etc'
         return 1
     fi
 
     # shellcheck disable=SC2039
-    local message val
+    local message status_code
 
     message=$1
     shift
 
     wasSpyCalledWith "$@"
-    assertTrue "$message" $?
-    val=$?
+    status_code=$?
 
     examineNextSpyCall "$1"
 
-    return $val
+    assertTrue "$message" $status_code
+
 }
 
 assertCalledOnceWith() {
-    ${_SHUNIT_LINENO_}
-
     if [ $# -lt 1 ]; then
-        echo 'Usage: assertCalledOnceWith SPY [ARG]...'
+        echo 'Usage: assertCalledOnceWith spy [arg ...]'
+        echo
+        echo 'Assert the arguments of the first and only invocation of the spy'
         return 1
     fi
 
-    assertCallCount "$1" 1 &&
-    assertCalledWith "$@"
+    assertCallCount "$1" 1 && assertCalledWith "$@"
 }
 
 assertCalledOnceWith_() {
     if [ $# -lt 2 ]; then
-        echo 'Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]...'
+        echo 'Usage: assertCalledOnceWith_ message spy [arg ...]'
+        echo
+        echo 'Assert the arguments of the first and only invocation of the spy'
+        echo 'When the assertion fails, the custom error message is used'
         return 1
     fi
 
-    assertCallCount "$1" "$2" 1 &&
-    assertCalledWith_ "$@"
+    assertCallCount "$1" "$2" 1 && assertCalledWith_ "$@"
 }
 
 assertNeverCalled() {
     if [ $# -lt 1 ] || [ $# -gt 2 ]; then
-        echo 'Usage: assertNeverCalled [MESSAGE] SPY'
+        echo 'Usage: assertNeverCalled [message] spy'
+        echo
+        echo 'Assert the spy was never invoked with an optional error message'
         return 1
     fi
 

@@ -155,12 +155,12 @@ A summary of asserts:
 
 Function                                              | Description
 ------------------------------------------------------|------------------------------------------------------------------
-`assertCallCount [MESSAGE] SPY COUNT`        | Assert the number of times the spy was invoked
-`assertCalledWith SPY [ARG]...`              | Assert the arguments for the first invocation of the spy<br>Subsequent calls will assert for the second invocation, etc
-`assertCalledWith_ MESSAGE SPY [ARG]...`     | Same as `assertCalledWith`, with a specific assertion message
-`assertCalledOnceWith SPY [ARG]...`          | Assert the spy was called once and given the specified arguments
-`assertCalledOnceWith_ MESSAGE SPY [ARG]...` | Same as `assertCalledOnceWith`, with a specific assertion message
-`assertNeverCalled [MESSAGE] SPY`            | Assert the spy was never invoked
+`assertCallCount [message] spy count`        | Assert the number of times the spy was invoked
+`assertCalledWith spy [arg ...]`             | Assert the arguments for the first invocation of the spy<br>Subsequent calls will assert for the second invocation, etc
+`assertCalledWith_ message spy [arg ...]`    | Same as `assertCalledWith`, with a specific assertion message
+`assertCalledOnceWith spy [arg ...]`         | Assert the spy was called once and given the specified arguments
+`assertCalledOnceWith_ message spy [arg ...]`| Same as `assertCalledOnceWith`, with a specific assertion message
+`assertNeverCalled [message] spy`            | Assert the spy was never invoked
 
 Use the `tearDown` hook provided by shunit2 to remove all spies after each test
 
