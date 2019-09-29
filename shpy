@@ -209,19 +209,24 @@ examineNextSpyCall() {
       "$1" $(( $(_shpyGetCurrentSpyCallIndex "$1") + 1 ))
 }
 
+# Removes spies and their metadata from disk and the environment
+# _shpy_inited and the temporary shpy working dir are unset and removed
 cleanupSpies() {
-    if [ -n "${_shpy_inited+is_set}" ]; then
-      unset -v _shpy_inited
-    fi
+    # Unset `_shpy_inited` if set
+    [ -n "${_shpy_inited+is_set}" ] && unset -v _shpy_inited
 
+    # Remove the temporary shpy working directory and restore the path
     if [ -n "${_shpy_spies_dir+is_set}" ]; then
       # Remove the shpy bin directory from the path using parameter expansion
       PATH="${PATH%$_shpy_spies_dir/bin:*}${PATH#*$_shpy_spies_dir/bin:}"
       export PATH
 
-      find "$_shpy_spies_dir" -maxdepth 1 -type f -exec sh -c '_shpyResetSpy "$1"' _ {} \;
+      # Reset each individual spy
+      find "$_shpy_spies_dir" \
+        -maxdepth 1 -type f -exec sh -c '_shpyResetSpy "$1"' _ {} \;
 
-      shpy_remove_dir_tree "$_shpy_spies_dir" || shpy_die "Error: \`shpy_remove_dir_tree '$_shpy_spies_dir'\` failed"
+      shpy_remove_dir_tree "$_shpy_spies_dir" \
+        || shpy_die "Error: Failed to clean up temporary shpy working dir"
 
       unset -v _shpy_spies_dir
     fi
@@ -259,7 +264,7 @@ _shpyResetSpy() {
     shpy_remove_dir_tree "$_shpy_spies_dir/$1" \
       || shpy_die "Error: Failed to remove spy directory"
 
-    unset "_shpy_$1_status_codes" "$1_output" "_shpy_$1_current" "$1"
+    unset "_shpy_$1_status_codes" "_shpy_$1_current"
 }
 
 # Creates an executable shell script for a spy in `$_shpy_spies_dir/bin/`
