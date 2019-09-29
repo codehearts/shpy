@@ -5,7 +5,9 @@
 #
 
 itDisplaysUsageWhenAssertCallCountHasTooFewArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: assertCallCount [MESSAGE] SPY COUNT' "$(assertCallCount dosomething 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: assertCallCount [message] spy count' \
+      "$(assertCallCount dosomething 2>&1 | head -n1)"
 }
 
 itReturns1WhenAssertCallCountHasTooFewArgs() {
@@ -90,7 +92,9 @@ itReturns0WhenAssertCallCountPassesWithOptionalMessage() {
 #
 
 itDisplaysUsageWhenAssertCalledWithHasTooFewArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: assertCalledWith SPY [ARG]...' "$(assertCalledWith 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: assertCalledWith spy [arg ...]' \
+      "$(assertCalledWith 2>&1 | head -n1)"
 }
 
 itReturns1WhenAssertCalledWithHasTooFewArgs() {
@@ -189,7 +193,9 @@ itAdvancesToNextCallAfterAssertCalledWithInNewShell() {
 #
 
 itDisplaysUsageWhenAssertCalledWith_HasTooFewArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: assertCalledWith_ MESSAGE SPY [ARG]...' "$(assertCalledWith_ 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: assertCalledWith_ message spy [arg ...]' \
+      "$(assertCalledWith_ 2>&1 | head -n1)"
 }
 
 itReturns1WhenAssertCalledWith_HasTooFewArgs() {
@@ -304,7 +310,9 @@ itAdvancesToNextCallAfterAssertCalledWith_InNewShell() {
 #
 
 itDisplaysUsageWhenAssertCalledOnceWithHasTooFewArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: assertCalledOnceWith SPY [ARG]...' "$(assertCalledOnceWith 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: assertCalledOnceWith spy [arg ...]' \
+      "$(assertCalledOnceWith 2>&1 | head -n1)"
 }
 
 itReturns1WhenAssertCalledOnceWithHasTooFewArgs() {
@@ -383,7 +391,9 @@ itReturns0WhenAssertCalledOnceWithPassesInNewShell() {
 #
 
 itDisplaysUsageWhenAssertCalledOnceWith_HasTooFewArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: assertCalledOnceWith_ MESSAGE SPY [ARG]...' "$(assertCalledOnceWith_ 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: assertCalledOnceWith_ message spy [arg ...]' \
+      "$(assertCalledOnceWith_ 2>&1 | head -n1)"
 }
 
 itReturns1WhenAssertCalledOnceWith_HasTooFewArgs() {
@@ -474,7 +484,9 @@ itReturns0WhenAssertCalledOnceWith_PassesInNewShell() {
 #
 
 itDisplaysUsageWhenAssertNeverCalledHasTooFewArgs() {
-    assertEquals 'usage message was not displayed' 'Usage: assertNeverCalled [MESSAGE] SPY' "$(assertNeverCalled 2>&1)"
+    assertEquals 'usage message was not displayed' \
+      'Usage: assertNeverCalled [message] spy' \
+      "$(assertNeverCalled 2>&1 | head -n1)"
 }
 
 itReturns1WhenAssertNeverCalledHasTooFewArgs() {
