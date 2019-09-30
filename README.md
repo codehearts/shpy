@@ -6,9 +6,9 @@
 
 POSIX compliant<sup>*</sup> spies and stubs for shell unit testing
 
-| ash | dash | bash | mksh | zsh |
+| ash | bash | dash | mksh | zsh |
 | :-: | :--: | :--: | :--: | :-: |
-| [![Ash Build Status][ash-build-badge]][build-link] | [![Bash Build Status][bash-build-badge]][build-link] | [![Dash Build Status][dash-build-badge]][duild-link] | [![Mksh Build Status][mksh-build-badge]][build-link] | [![Zsh Build Status][zsh-build-badge]][build-link] |
+| [![Ash Build Status][ash-build-badge]][build-link] | [![Bash Build Status][bash-build-badge]][build-link] | [![Dash Build Status][dash-build-badge]][build-link] | [![Mksh Build Status][mksh-build-badge]][build-link] | [![Zsh Build Status][zsh-build-badge]][build-link] |
 
 Features at a glance:
 
