@@ -35,3 +35,7 @@ itDisplaysErrorMessageWhenShpyPathVariableIsNotSet() {
     SHPY_PATH="$original_shpy_path"
     export SHPY_PATH
 }
+
+itSetsShpyVersionEnvironmentVariable() {
+  assertEquals 1.0.0 "$SHPY_VERSION"
+}
