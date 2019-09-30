@@ -7,7 +7,7 @@ FROM koalaman/shellcheck:v0.7.0 AS shellcheck
 # Create a shunit stage to pull the latest commit into /shunit2 
 #
 FROM alpine:3.10.1 AS shunit
-RUN apk --no-cache add git
+RUN apk add git
 RUN git clone --depth 1 https://github.com/kward/shunit2.git
 
 #
