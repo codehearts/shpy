@@ -1,11 +1,10 @@
-sudo: required
-
 language: sh
 
-services:
-  - docker
+services: docker
 
-install: docker-compose build base
+before_install: docker pull shpy/shpy
+
+install: docker build --pull --cache-from shpy/shpy --target shpy -t shpy:local .
 
 script:
   - docker-compose run $TRAVIS_JOB_NAME
