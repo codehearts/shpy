@@ -11,6 +11,31 @@ RUN apk --no-cache add git
 RUN git clone --depth 1 https://github.com/kward/shunit2.git
 
 #
+# Create a kcov target to run kcov on debian
+#
+FROM kcov/kcov:v36 AS kcov
+
+# Create a non-root `shpy` user
+RUN useradd -ms /bin/sh shpy
+
+# Define the shpy path globally
+ENV SHPY_PATH /shpy/shpy
+
+# Copy in shunit2
+COPY --from=shunit --chown=shpy /shunit2/shunit2 /usr/local/bin/shunit2
+
+# Create /shpy, /app, /coverage for the non-root user and run as them
+RUN mkdir /shpy /app /coverage && chown shpy:shpy /shpy /app /coverage
+USER shpy
+
+# Copy the current shpy sources
+COPY --chown=shpy ./ /shpy/
+WORKDIR /app/
+
+# By default, run `/bin/sh` (which is `dash` under Debian)
+CMD ["/bin/sh"]
+
+#
 # Base the shpy image on Alpine Linux
 #
 FROM alpine:3.10.1 AS shpy
@@ -49,29 +74,4 @@ COPY --chown=shpy ./ /shpy/
 WORKDIR /app/
 
 # By default, run `/bin/sh` (which is `ash` under BusyBox in Alpine Linux)
-CMD ["/bin/sh"]
-
-#
-# Create a kcov target to run kcov on debian
-#
-FROM kcov/kcov:v36 AS kcov
-
-# Create a non-root `shpy` user
-RUN useradd -ms /bin/sh shpy
-
-# Define the shpy path globally
-ENV SHPY_PATH /shpy/shpy
-
-# Copy in shunit2
-COPY --from=shunit --chown=shpy /shunit2/shunit2 /usr/local/bin/shunit2
-
-# Create /shpy, /app, /coverage for the non-root user and run as them
-RUN mkdir /shpy /app /coverage && chown shpy:shpy /shpy /app /coverage
-USER shpy
-
-# Copy the current shpy sources
-COPY --chown=shpy ./ /shpy/
-WORKDIR /app/
-
-# By default, run `/bin/sh` (which is `dash` under Debian)
 CMD ["/bin/sh"]
