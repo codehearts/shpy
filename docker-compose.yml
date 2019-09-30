@@ -2,7 +2,13 @@ version: '3.4'
 
 services:
   base:
-    build: .
+    build:
+      context: .
+      cache_from:
+        - koalaman/shellcheck:v0.7.0
+        - alpine:3.10.1
+        - kcov/kcov:v36
+        - shpy/shpy:latest
     image: shpy:local
   ash:
     image: shpy:local
