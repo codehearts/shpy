@@ -6,9 +6,9 @@
 
 POSIX compliant<sup>*</sup> spies and stubs for shell unit testing
 
-| ash | bash | mksh | zsh |
-| :-: | :--: | :--: | :-: |
-| [![Ash Build Status][ash-build-badge]][build-link] | [![Bash Build Status][bash-build-badge]][build-link] | [![Mksh Build Status][mksh-build-badge]][build-link] | [![Zsh Build Status][zsh-build-badge]][build-link] |
+| ash | dash | bash | mksh | zsh |
+| :-: | :--: | :--: | :--: | :-: |
+| [![Ash Build Status][ash-build-badge]][build-link] | [![Bash Build Status][bash-build-badge]][build-link] | [![Dash Build Status][dash-build-badge]][duild-link] | [![Mksh Build Status][mksh-build-badge]][build-link] | [![Zsh Build Status][zsh-build-badge]][build-link] |
 
 Features at a glance:
 
@@ -56,6 +56,7 @@ The following scripts and binaries are provided by this image
 | ash | binary | `/bin/sh` |
 | bash | binary | `/bin/bash` |
 | checkbashisms | binary | `/usr/bin/checkbashisms` |
+| dash | binary | `/usr/bin/dash` |
 | mksh | binary | `/bin/mksh` |
 | shellcheck | binary | `/usr/local/bin/shellcheck` |
 | zsh | binary | `/bin/zsh` |
@@ -180,6 +181,7 @@ shpy relies on [portable but more modern shell features](http://apenwarr.ca/log/
 [build-badge]:      https://travis-ci.org/codehearts/shpy.svg?branch=master
 [ash-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/1
 [bash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/2
-[mksh-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/3
-[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/4
+[dash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/3
+[mksh-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/4
+[zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/5
 [build-link]:       https://travis-ci.org/codehearts/shpy

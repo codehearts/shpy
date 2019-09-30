@@ -25,6 +25,12 @@ services:
     command: sh -c 'checkbashisms shpy* test/* examples/*/test.sh examples/renamer/renamer /shpy/examples/coverfetch/coverfetch'
     volumes:
       - ./:/shpy:ro
+  dash:
+    image: shpy:local
+    depends_on: [base]
+    command: dash ${CMD:-/shpy/test/run_tests}
+    volumes:
+      - ./:/shpy:ro
   kcov:
     build:
       context: .
