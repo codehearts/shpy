@@ -13,7 +13,7 @@ createSpy() {
     # shellcheck disable=SC2039
     local usage status_codes outputs_count outputs_dir errors_count errors_dir spy_name
 
-    usage='Usage: createSpy [[-r status] [-o output] [-e output] ...] name
+    usage="Usage: createSpy [[-r status] [-o output] [-e output] ...] name
 
 Creates new spies and resets existing spies
 
@@ -25,7 +25,7 @@ Options:
   -o    Sets the output sent to stdout when the spy is invoked
         When used with -e, stdout is written to first
   -e    Sets the output sent to stderr when the spy is invoked
-        When used with -o, stdout is written to first'
+        When used with -o, stdout is written to first"
 
     if [ $# -eq 0 ]; then
         printf '%s\n' "$usage"
@@ -205,8 +205,7 @@ examineNextSpyCall() {
         return 1
     fi
 
-    _shpySetDirectoryContentsCount \
-      "$1" $(( $(_shpyGetCurrentSpyCallIndex "$1") + 1 ))
+    _shpySetCurrentSpyCallIndex "$1" $(( $(_shpyGetCurrentSpyCallIndex "$1") + 1 ))
 }
 
 # Removes spies and their metadata from disk and the environment
@@ -290,7 +289,7 @@ _shpyGetCurrentSpyCallIndex() {
 # Sets and exports the index of the current spy call under examination
 # $1 - Name of the spy
 # $2 - Call index to examine
-_shpySetDirectoryContentsCount() {
+_shpySetCurrentSpyCallIndex() {
     eval "_shpy_$1_current=$2"
     export "_shpy_$1_current"
 }
@@ -398,9 +397,7 @@ _shpyGetSpyReturnStatus() {
     status_code="$(echo "$status_codes" | cut -d' ' -f"$(getSpyCallCount "$1")")"
 
     # If no status was returned for the current call, use the final status
-    if [ -z "${status_code:+is_not_null}" ]; then
-      status_code=${status_codes##* }
-    fi
+    [ -z "${status_code:+is_not_null}" ] && status_code=${status_codes##* }
 
     return "$status_code"
 }
