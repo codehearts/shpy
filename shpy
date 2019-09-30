@@ -421,21 +421,21 @@ _shpy_break_path_cache() {
 
 # Runs the system `mktemp` binary to create the shpy working directory
 _shpy_create_working_dir() {
-    command -p mktemp -d shpy.XXXXXX
+    command -p mktemp -dt shpy.XXXXXX
     _shpy_break_path_cache
 }
 
 # Runs the system `mkdir -p` binary to create a directory and its parents
 # $1 - Path of the directory to create
 _shpy_mkdir() {
-    command -p mkdir -p -- "$1"
+    command -p mkdir -p "$1"
     _shpy_break_path_cache
 }
 
 # Runs the system `rm -rf` binary to remove a directory and its contents
 # $1 - Path to the directory to remove
 _shpy_rmdir() {
-    command -p rm -rf -- "$1"
+    command -p rm -rf "$1"
     _shpy_break_path_cache
 }
 
