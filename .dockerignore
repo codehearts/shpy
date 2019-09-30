@@ -1,0 +1,7 @@
+.*
+CONTRIBUTING.md
+Dockerfile
+docker-compose.yml
+
+coverage/
+hooks/
