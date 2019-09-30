@@ -9,6 +9,7 @@ So you're looking to contribute to shpy, eh? Do you think you're ready to face t
   - [Writing Tests](#writing-tests)
   - [Running Tests](#running-tests)
 - [Submitting Changes](#incoming_envelope-submitting-changes)
+- [Release Checklist](#ship-release-checklist)
 - [Getting in Touch](#phone-getting-in-touch)
 
 ## :star2: Getting Started
@@ -152,6 +153,30 @@ To run tests under a specific shell, or to run a specific analysis tool, you can
 Once your code is polished and tests are passing, it's time to submit a pull request! When creating your PR, it's a good idea for your description to explain  _what_ was changed and _why_ the change was needed
 
 Once the CI build for your branch passes and a project owner reviews your code (which should happen within a few days), your change will be rebased into the master branch and your contribution complete! Thanks! :sparkling_heart:
+
+## :ship: Release Checklist
+
+Shpy releases are versioned using the [semver](https://semver.org) major.minor.patch format
+
+Segment | Reason to bump
+:-----  | :-------------
+Major   | Breaking changes to the API, such as renaming an existing public function
+Minor   | New functionality is added, such as improving the performance of spies or supporting the sourcing of spies
+Patch   | Bug fixes, such as fixing an issue where spies did not work with `nounset` set
+
+During a version bump, all segments to the right of the bumped segment are reset to 0, such as 0.0.1 to 0.1.0, 1.2.3 to 2.0.0, and so on
+
+Before creating a new release, run through this checklist to ensure nothing is forgotten!
+
+- [ ] Update the `SHPY_VERSION` variable in `shpy` and its test in `test/test_testEnvironment`
+- [ ] Document any public-facing changes in `README.md`
+- [ ] Document any architectural or internal API changes in `CONTRIBUTING.md`
+- [ ] Once the PR is approved, tag the head of `master` and push
+
+        git tag -a x.y.z -m 'brief description of changes'
+        git push origin x.y.z
+
+- [ ] Create a release on GitHub with a fully fleshed description of changes
 
 ## :phone: Getting in Touch
 

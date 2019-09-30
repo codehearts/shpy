@@ -129,6 +129,8 @@ export SHPY_PATH
 
 When using the Docker image, `SHPY_PATH` is preset as `/shpy/shpy` for convenience
 	
+The `SHPY_VERSION` environment variable is provided to get the current shpy version
+
 A summary of functions:
 
 Function | Description

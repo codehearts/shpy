@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+# Export the shpy version in the environment
+SHPY_VERSION=1.0.0
+export SHPY_VERSION
+
 # Ensure SHPY_PATH is set
 if [ -z "${SHPY_PATH:+is_set_and_not_null}" ]; then
   echo 'Error: SHPY_PATH is not set as the path to shpy' >&2
