@@ -50,13 +50,7 @@ RUN echo 'http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repos
 # Ncurses is installed for `tput`, which is used by shunit to colorize output
 # Curl is installed for the `coverfetch` example
 RUN apk --no-cache add --update-cache \
-      ncurses=6.1_p20190518-r0 \
-      curl=7.66.0-r0 \
-      checkbashisms=2.19.5-r0 \
-      bash=5.0.0-r0 \
-      dash=0.5.10.2-r0 \
-      mksh=57-r0 \
-      zsh=5.7.1-r0
+      ncurses curl checkbashisms bash dash mksh zsh
 
 # Create a non-root `shpy` user
 RUN addgroup -S shpy && adduser -S shpy -G shpy
