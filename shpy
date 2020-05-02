@@ -302,7 +302,7 @@ _shpySetCurrentSpyCallIndex() {
 # $1 - Path to the directory
 _shpyGetDirectoryContentsCount() {
     if [ -d "$1" ]; then
-      find "$1" -maxdepth 1 ! -path "$1" | wc -l
+      find "$1" -maxdepth 1 ! -path "$1" | expr $(wc -l)
     else
       echo 0
     fi
