@@ -300,9 +300,10 @@ _shpySetCurrentSpyCallIndex() {
 
 # Outputs the number of files in the given directory
 # $1 - Path to the directory
+# xargs to remove leading spaces
 _shpyGetDirectoryContentsCount() {
     if [ -d "$1" ]; then
-      find "$1" -maxdepth 1 ! -path "$1" | expr $(wc -l)
+      find "$1" -maxdepth 1 ! -path "$1" | wc -l | xargs
     else
       echo 0
     fi
