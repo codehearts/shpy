@@ -282,6 +282,10 @@ _shpyCreateSpyExecutable() {
     printf '. %s\n' "$SHPY_PATH" >> "$spy_file"
     printf '_shpyRunSpy "%s" "$@"\n' "$1" >> "$spy_file"
     chmod +x "$spy_file"
+
+    # Make sure spy script from PATH will be called
+    # by doing unset for the function, in case it was sourced
+    unset -f "$1" 2> /dev/null || true
 }
 
 # Outputs the index of the current spy call under examination
