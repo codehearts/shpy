@@ -13,7 +13,7 @@ services:
   ash:
     image: shpy:local
     depends_on: [base]
-    command: sh ${CMD:-/shpy/test/run_tests}
+    command: ash ${CMD:-/shpy/test/run_tests}
     volumes:
       - ./:/shpy:ro
   bash:

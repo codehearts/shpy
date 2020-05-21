@@ -221,6 +221,18 @@ itDisplaysStandardOutputBeforeErrorOutput() {
       "$(dosomething 2>&1)"
 }
 
+itCallsSpyOnChainedFunction() {
+
+    f1() { echo "Output from locally defined f1"; }
+    f2() { f1; }
+
+    doOrDie createSpy -o 'Output from spy on f1' f1
+
+    assertEquals 'Locally defined function was called instead of spy' \
+      "Output from spy on f1" \
+      "$(f2)"
+}
+
 # Helper method to run the same case with output defined in different orders
 # $1 - 0 to define all stdout before stderr, 1 to interleave the definitions
 do_multiple_outputs_test() {
