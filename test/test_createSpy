@@ -2,7 +2,7 @@
 
 itDisplaysUsageWhenCreatingSpyWithoutArgs() {
     assertEquals 'usage message was not displayed' \
-      'Usage: createSpy [[-r status] [-o output] [-e output] ...] name' \
+      'Usage: createSpy [[-r status] [-o output] [-e output] [-u] ...] name' \
       "$(createSpy 2>&1 | head -n1)"
 }
 
@@ -17,7 +17,7 @@ itDiesWhenCreatingSpyWithUnknownOption() {
 
 itDisplaysUsageWhenCreatingSpyWithRequiredArgMissing() {
     assertEquals 'usage message was not displayed' \
-      'Usage: createSpy [[-r status] [-o output] [-e output] ...] name' \
+      'Usage: createSpy [[-r status] [-o output] [-e output] [-u] ...] name' \
       "$(createSpy -r dosomething 2>&1 | head -n1)"
 }
 
@@ -226,11 +226,24 @@ itCallsSpyOnChainedFunction() {
     f1() { echo "Output from locally defined f1"; }
     f2() { f1; }
 
-    doOrDie createSpy -o 'Output from spy on f1' f1
+    doOrDie createSpy -o 'Output from spy on f1' -u f1
 
     assertEquals 'Locally defined function was called instead of spy' \
       "Output from spy on f1" \
       "$(f2)"
+    
+}
+
+itOutputsStderrMsgForDeclaredFunction() {
+
+    f1() { echo "Output from locally defined f1"; }
+    f2() { f1; }
+
+    out="$(doOrDie createSpy -o 'Output from spy on f1' f1 2>&1)"
+    
+    assertEquals 'createSpy did not output warning about declared function' \
+        "Function f1 is declared and will be called instead of spy. Add -u to createSpy to unset it." \
+        "$out"
 }
 
 # Helper method to run the same case with output defined in different orders
