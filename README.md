@@ -102,6 +102,15 @@ touch my-new-file # outputs "call me once, shame on you" to stdout, returns true
 touch my-new-file # outputs "call me twice, shame on me" to stderr, returns false
 ```
 
+When developing tests for complex functions with long chained calls, source all of them and use spy with -u flag. The flag will unset declared function, so complex functions can be tested with a mix of spies and original functions. 
+
+```sh
+source my_script.sh # contains complex_function that calls file_check and directory_check
+
+createSpy -o 'spy test' -u file_check
+complex_function # complex_function calls file_check, so it will output "spy test". However, without -u createSpy gives a warning that file_check is already declared and complex_function executes declared one instead of spy
+```
+
 When you're done playing with shpy, it's only polite to clean up after yourself
 
 ```sh
@@ -139,6 +148,7 @@ Function | Description
 `createSpy -r status name`      | Sets the status code returned when the spy is invoked<br>Can be passed multiple times to set a return value sequence<br>Once the sequence finishes, the last value is always returned
 `createSpy -o output name`      | Sets output sent to stdout when the spy is invoked<br>Can be passed multiple times to set an output sequence<br>Once the sequence finishes, the last value is always output<br>When used with `-e`, standard out is written to first
 `createSpy -e output name`      | Sets output sent to stderr when the spy is invoked<br>Can be passed multiple times to set an error output sequence<br>Once the sequence finishes, the last value is always output<br>When used with `-o`, standard out is written to first
+`createSpy -u name`             | A flag to unset declared function, so created spy can run instead otherwise declared function takes precedence<br>Function is not restored after test runs
 `createStub name`               | Alias for `createSpy`
 `getSpyCallCount name`          | Outputs the number of invocations of a spy
 `wasSpyCalledWith name [arg ...]` | Returns 0 if the current spy call under examination has the given args

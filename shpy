@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Export the shpy version in the environment
 SHPY_VERSION=1.0.0
@@ -17,7 +17,7 @@ createSpy() {
     # shellcheck disable=SC2039
     local usage status_codes outputs_count outputs_dir errors_count errors_dir spy_name
 
-    usage="Usage: createSpy [[-r status] [-o output] [-e output] ...] name
+    usage="Usage: createSpy [[-r status] [-o output] [-e output] [-u] ...] name
 
 Creates new spies and resets existing spies
 
@@ -29,7 +29,8 @@ Options:
   -o    Sets the output sent to stdout when the spy is invoked
         When used with -e, stdout is written to first
   -e    Sets the output sent to stderr when the spy is invoked
-        When used with -o, stdout is written to first"
+        When used with -o, stdout is written to first
+  -u    Flag to unset (remove) declared function named as spy. It will not be restored."
 
     if [ $# -eq 0 ]; then
         printf '%s\n' "$usage"
@@ -56,7 +57,7 @@ Options:
 
     # Parse command line arguments
     OPTIND=1
-    while getopts :o:r:e: opt; do
+    while getopts :o:r:e:u opt; do
         case "$opt" in
             o)
               # Write the contents to the stdout directory
@@ -72,6 +73,10 @@ Options:
               # Append the status code to a space-delimited sequence
               # Add a space when `status_code` isn't null to avoid leading space
               status_codes="${status_codes-}${status_codes:+ }$OPTARG"
+              ;;
+            u)
+              # Unset function
+              unset -f "$spy_name" 2> /dev/null || true
               ;;
             *) _shpy_die "Error: Unknown option -$OPTARG" ;;
         esac
@@ -283,9 +288,10 @@ _shpyCreateSpyExecutable() {
     printf '_shpyRunSpy "%s" "$@"\n' "$1" >> "$spy_file"
     chmod +x "$spy_file"
 
-    # Make sure spy script from PATH will be called
-    # by doing unset for the function, in case it was sourced
-    unset -f "$1" 2> /dev/null || true
+    # Check if function exists with spy name
+    if type "$1" | grep -q "is a shell function\|^$1 is a function"; then
+       echo "Function $1 is declared and will be called instead of spy. Add -u to createSpy to unset it." >&2
+    fi
 }
 
 # Outputs the index of the current spy call under examination
