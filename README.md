@@ -108,7 +108,8 @@ When developing tests for complex functions with long chained calls, source all 
 source my_script.sh # contains complex_function that calls file_check and directory_check
 
 createSpy -o 'spy test' -u file_check
-complex_function # complex_function calls file_check, so it will output "spy test". However, without -u createSpy gives a warning that file_check is already declared and complex_function executes declared one instead of spy
+complex_function # complex_function calls file_check, which is mocked to output "spy test"
+                 # Without -u, createSpy would warn that file_check is already declared and wouldn't be mocked
 ```
 
 When you're done playing with shpy, it's only polite to clean up after yourself
