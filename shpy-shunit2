@@ -26,15 +26,22 @@ assertCalledWith() {
     fi
 
     # shellcheck disable=SC2039
-    local status_code
+    local status_code actual_call current_spy_call
 
     wasSpyCalledWith "$@"
     status_code=$?
 
+    actual_call=$1
+    if [ $status_code -ne 0 ]; then
+        current_spy_call=$(( $(_shpyGetCurrentSpyCallIndex "$1") + 1 ))
+        if ! actual_call="$actual_call $(getArgsForCall "$1" "$current_spy_call")" 2>/dev/null; then
+            actual_call='not called'
+        fi
+    fi
+
     examineNextSpyCall "$1"
 
-    assertTrue $status_code
-
+    assertTrue "expected:<$*> but was:<$actual_call>" $status_code
 }
 
 assertCalledWith_() {

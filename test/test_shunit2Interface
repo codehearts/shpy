@@ -118,6 +118,48 @@ itDisplaysAssertionWhenAssertCalledWithFailsInNewShell() {
     assertTrue 'output does not begin with "ASSERT:" from new shell' $?
 }
 
+itDisplaysExpectedVsActualWhenAssertCalledWithFailsWithDifferentArgs() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    printf '%s' "$(assertCalledWith dosomething 456 2>/dev/null)" |
+        grep -q "expected:<dosomething 456> but was:<dosomething 123>"
+    assertTrue 'output does not contain expected vs. actual' $?
+}
+
+itDisplaysExpectedVsActualWhenAssertCalledWithFailsWithDifferentArgsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    printf '%s' "$(assertCalledWith dosomething 456 2>/dev/null)" |
+        grep -q "expected:<dosomething 456> but was:<dosomething 123>"
+    assertTrue 'output does not contain expected vs. actual' $?
+}
+
+itDisplaysExpectedVsActualWhenAssertCalledWithFailsWithTooManyCalls() {
+    doOrDie createSpy dosomething
+    dosomething 123
+
+    assertCalledWith dosomething 123
+    assertEquals 'first assertion was not for first call' 0 $?
+
+    printf '%s' "$(assertCalledWith dosomething 456 2>/dev/null)" |
+        grep -q "expected:<dosomething 456> but was:<not called>"
+    assertTrue 'output does not contain expected vs. actual' $?
+}
+
+itDisplaysExpectedVsActualWhenAssertCalledWithFailsWithTooManyCallsInNewShell() {
+    doOrDie createSpy dosomething
+    runInNewShell dosomething 123
+
+    assertCalledWith dosomething 123
+    assertEquals 'first assertion was not for first call' 0 $?
+
+    printf '%s' "$(assertCalledWith dosomething 456 2>/dev/null)" |
+        grep -q "expected:<dosomething 456> but was:<not called>"
+    assertTrue 'output does not contain expected vs. actual' $?
+}
+
 itReturns1WhenAssertCalledWithFails() {
     doOrDie createSpy dosomething
     dosomething 123
