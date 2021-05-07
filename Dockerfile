@@ -16,7 +16,7 @@ RUN tar xzf shunit2.tar.gz && mv shunit2-* shunit2
 #
 # Create a kcov target to run kcov on debian
 #
-FROM kcov/kcov:v36 AS kcov
+FROM kcov/kcov:v38 AS kcov
 
 # Create a non-root `shpy` user
 RUN useradd -ms /bin/sh shpy
