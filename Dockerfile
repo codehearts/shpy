@@ -6,7 +6,7 @@ FROM koalaman/shellcheck:v0.7.1 AS shellcheck
 #
 # Create a shunit stage to pull a fixed commit into /shunit2
 #
-FROM alpine:3.13.5 AS shunit
+FROM alpine:3.15.0 AS shunit
 
 ARG SHUNIT2_SHA=ba130d69bbff304c0c6a9c5e8ab549ae140d6225
 ARG SHUNIT2_URL=https://github.com/kward/shunit2/archive/${SHUNIT2_SHA}.tar.gz
@@ -41,7 +41,7 @@ CMD ["/bin/sh"]
 #
 # Base the shpy image on Alpine Linux
 #
-FROM alpine:3.13.5 AS shpy
+FROM alpine:3.15.0 AS shpy
 
 # Enable the community repo to install dash
 RUN echo 'http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories
