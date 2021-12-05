@@ -25,7 +25,7 @@ assertCalledWith() {
         return 1
     fi
 
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local status_code actual_call current_spy_call
 
     wasSpyCalledWith "$@"
@@ -55,7 +55,7 @@ assertCalledWith_() {
         return 1
     fi
 
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local message status_code
 
     message=$1

@@ -10,7 +10,7 @@ itRunsTestsWithNounset() {
 }
 
 itReturns1WhenShpyPathVariableIsNotSet() {
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local original_shpy_path
     original_shpy_path="$SHPY_PATH"
     unset SHPY_PATH
@@ -24,7 +24,7 @@ itReturns1WhenShpyPathVariableIsNotSet() {
 }
 
 itDisplaysErrorMessageWhenShpyPathVariableIsNotSet() {
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local original_shpy_path
     original_shpy_path="$SHPY_PATH"
     unset SHPY_PATH
