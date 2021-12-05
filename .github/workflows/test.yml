@@ -1,0 +1,45 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        shell: [ash, bash, dash, mksh, zsh]
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: docker-compose run ${{ matrix.shell }}
+      - run: docker-compose run ${{ matrix.shell }}
+        env:
+          CMD: /shpy/examples/renamer/test.sh
+      - run: docker-compose run ${{ matrix.shell }}
+        env:
+          CMD: /shpy/examples/coverfetch/test.sh
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: |
+          docker-compose build
+          docker-compose run -u root --entrypoint chown kcov shpy:shpy /coverage
+      - name: Coverage report
+        run: |
+          docker-compose run checkbashisms
+          docker-compose run shellcheck
+          docker-compose run kcov
+          CMD=/shpy/examples/renamer/test.sh docker-compose run kcov
+          CMD=/shpy/examples/coverfetch/test.sh docker-compose run kcov
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v2

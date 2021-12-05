@@ -3,12 +3,9 @@
 [![Build Status][build-badge]][build-link]
 [![Coverage][coverage-badge]][coverage-link]
 [![MIT License][license-badge]](https://github.com/codehearts/shpy/blob/master/LICENSE.md)
+![Build status for supported shells](http://github-actions.40ants.com/codehearts/shpy/matrix.svg?only=Test.test)
 
-POSIX compliant<sup>*</sup> spies and stubs for shell unit testing
-
-| ash | bash | dash | mksh | zsh |
-| :-: | :--: | :--: | :--: | :-: |
-| [![Ash Build Status][ash-build-badge]][build-link] | [![Bash Build Status][bash-build-badge]][build-link] | [![Dash Build Status][dash-build-badge]][build-link] | [![Mksh Build Status][mksh-build-badge]][build-link] | [![Zsh Build Status][zsh-build-badge]][build-link] |
+POSIX compliant[<sup>[1]</sup>](https://github.com/codehearts/shpy#a-word-on-shell-portability) spies and stubs for shell unit testing
 
 Features at a glance:
 
@@ -191,10 +188,10 @@ shpy relies on [portable but more modern shell features](http://apenwarr.ca/log/
 [coverage-badge]:   https://codecov.io/gh/codehearts/shpy/branch/master/graph/badge.svg
 [coverage-link]:    https://codecov.io/gh/codehearts/shpy
 [license-badge]:    https://img.shields.io/badge/license-MIT-007EC7.svg
-[build-badge]:      https://travis-ci.org/codehearts/shpy.svg?branch=master
+[build-badge]:      https://img.shields.io/github/workflow/status/codehearts/shpy/Test/master
 [ash-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/1
 [bash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/2
 [dash-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/3
 [mksh-build-badge]: https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/4
 [zsh-build-badge]:  https://travis-matrix-badges.herokuapp.com/repos/codehearts/shpy/branches/master/5
-[build-link]:       https://travis-ci.org/codehearts/shpy
+[build-link]:       https://github.com/codehearts/shpy/actions?query=workflow%3ATest+branch%3Amaster
