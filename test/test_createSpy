@@ -119,7 +119,7 @@ itStubsOutputOfCreatedSpyInNewShell() {
 }
 
 itStubsMultipleOutputsAsSequence() {
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local first_output second_output third_output
     first_output=$(printf "%s\\n%s" "first" "output")
     second_output="second OUTPUT"
@@ -137,7 +137,7 @@ itStubsMultipleOutputsAsSequence() {
 }
 
 itStubsMultipleOutputsAsSequenceInNewShell() {
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local first_output second_output third_output
     first_output=$(printf "%s\\n%s" "first" "output")
     second_output="second OUTPUT"
@@ -172,7 +172,7 @@ itStubsErrorOutputOfCreatedSpyInNewShell() {
 }
 
 itStubsMultipleErrorOutputsAsSequence() {
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local first_output second_output third_output
     first_output=$(printf "%s\\n%s" "first" "output")
     second_output="second OUTPUT"
@@ -190,7 +190,7 @@ itStubsMultipleErrorOutputsAsSequence() {
 }
 
 itStubsMultipleErrorOutputsAsSequenceInNewShell() {
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local first_output second_output third_output
     first_output=$(printf "%s\\n%s" "first" "output")
     second_output="second OUTPUT"
@@ -249,7 +249,7 @@ itOutputsStderrMsgForDeclaredFunction() {
 # Helper method to run the same case with output defined in different orders
 # $1 - 0 to define all stdout before stderr, 1 to interleave the definitions
 do_multiple_outputs_test() {
-    # shellcheck disable=SC2039
+    # shellcheck disable=SC3043
     local first_output second_output first_err second_err third_err test_label
 
     first_output="first stdout"

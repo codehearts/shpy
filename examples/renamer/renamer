@@ -12,7 +12,7 @@ fi
 renamer() {
   # Split at the first '*' to create the prefix and suffix for renaming
   prefix="$(printf '%s' "$1" | cut -d* -f1)"
-  suffix="${1##$prefix\*}"
+  suffix="${1##"$prefix"\*}"
 
   # Remove the first arg (renaming pattern) so all args are files to rename
   shift
