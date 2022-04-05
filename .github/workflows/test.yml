@@ -42,4 +42,4 @@ jobs:
           CMD=/shpy/examples/renamer/test.sh docker-compose run kcov
           CMD=/shpy/examples/coverfetch/test.sh docker-compose run kcov
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
