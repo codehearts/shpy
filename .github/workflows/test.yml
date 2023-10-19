@@ -17,7 +17,7 @@ jobs:
         shell: [ash, bash, dash, mksh, zsh]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: docker-compose run ${{ matrix.shell }}
       - run: docker-compose run ${{ matrix.shell }}
         env:
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build
         run: |
           docker-compose build
