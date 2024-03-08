@@ -1,7 +1,7 @@
 #
 # Fetch the official shellcheck image
 #
-FROM koalaman/shellcheck:v0.8.0 AS shellcheck
+FROM koalaman/shellcheck:v0.10.0 AS shellcheck
 
 #
 # Create a shunit stage to pull a fixed commit into /shunit2
